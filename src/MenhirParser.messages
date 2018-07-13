@@ -1,0 +1,902 @@
+ast_eof: BANG WHILE 
+##
+## Ends in an error in state: 17.
+##
+## expr -> BANG . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## BANG 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: COLON ID STAR 
+##
+## Ends in an error in state: 85.
+##
+## stmt -> COLON ID . stmt [ SEMICOLON RBRACE EOF ELSE ]
+## stmt -> COLON ID . [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## COLON ID 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: COLON WHILE 
+##
+## Ends in an error in state: 84.
+##
+## stmt -> COLON . ID stmt [ SEMICOLON RBRACE EOF ELSE ]
+## stmt -> COLON . ID [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## COLON 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: ID EQUAL WHILE 
+##
+## Ends in an error in state: 14.
+##
+## expr -> ID EQUAL . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## ID EQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: ID WHILE 
+##
+## Ends in an error in state: 13.
+##
+## expr -> ID . EQUAL expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+## primary -> ID . [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LPAREN LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE DOT COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## ID 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: IF LPAREN TRUE RPAREN LBRACE RBRACE WHILE 
+##
+## Ends in an error in state: 88.
+##
+## stmt -> IF LPAREN expr RPAREN stmt . [ SEMICOLON RBRACE EOF ELSE ]
+## stmt -> IF LPAREN expr RPAREN stmt . ELSE stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## IF LPAREN expr RPAREN stmt 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: IF LPAREN TRUE RPAREN STAR 
+##
+## Ends in an error in state: 83.
+##
+## stmt -> IF LPAREN expr RPAREN . stmt [ SEMICOLON RBRACE EOF ELSE ]
+## stmt -> IF LPAREN expr RPAREN . stmt ELSE stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## IF LPAREN expr RPAREN 
+##
+
+# <YOUR SYNTAX ERROR MESSAGE HERE>
+If statement expected then branch
+
+ast_eof: IF LPAREN TRUE RPAREN TRUE ELSE STAR 
+##
+## Ends in an error in state: 89.
+##
+## stmt -> IF LPAREN expr RPAREN stmt ELSE . stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## IF LPAREN expr RPAREN stmt ELSE 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: IF LPAREN TRUE SEMICOLON 
+##
+## Ends in an error in state: 82.
+##
+## expr -> expr . EQUALEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . BANGEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . AND expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . OR expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . LESS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . LESSEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . GREATER expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . GREATEREQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . POW expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . STAR expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . SLASH expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . PLUS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . MINUS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## stmt -> IF LPAREN expr . RPAREN stmt [ SEMICOLON RBRACE EOF ELSE ]
+## stmt -> IF LPAREN expr . RPAREN stmt ELSE stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## IF LPAREN expr 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: IF LPAREN WHILE 
+##
+## Ends in an error in state: 81.
+##
+## stmt -> IF LPAREN . expr RPAREN stmt [ SEMICOLON RBRACE EOF ELSE ]
+## stmt -> IF LPAREN . expr RPAREN stmt ELSE stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## IF LPAREN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: IF WHILE 
+##
+## Ends in an error in state: 80.
+##
+## stmt -> IF . LPAREN expr RPAREN stmt [ SEMICOLON RBRACE EOF ELSE ]
+## stmt -> IF . LPAREN expr RPAREN stmt ELSE stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## IF 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: LBRACE STAR 
+##
+## Ends in an error in state: 79.
+##
+## stmt -> LBRACE . loption(separated_nonempty_list(SEMICOLON,stmt)) RBRACE [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## LBRACE 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: LBRACE TRUE EOF 
+##
+## Ends in an error in state: 95.
+##
+## stmt -> LBRACE loption(separated_nonempty_list(SEMICOLON,stmt)) . RBRACE [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## LBRACE loption(separated_nonempty_list(SEMICOLON,stmt)) 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+## In state 87, spurious reduction of production stmt -> expr 
+## In state 91, spurious reduction of production separated_nonempty_list(SEMICOLON,stmt) -> stmt 
+## In state 94, spurious reduction of production loption(separated_nonempty_list(SEMICOLON,stmt)) -> separated_nonempty_list(SEMICOLON,stmt) 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: LPAREN TRUE SEMICOLON 
+##
+## Ends in an error in state: 66.
+##
+## expr -> expr . EQUALEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . BANGEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . AND expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . OR expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . LESS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . LESSEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . GREATER expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . GREATEREQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . POW expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . STAR expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . SLASH expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . PLUS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . MINUS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## primary -> LPAREN expr . RPAREN [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LPAREN LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE DOT COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN expr 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: LPAREN WHILE 
+##
+## Ends in an error in state: 11.
+##
+## primary -> LPAREN . expr RPAREN [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LPAREN LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE DOT COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: MINUS WHILE 
+##
+## Ends in an error in state: 10.
+##
+## expr -> MINUS . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## MINUS 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: PRINT TRUE RPAREN 
+##
+## Ends in an error in state: 78.
+##
+## expr -> expr . EQUALEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . BANGEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . AND expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . OR expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . LESS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . LESSEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . GREATER expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . GREATEREQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . POW expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . STAR expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . SLASH expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . PLUS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . MINUS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## stmt -> PRINT expr . [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## PRINT expr 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: PRINT WHILE 
+##
+## Ends in an error in state: 77.
+##
+## stmt -> PRINT . expr [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## PRINT 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: RETURN TRUE RPAREN 
+##
+## Ends in an error in state: 76.
+##
+## expr -> expr . EQUALEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . BANGEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . AND expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . OR expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . LESS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . LESSEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . GREATER expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . GREATEREQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . POW expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . STAR expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . SLASH expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . PLUS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . MINUS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## stmt -> RETURN expr . [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## RETURN expr 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: RETURN WHILE 
+##
+## Ends in an error in state: 75.
+##
+## stmt -> RETURN . expr [ SEMICOLON RBRACE EOF ELSE ]
+## stmt -> RETURN . [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## RETURN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: STAR 
+##
+## Ends in an error in state: 0.
+##
+## ast_eof' -> . ast_eof [ # ]
+##
+## The known suffix of the stack is as follows:
+## 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: SUPER DOT WHILE 
+##
+## Ends in an error in state: 6.
+##
+## primary -> SUPER DOT . ID [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LPAREN LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE DOT COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## SUPER DOT 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: SUPER WHILE 
+##
+## Ends in an error in state: 5.
+##
+## primary -> SUPER . DOT ID [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LPAREN LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE DOT COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## SUPER 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE AND WHILE 
+##
+## Ends in an error in state: 49.
+##
+## expr -> expr AND . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr AND 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE BANGEQUAL WHILE 
+##
+## Ends in an error in state: 47.
+##
+## expr -> expr BANGEQUAL . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr BANGEQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE DOT ID EQUAL WHILE 
+##
+## Ends in an error in state: 55.
+##
+## expr -> primary DOT ID EQUAL . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## primary DOT ID EQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE DOT ID WHILE 
+##
+## Ends in an error in state: 54.
+##
+## call -> DOT ID . [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LPAREN LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EQUAL EOF ELSE DOT COMMA BANGEQUAL AND ]
+## expr -> primary DOT ID . EQUAL expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## primary DOT ID 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE DOT WHILE 
+##
+## Ends in an error in state: 53.
+##
+## call -> DOT . ID [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LPAREN LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EQUAL EOF ELSE DOT COMMA BANGEQUAL AND ]
+## expr -> primary DOT . ID EQUAL expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## primary DOT 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE ELSE 
+##
+## Ends in an error in state: 91.
+##
+## separated_nonempty_list(SEMICOLON,stmt) -> stmt . [ RBRACE EOF ]
+## separated_nonempty_list(SEMICOLON,stmt) -> stmt . SEMICOLON separated_nonempty_list(SEMICOLON,stmt) [ RBRACE EOF ]
+##
+## The known suffix of the stack is as follows:
+## stmt 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+## In state 87, spurious reduction of production stmt -> expr 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE EQUALEQUAL WHILE 
+##
+## Ends in an error in state: 45.
+##
+## expr -> expr EQUALEQUAL . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr EQUALEQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE GREATER WHILE 
+##
+## Ends in an error in state: 41.
+##
+## expr -> expr GREATER . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr GREATER 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE GREATEREQUAL WHILE 
+##
+## Ends in an error in state: 39.
+##
+## expr -> expr GREATEREQUAL . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr GREATEREQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE LESS WHILE 
+##
+## Ends in an error in state: 43.
+##
+## expr -> expr LESS . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr LESS 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE LESSEQUAL WHILE 
+##
+## Ends in an error in state: 37.
+##
+## expr -> expr LESSEQUAL . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr LESSEQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE LPAREN RPAREN DOT WHILE 
+##
+## Ends in an error in state: 61.
+##
+## call -> DOT . ID [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LPAREN LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EQUAL EOF ELSE DOT COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## DOT 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE LPAREN RPAREN EQUAL WHILE 
+##
+## Ends in an error in state: 58.
+##
+## expr -> primary nonempty_list(call) EQUAL . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## primary nonempty_list(call) EQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE LPAREN RPAREN WHILE 
+##
+## Ends in an error in state: 60.
+##
+## nonempty_list(call) -> call . [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EQUAL EOF ELSE COMMA BANGEQUAL AND ]
+## nonempty_list(call) -> call . nonempty_list(call) [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## call 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE LPAREN TRUE COMMA WHILE 
+##
+## Ends in an error in state: 51.
+##
+## separated_nonempty_list(COMMA,expr) -> expr COMMA . separated_nonempty_list(COMMA,expr) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## expr COMMA 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE LPAREN TRUE SEMICOLON 
+##
+## Ends in an error in state: 24.
+##
+## expr -> expr . EQUALEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . BANGEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . AND expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . OR expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . LESS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . LESSEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . GREATER expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . GREATEREQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . POW expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . STAR expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . SLASH expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . PLUS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## expr -> expr . MINUS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL COMMA BANGEQUAL AND ]
+## separated_nonempty_list(COMMA,expr) -> expr . [ RPAREN ]
+## separated_nonempty_list(COMMA,expr) -> expr . COMMA separated_nonempty_list(COMMA,expr) [ RPAREN ]
+##
+## The known suffix of the stack is as follows:
+## expr 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE LPAREN WHILE 
+##
+## Ends in an error in state: 20.
+##
+## call -> LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LPAREN LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EQUAL EOF ELSE DOT COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE MINUS WHILE 
+##
+## Ends in an error in state: 33.
+##
+## expr -> expr MINUS . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr MINUS 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE OR WHILE 
+##
+## Ends in an error in state: 35.
+##
+## expr -> expr OR . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr OR 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE PLUS WHILE 
+##
+## Ends in an error in state: 31.
+##
+## expr -> expr PLUS . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr PLUS 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE POW WHILE 
+##
+## Ends in an error in state: 29.
+##
+## expr -> expr POW . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr POW 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE RBRACE 
+##
+## Ends in an error in state: 98.
+##
+## ast_eof -> loption(separated_nonempty_list(SEMICOLON,stmt)) . EOF [ # ]
+##
+## The known suffix of the stack is as follows:
+## loption(separated_nonempty_list(SEMICOLON,stmt)) 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+## In state 87, spurious reduction of production stmt -> expr 
+## In state 91, spurious reduction of production separated_nonempty_list(SEMICOLON,stmt) -> stmt 
+## In state 94, spurious reduction of production loption(separated_nonempty_list(SEMICOLON,stmt)) -> separated_nonempty_list(SEMICOLON,stmt) 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE RPAREN 
+##
+## Ends in an error in state: 87.
+##
+## expr -> expr . EQUALEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . BANGEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . AND expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . OR expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . LESS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . LESSEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . GREATER expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . GREATEREQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . POW expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . STAR expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . SLASH expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . PLUS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . MINUS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## stmt -> expr . [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## expr 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE SEMICOLON STAR 
+##
+## Ends in an error in state: 92.
+##
+## separated_nonempty_list(SEMICOLON,stmt) -> stmt SEMICOLON . separated_nonempty_list(SEMICOLON,stmt) [ RBRACE EOF ]
+##
+## The known suffix of the stack is as follows:
+## stmt SEMICOLON 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE SLASH WHILE 
+##
+## Ends in an error in state: 27.
+##
+## expr -> expr SLASH . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr SLASH 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE STAR WHILE 
+##
+## Ends in an error in state: 25.
+##
+## expr -> expr STAR . expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## expr STAR 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: TRUE WHILE 
+##
+## Ends in an error in state: 19.
+##
+## expr -> primary . DOT ID EQUAL expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+## expr -> primary . nonempty_list(call) EQUAL expr [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+## primary_ -> primary . [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+## primary_ -> primary . nonempty_list(call) [ STAR SLASH SEMICOLON RPAREN RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE COMMA BANGEQUAL AND ]
+##
+## The known suffix of the stack is as follows:
+## primary 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: VAR ID EQUAL TRUE RPAREN 
+##
+## Ends in an error in state: 74.
+##
+## expr -> expr . EQUALEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . BANGEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . AND expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . OR expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . LESS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . LESSEQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . GREATER expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . GREATEREQUAL expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . POW expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . STAR expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . SLASH expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . PLUS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## expr -> expr . MINUS expr [ STAR SLASH SEMICOLON RBRACE POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL EOF ELSE BANGEQUAL AND ]
+## stmt -> VAR ID EQUAL expr . [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## VAR ID EQUAL expr 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: VAR ID EQUAL WHILE 
+##
+## Ends in an error in state: 73.
+##
+## stmt -> VAR ID EQUAL . expr [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## VAR ID EQUAL 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: VAR ID WHILE 
+##
+## Ends in an error in state: 72.
+##
+## stmt -> VAR ID . EQUAL expr [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## VAR ID 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: VAR WHILE 
+##
+## Ends in an error in state: 71.
+##
+## stmt -> VAR . ID EQUAL expr [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## VAR 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: WHILE LPAREN TRUE RPAREN STAR 
+##
+## Ends in an error in state: 70.
+##
+## stmt -> WHILE LPAREN expr RPAREN . stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## WHILE LPAREN expr RPAREN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: WHILE LPAREN TRUE SEMICOLON 
+##
+## Ends in an error in state: 69.
+##
+## expr -> expr . EQUALEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . BANGEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . AND expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . OR expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . LESS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . LESSEQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . GREATER expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . GREATEREQUAL expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . POW expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . STAR expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . SLASH expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . PLUS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## expr -> expr . MINUS expr [ STAR SLASH RPAREN POW PLUS OR MINUS LESSEQUAL LESS GREATEREQUAL GREATER EQUALEQUAL BANGEQUAL AND ]
+## stmt -> WHILE LPAREN expr . RPAREN stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## WHILE LPAREN expr 
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 19, spurious reduction of production primary_ -> primary 
+## In state 18, spurious reduction of production expr -> primary_ 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: WHILE LPAREN WHILE 
+##
+## Ends in an error in state: 2.
+##
+## stmt -> WHILE LPAREN . expr RPAREN stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## WHILE LPAREN 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+ast_eof: WHILE WHILE 
+##
+## Ends in an error in state: 1.
+##
+## stmt -> WHILE . LPAREN expr RPAREN stmt [ SEMICOLON RBRACE EOF ELSE ]
+##
+## The known suffix of the stack is as follows:
+## WHILE 
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+

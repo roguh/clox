@@ -1,0 +1,96 @@
++
+!=
+
+>=
+
+==
+// comments
+
+// single-char tokens
+(	)	[	]	,	.	-	+	*	;
+/
+
+// tokens of length two or one
+! != = == > >= < <=
+
+identifiers i I i_ i10 i_ I_10 I_d_e_n_t_i_f_i_e_r___1234567890___ID
+// lox extension: ids start with _
+_EVEN_start_with_under_ 
+ab=cd+efgh/i
+
+// keywords
+and class else false fun for if nil or print return super this true var while
+
+"strings" "" "s" "multi
+line
+strings" 
+"strings with ocaml string escapes \\\"\n\r\t\b\ \'"
+
+// integers
+0
+1
+12
+1234
+00000000000000000000000000001234567890
+
+// big integers: 
+// maximum values of int32, uint32, int64, uint64:
+2147483647
+4294967295
+9223372036854775807
+18446744073709551615
+
+// big
+18446744073709551616
+1844674407370955161618446744073709551616
+
+// floats
+12.34
+12345678901234567890.12345678901234567890
+00000123.00000
+0000000000.000000000000
+10000000000.0000000000001
+10000000000.0
+0.0000000000001
+
+// craftinginterpreters specifies that 
+// "We don’t allow a leading or trailing decimal point, so these are both 
+// invalid: .1234 1234."
+// This rule is ignored in this implementation
+// lox extension: numbers can start or end with dots
+.1234567890
+.0
+.123456
+
+1.
+123456789.
+
+// hex works
+// lox extension: hex literals
+0xA
+0xdead_beef
+0xffffff.fff
+0x.ffff
+0x.23456789
+
+// lox extension: number separator for literals
+1_000_000
+1_000_000.000_001
+0xdead_
+0xdead_._beef
+
+// not a number
+nan
+NaN
+
+going int0 3 _nesting
+
+/* more comments
+ *
+ */
+
+/* n /* e /* s /* t */ i */ n */ g */
+
+and all is well afterwards!
+
+// and of course, EOF

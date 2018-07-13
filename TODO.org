@@ -1,0 +1,42 @@
+* tasks
+** :ast prints bugs
+should : be in language?
+** holy shit so many bugs
+** parse expr
+** parse stmt
+** eval stmts
+- bind variables
+- bind functions
+** resolve identifier level
+* build vm
+* compile to bytecode
+* to js 
+test these libraries:
+- menhir
+- zarith
+- camomile
+- compiler-libs
+- sedlex
+- stdio and base
+
+do all PPX syntax extensions work through bucklescript/js_of_ocaml?
+
+** js_of_ocaml vs bucklescript
+- output size
+- compatibility/difficulty of porting
+
+* sexy js interface
+* use reason syntax instead?
+* tests
+** lex: sequences
+- all possible tokens, especially primitives and comments
+- several failure modes
+** parse: trees
+- all possible AST nodes
+- some failure modes
+- make a random AST generator?
+  subtly corrupt.
+** eval: code
+- all possible AST nodes, some failing and some valid
+- several salient examples
+- test several error messages for legibility 

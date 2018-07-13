@@ -1,0 +1,7 @@
+#+TITLE: Lox-in-Ocaml Interpreter
+
+#+BEGIN_CODE
+make clean
+make all
+make test
+#+END_CODE

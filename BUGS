@@ -1,0 +1,2 @@
+- ppx enumerate: token named STRING
+  deriving enumerate... all_of_string not found
