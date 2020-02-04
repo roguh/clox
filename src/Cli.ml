@@ -16,7 +16,7 @@ let repl channel =
     );
     *)
   (* LNoise.history_load ~filename:"history.txt" |> ignore; *)
-  LNoise.history_set ~max_length:1000000 |> ignore ;
+  (LNoise.history_set ~max_length:1000000 : (unit, string) Caml.result) |> ignore ;
   (*
   LNoise.set_completion_callback begin fun line_so_far ln_completions ->
     if line_so_far <> "" && line_so_far.[0] = 'h' then
@@ -28,7 +28,7 @@ let repl channel =
   and linenoise from_user =
     if Option.is_some @@ List.find ~f:(String.equal from_user) ["quit"; "exit"] 
     then false
-    else ( LNoise.history_add from_user |> ignore ; true )
+    else ( (LNoise.history_add from_user : (unit, string) Caml.result) |> ignore ; true )
     (* LNoise.history_save ~filename:"history.txt" |> ignore; *)
   in
   let rec init_state = Lox.repl_init_state channel
