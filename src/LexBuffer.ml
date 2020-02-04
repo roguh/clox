@@ -13,8 +13,8 @@ type t =
   { buf : Sedlexing.lexbuf
   ; mutable pos : Lexing.position
   ; mutable pos_mark : Lexing.position
-  ; mutable last_char : int option
-  ; mutable last_char_mark : int option }
+  ; mutable last_char : Uchar.t option
+  ; mutable last_char_mark : Uchar.t option }
 
 let get_pos {pos;_} = pos
 
@@ -58,22 +58,22 @@ let start lexbuf =
 (** location of next character *)
 let next_loc lexbuf = {lexbuf.pos with pos_cnum = lexbuf.pos.pos_cnum + 1}
 
-let cr = Char.to_int '\r'
+let cr = Uchar.of_char '\r'
 
 (** next character *)
 let next lexbuf =
   let c = Sedlexing.next lexbuf.buf in
   let pos = next_loc lexbuf in
-  ( match Char.of_int c with
-  | Some '\r' -> lexbuf.pos <- {pos with pos_bol = pos.pos_cnum - 1; pos_lnum = pos.pos_lnum + 1}
-  | Some '\n' when not (Option.equal Int.equal lexbuf.last_char (Some cr)) ->
+  ( match Option.value ~default:' ' (Option.map ~f:Uchar.to_char_exn c) with
+  | '\r' -> lexbuf.pos <- {pos with pos_bol = pos.pos_cnum - 1; pos_lnum = pos.pos_lnum + 1}
+  | '\n' when not (Option.equal Uchar.equal lexbuf.last_char (Some cr)) ->
       lexbuf.pos <- {pos with pos_bol = pos.pos_cnum - 1; pos_lnum = pos.pos_lnum + 1}
-  | Some '\n' -> ()
+  | '\n' -> ()
   | _ -> lexbuf.pos <- pos ) ;
-  lexbuf.last_char <- Some c ;
+  lexbuf.last_char <- c;
   c
 
-let raw lexbuf : int array = Sedlexing.lexeme lexbuf.buf
+let raw lexbuf : Uchar.t array = Sedlexing.lexeme lexbuf.buf
 
 let ascii ?(skip = 0) ?(drop = 0) lexbuf : string =
   let len = Sedlexing.(lexeme_length lexbuf.buf - skip - drop) in
