@@ -136,7 +136,7 @@ let token buf =
 
   | lexid     -> ID (get_lexeme buf.buf)
 
-  | _ -> illegal buf (Char.of_int_exn (next buf))
+  | _ -> illegal buf (Option.value ~default:' ' (Option.map ~f:Uchar.to_char_exn (next buf)))
 
 (* wrapper around `token` that records start and end locations *)
 let loc_token buf =
