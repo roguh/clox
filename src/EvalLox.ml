@@ -146,7 +146,7 @@ and eval_stmt env stmt =
   | Magic ("ast", Some (st)) | Magic("parse", Some(st)) ->
       Stdio.Out_channel.fprintf env.channel "%s\n" @@ pretty_stmt st.stmt;
       return_single Nil
-  | Magic (name, _) -> return_single @@ string @@ "unknwon magic " ^ name
+  | Magic (name, _) -> return_single @@ string @@ "unknown magic " ^ name
   | If (cond', a, b) -> 
       eval_expr env cond' >>= fun cond ->
       (if truthy cond 
