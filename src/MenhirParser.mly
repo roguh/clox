@@ -132,19 +132,19 @@ call:
  ;
 
 stmt:
- | e = expr { mk_stmt $loc @@ Expr e }; 
+ | e = expr { mk_stmt $loc @@ Expr e }
  | VAR; i = ID; EQUAL; e = expr { mk_stmt $loc @@ Var (i, e) }
- | PRINT; e = expr           { mk_stmt $loc @@ Print e }
- | RETURN; e = expr          { mk_stmt $loc @@ Return (Some e) }
- | RETURN;                   { mk_stmt $loc @@ Return (None) }
- | LBRACE; ss = separated_list(SEMICOLON, stmt); RBRACE; 
+ | PRINT;              e = expr { mk_stmt $loc @@ Print e }
+ | RETURN;             e = expr { mk_stmt $loc @@ Return (Some e) }
+ | RETURN;                      { mk_stmt $loc @@ Return (None) }
+ | LBRACE; ss = separated_list(SEMICOLON, stmt); RBRACE;
     { mk_stmt $loc @@ Block ss }
  | WHILE; LPAREN; e = expr; RPAREN; s = stmt;
     { mk_stmt $loc @@ While (e, s) }
  (* TODO explicitly resolve shift-reduce conflict with dangling-else *)
- | IF; LPAREN; cond = expr; RPAREN; e = stmt; 
+ | IF; LPAREN; cond = expr; RPAREN; e = stmt;
     { mk_stmt $loc @@ If (cond, e, None) }
- | IF; LPAREN; cond = expr; RPAREN; e1 = stmt; ELSE; e2 = stmt; 
+ | IF; LPAREN; cond = expr; RPAREN; e1 = stmt; ELSE; e2 = stmt;
     { mk_stmt $loc @@ If (cond, e1, Some e2) }
  | COLON; i = ID; s = stmt
     { mk_stmt $loc @@ Magic (i, Some s) }
