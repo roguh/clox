@@ -52,6 +52,6 @@ let rep channel state v =
   Result.iter_error result ~f:(print_error channel) ;
   Out_channel.flush Stdio.stdout
 
-let%test_unit "empty file" = runFile Out_channel.stdout "tests/empty.lox"
+let%test_unit "empty file" = runFile Out_channel.stdout "../lox_tests/empty.lox"
 
 (* let%test "be good" = false *)

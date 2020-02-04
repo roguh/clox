@@ -4,19 +4,19 @@
 
 Install OCaml, opam, and dune.
 
-#+BEGIN_CODE
+#+BEGIN_SRC
 asdf plugin-add ocaml
 asdf install ocaml XXX
 opam install dune
-#+END_CODE
+#+END_SRC
 
 Find dependencies: =dune external-lib-deps --missing src/cli.exe=
 
 * Compile
 
-#+BEGIN_CODE
+#+BEGIN_SRC
 make clean
 make all
 make test
-#+END_CODE
+#+END_SRC
 
