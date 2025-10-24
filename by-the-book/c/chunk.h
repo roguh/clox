@@ -21,13 +21,14 @@ typedef struct {
     int capacity;
     uint8_t* code;
     int* lines;
+    int* columns;
     ValueArray constants;
 } Chunk;
 
 void initChunk(Chunk* chunk);
 void freeChunk(Chunk* chunk);
-void writeChunk(Chunk* chunk, uint8_t byte, int line);
-void writeConstant(Chunk* chunk, Value value, int line);
+void writeChunk(Chunk* chunk, uint8_t byte, int line, int column);
+void writeConstant(Chunk* chunk, Value value, int line, int column);
 int addConstant(Chunk* chunk, Value value);
 
 

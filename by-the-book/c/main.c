@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "common.h"
+#include "scanner.h"
 #include "vm.h"
 #include "test/unit.h"
 
@@ -72,12 +72,15 @@ int main(int argc, char** argv) {
             );
             return 0;
         } else if (EQ(argv[i], "-c") || EQ(argv[i], "--command")) {
-            interpretString(argv[i + 1]);
+            interpret(argv[i + 1]);
             i++;
             test = false;
+        } else if (EQ(argv[i], "-x") || EQ(argv[i], "--lex")) {
+            scanAndPrint(argv[i + 1]);
+            i++;
         } else {
             char* contents = readFile(argv[i]);
-            interpretString(contents);
+            interpret(contents);
             free(contents);
             test = false;
         }

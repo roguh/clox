@@ -20,6 +20,9 @@ main: $(OBJS)
 clean:
 	rm -f $(DEPS) $(OBJS)
 
+cloc: clean
+	cloc .
+
 fmt:
 lint:
 test:

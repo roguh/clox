@@ -7,7 +7,7 @@
 void testChunk1() {
     Chunk chunk;
     initChunk(&chunk);
-    writeChunk(&chunk, OP_RETURN, 123);
+    writeChunk(&chunk, OP_RETURN, 123, 12);
     disChunk(&chunk, "test return");
     freeChunk(&chunk);
 }
@@ -15,13 +15,13 @@ void testChunk1() {
 void testChunk2() {
     Chunk chunk;
     initChunk(&chunk);
-    writeChunk(&chunk, OP_CONSTANT, 123);
-    writeChunk(&chunk, addConstant(&chunk, 3.14159265), 123);
-    writeChunk(&chunk, OP_CONSTANT, 123);
-    writeChunk(&chunk, addConstant(&chunk, 2 * 3.14159265), 123);
-    writeChunk(&chunk, OP_CONSTANT, 123);
-    writeChunk(&chunk, addConstant(&chunk, 3 * 3.14159265), 123);
-    writeChunk(&chunk, OP_RETURN, 123);
+    writeChunk(&chunk, OP_CONSTANT, 123, 12);
+    writeChunk(&chunk, addConstant(&chunk, 3.14159265), 123, 12);
+    writeChunk(&chunk, OP_CONSTANT, 123, 12);
+    writeChunk(&chunk, addConstant(&chunk, 2 * 3.14159265), 123, 12);
+    writeChunk(&chunk, OP_CONSTANT, 123, 12);
+    writeChunk(&chunk, addConstant(&chunk, 3 * 3.14159265), 123, 12);
+    writeChunk(&chunk, OP_RETURN, 123, 12);
     disChunk(&chunk, "test return constant");
     freeChunk(&chunk);
 }
@@ -30,9 +30,9 @@ void testChunk3() {
     Chunk chunk;
     initChunk(&chunk);
     for (int i = 0; i < MIN_SIZE_TO_CONSTANT_LONG + 1; i++) {
-        writeConstant(&chunk, i + 3.14159265, 123);
+        writeConstant(&chunk, i + 3.14159265, 123, 12);
     }
-    writeChunk(&chunk, OP_RETURN, 123);
+    writeChunk(&chunk, OP_RETURN, 123, 12);
     disChunk(&chunk, "test return many constants (expect 2 OP_CONSTANT_LONG instructions)");
     freeChunk(&chunk);
 }
@@ -40,9 +40,9 @@ void testChunk3() {
 void testRun1() {
     Chunk chunk;
     initChunk(&chunk);
-    writeChunk(&chunk, OP_RETURN, 123);
+    writeChunk(&chunk, OP_RETURN, 123, 12);
     initVM();
-    int result = interpret(&chunk);
+    int result = interpretChunk(&chunk);
     freeVM();
     printf("execution result: %d\n", result);
     freeChunk(&chunk);
@@ -51,12 +51,12 @@ void testRun1() {
 void testRun2() {
     Chunk chunk;
     initChunk(&chunk);
-    writeConstant(&chunk, 3.14159265, 122);
-    writeChunk(&chunk, OP_NEG, 123);
-    writeChunk(&chunk, OP_RETURN, 123);
+    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeChunk(&chunk, OP_NEG, 123, 12);
+    writeChunk(&chunk, OP_RETURN, 123, 12);
 
     initVM();
-    int result = interpret(&chunk);
+    int result = interpretChunk(&chunk);
     freeVM();
     printf("execution result: %d\n", result);
     freeChunk(&chunk);
@@ -65,26 +65,26 @@ void testRun2() {
 void testRun3() {
     Chunk chunk;
     initChunk(&chunk);
-    writeConstant(&chunk, 3.14159265, 122);
-    writeConstant(&chunk, 3.14159265, 122);
-    writeChunk(&chunk, OP_ADD, 123);
-    writeChunk(&chunk, OP_PRINT, 123);
-    writeConstant(&chunk, 3.14159265, 122);
-    writeConstant(&chunk, 3.14159265, 122);
-    writeChunk(&chunk, OP_SUB, 123);
-    writeChunk(&chunk, OP_PRINT, 123);
-    writeConstant(&chunk, 3.14159265, 122);
-    writeConstant(&chunk, 3.14159265, 122);
-    writeChunk(&chunk, OP_MUL, 123);
-    writeChunk(&chunk, OP_PRINT, 123);
-    writeConstant(&chunk, 3.14159265, 122);
-    writeConstant(&chunk, 3.14159265, 122);
-    writeChunk(&chunk, OP_DIV, 123);
-    writeChunk(&chunk, OP_PRINT, 123);
-    writeChunk(&chunk, OP_RETURN, 123);
+    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeChunk(&chunk, OP_ADD, 123, 12);
+    writeChunk(&chunk, OP_PRINT, 123, 12);
+    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeChunk(&chunk, OP_SUB, 123, 12);
+    writeChunk(&chunk, OP_PRINT, 123, 12);
+    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeChunk(&chunk, OP_MUL, 123, 12);
+    writeChunk(&chunk, OP_PRINT, 123, 12);
+    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeChunk(&chunk, OP_DIV, 123, 12);
+    writeChunk(&chunk, OP_PRINT, 123, 12);
+    writeChunk(&chunk, OP_RETURN, 123, 12);
 
     initVM();
-    int result = interpret(&chunk);
+    int result = interpretChunk(&chunk);
     freeVM();
     printf("execution result: %d\n", result);
     freeChunk(&chunk);

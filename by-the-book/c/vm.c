@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "debug.h"
+#include "compiler.h"
 #include "vm.h"
 
 VM vm;
@@ -90,13 +91,13 @@ static InterpretResult run() {
     }
 }
 
-InterpretResult interpret(Chunk* chunk) {
+InterpretResult interpretChunk(Chunk* chunk) {
     vm.chunk = chunk;
     vm.ip = 0;
     return run();
 }
 
-InterpretResult interpretString(const char* program) {
-    printf("%s", program);
+InterpretResult interpret(const char* program) {
+    compile(program);
     return INTERPRET_OK;
 }
