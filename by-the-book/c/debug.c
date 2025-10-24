@@ -48,6 +48,16 @@ int disInstruction(Chunk* chunk, int offset) {
             return constantLongInstruction("OP_CONSTANT_LONG", chunk, offset);
         case OP_NEG:
             return simpleInstruction("OP_NEG", offset);
+        case OP_ADD:
+            return simpleInstruction("OP_ADD", offset);
+        case OP_SUB:
+            return simpleInstruction("OP_SUB", offset);
+        case OP_MUL:
+            return simpleInstruction("OP_MUL", offset);
+        case OP_DIV:
+            return simpleInstruction("OP_DIV", offset);
+        case OP_PRINT:
+            return simpleInstruction("OP_PRINT", offset);
         default:
             printf("unknown opcode %d\n", instruction);
             return offset + 1;

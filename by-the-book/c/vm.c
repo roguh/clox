@@ -39,17 +39,18 @@ static InterpretResult run() {
 #define READ_BYTE() (vm.chunk->code[vm.ip++])
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define READ_CONSTANT_LONG() (vm.chunk->constants.values[READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16])
+#define BIN_OP(op) do { double b = pop() ; double a = pop() ; push(a op b); } while (false)
 
     while (true) {
-#ifdef DEBUG_TRACE
+        if (DEBUG_TRACE) {
         disInstruction(vm.chunk, vm.ip);
-        for (Value* slot = vm.stack; slot < vm.stackTop; slot++) {
-            printf("[ ");
-            printValue(top());
-            printf(" ]");
+            for (Value* slot = vm.stack; slot < vm.stackTop; slot++) {
+                printf("[ ");
+                printValue(top());
+                printf(" ]");
+            }
+            printf("\n");
         }
-        printf("\n");
-#endif
         uint8_t instruction;
         switch (instruction = READ_BYTE()) {
             case OP_RETURN: {
@@ -58,6 +59,13 @@ static InterpretResult run() {
                     printf("\n");
                 }
                 return INTERPRET_OK;
+            }
+            case OP_PRINT: {
+                if (size()) {
+                    printValue(top());
+                    printf("\n");
+                }
+                break;
             }
             case OP_CONSTANT: {
                 Value constant = READ_CONSTANT();
@@ -74,9 +82,12 @@ static InterpretResult run() {
                 push(-val);
                 break;
             }
+            case OP_ADD: BIN_OP(+); break;
+            case OP_SUB: BIN_OP(-); break;
+            case OP_MUL: BIN_OP(*); break;
+            case OP_DIV: BIN_OP(/); break;
         }
     }
-#undef READ_BYTE
 }
 
 InterpretResult interpret(Chunk* chunk) {

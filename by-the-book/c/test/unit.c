@@ -62,10 +62,39 @@ void testRun2() {
     freeChunk(&chunk);
 }
 
+void testRun3() {
+    Chunk chunk;
+    initChunk(&chunk);
+    writeConstant(&chunk, 3.14159265, 122);
+    writeConstant(&chunk, 3.14159265, 122);
+    writeChunk(&chunk, OP_ADD, 123);
+    writeChunk(&chunk, OP_PRINT, 123);
+    writeConstant(&chunk, 3.14159265, 122);
+    writeConstant(&chunk, 3.14159265, 122);
+    writeChunk(&chunk, OP_SUB, 123);
+    writeChunk(&chunk, OP_PRINT, 123);
+    writeConstant(&chunk, 3.14159265, 122);
+    writeConstant(&chunk, 3.14159265, 122);
+    writeChunk(&chunk, OP_MUL, 123);
+    writeChunk(&chunk, OP_PRINT, 123);
+    writeConstant(&chunk, 3.14159265, 122);
+    writeConstant(&chunk, 3.14159265, 122);
+    writeChunk(&chunk, OP_DIV, 123);
+    writeChunk(&chunk, OP_PRINT, 123);
+    writeChunk(&chunk, OP_RETURN, 123);
+
+    initVM();
+    int result = interpret(&chunk);
+    freeVM();
+    printf("execution result: %d\n", result);
+    freeChunk(&chunk);
+}
+
 void testAll() {
     testChunk1();
     testChunk2();
     testChunk3();
     testRun1();
     testRun2();
+    testRun3();
 }

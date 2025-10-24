@@ -13,6 +13,7 @@ typedef enum {
     OP_SUB,
     OP_MUL,
     OP_DIV,
+    OP_PRINT,
 } OpCode;
 
 typedef struct {
