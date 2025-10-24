@@ -7,10 +7,12 @@ void initChunk(Chunk* chunk) {
     chunk->count = 0;
     chunk->capacity = 0;
     chunk->code = NULL;
+    initValues(&chunk->constants);
 }
 
 void freeChunk(Chunk* chunk) {
     FREE_ARRAY(uint8_t, chunk->code, chunk->capacity);
+    freeValues(&chunk->constants);
     initChunk(chunk);
 }
 
@@ -21,4 +23,9 @@ void writeChunk(Chunk* chunk, uint8_t byte) {
         chunk->code = GROW_ARRAY(uint8_t, chunk->code, old, chunk->capacity);
     }
     chunk->code[chunk->count++] = byte;
+}
+
+int addConstant(Chunk* chunk, Value value) {
+    writeValues(&chunk->constants, value);
+    return chunk->constants.count - 1;
 }

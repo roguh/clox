@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "test/chunk.h"
+#include "test/unit.h"
 
 int main(int argc, char** argv) {
-    testChunk();
+    testAll();
     return 0;
 }
