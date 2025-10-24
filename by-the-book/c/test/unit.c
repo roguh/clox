@@ -40,15 +40,26 @@ void testChunk3() {
 void testRun1() {
     Chunk chunk;
     initChunk(&chunk);
+    writeChunk(&chunk, OP_RETURN, 123);
+    initVM();
+    int result = interpret(&chunk);
+    freeVM();
+    printf("execution result: %d\n", result);
+    freeChunk(&chunk);
+}
+
+void testRun2() {
+    Chunk chunk;
+    initChunk(&chunk);
     for (int i = 0; i < MIN_SIZE_TO_CONSTANT_LONG + 1; i++) {
         writeConstant(&chunk, i + 3.14159265, 123);
     }
     writeChunk(&chunk, OP_RETURN, 123);
-    //disChunk(&chunk, "test return many constants (expect 2 OP_CONSTANT_LONG instructions)");
+
     initVM();
-    interpret(&chunk);
+    int result = interpret(&chunk);
     freeVM();
-    
+    printf("execution result: %d\n", result);
     freeChunk(&chunk);
 }
 
@@ -57,4 +68,5 @@ void testAll() {
     testChunk2();
     testChunk3();
     testRun1();
+    testRun2();
 }
