@@ -2,6 +2,7 @@
 CFLAGS = -std=c99
 CFLAGS += -Wall -Wpedantic -O2 -g 
 CFLAGS += -MMD   # dependency generation magic
+CFLAGS += -DDEBUG_TRACE=$(DEBUG_TRACE)
 LDLIBS = -lm
 LDFLAGS =
 
@@ -12,6 +13,9 @@ DEPS=$(OBJS:.o=.d)
 .PHONY: all clean
 
 all: main
+
+debug:
+	make DEBUG_TRACE=true
 
 main: $(OBJS)
 

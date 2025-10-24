@@ -2,6 +2,7 @@
 
 #include "../chunk.h"
 #include "../debug.h"
+#include "../vm.h"
 
 void testChunk1() {
     Chunk chunk;
@@ -32,7 +33,22 @@ void testChunk3() {
         writeConstant(&chunk, i + 3.14159265, 123);
     }
     writeChunk(&chunk, OP_RETURN, 123);
-    disChunk(&chunk, "test return many constants");
+    disChunk(&chunk, "test return many constants (expect 2 OP_CONSTANT_LONG instructions)");
+    freeChunk(&chunk);
+}
+
+void testRun1() {
+    Chunk chunk;
+    initChunk(&chunk);
+    for (int i = 0; i < MIN_SIZE_TO_CONSTANT_LONG + 1; i++) {
+        writeConstant(&chunk, i + 3.14159265, 123);
+    }
+    writeChunk(&chunk, OP_RETURN, 123);
+    //disChunk(&chunk, "test return many constants (expect 2 OP_CONSTANT_LONG instructions)");
+    initVM();
+    interpret(&chunk);
+    freeVM();
+    
     freeChunk(&chunk);
 }
 
@@ -40,4 +56,5 @@ void testAll() {
     testChunk1();
     testChunk2();
     testChunk3();
+    testRun1();
 }
