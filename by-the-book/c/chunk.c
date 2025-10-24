@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "chunk.h"
@@ -26,10 +27,25 @@ void writeChunk(Chunk* chunk, uint8_t byte, int line) {
         chunk->lines = GROW_ARRAY(int, chunk->lines, old, chunk->capacity);
     }
     chunk->lines[chunk->count] = line;
-    chunk->code[chunk->count++] = byte;
+    chunk->code[chunk->count] = byte;
+    chunk->count++;
 }
 
 int addConstant(Chunk* chunk, Value value) {
     writeValues(&chunk->constants, value);
     return chunk->constants.count - 1;
+}
+
+void writeConstant(Chunk* chunk, Value value, int line) {
+    int offset = addConstant(chunk, value);
+    if (chunk->constants.count < MIN_SIZE_TO_CONSTANT_LONG) {
+        writeChunk(chunk, OP_CONSTANT, line);
+        writeChunk(chunk, (uint8_t)offset, line);
+    } else {
+        writeChunk(chunk, OP_CONSTANT_LONG, line);
+        // not only 1 but 3 bytes!
+        writeChunk(chunk, (uint8_t)offset, line);
+        writeChunk(chunk, (uint8_t)(offset >> 8), line);
+        writeChunk(chunk, (uint8_t)(offset >> 16), line);
+    }
 }

@@ -21,7 +21,8 @@ void writeValues(Values* values, Value value) {
         values->capacity = GROW_CAPACITY(old);
         values->values = GROW_ARRAY(Value, values->values, old, values->capacity);
     }
-    values->values[values->count++] = value;
+    values->values[values->count] = value;
+    values->count++;
 }
 
 void printValue(Value value) {

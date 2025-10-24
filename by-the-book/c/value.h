@@ -11,6 +11,9 @@ typedef struct {
     Value* values;
 } ValueArray;
 
+// increment this in the "real world"
+#define MIN_SIZE_TO_CONSTANT_LONG 8
+
 typedef ValueArray Values;
 
 void initValues(Values* values);
