@@ -96,3 +96,7 @@ InterpretResult interpret(Chunk* chunk) {
     return run();
 }
 
+InterpretResult interpretString(const char* program) {
+    printf("%s", program);
+    return INTERPRET_OK;
+}

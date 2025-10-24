@@ -1,0 +1,5 @@
+implement some codegolf in lox
+implement lambda solver
+implement a byte compression algorithm in lox
+add tests against .lox code files
+add C linters, analyzers, the whole shebang
