@@ -1,6 +1,6 @@
 ######### THANK YOU exDM69 from reddit (2014/7/7)
 CFLAGS = -std=c99
-CFLAGS += -Wall -Wpedantic -O2 -g 
+CFLAGS += -Wall -Wpedantic -O2 -g
 CFLAGS += -MMD   # dependency generation magic
 CFLAGS += -DDEBUG_TRACE=$(DEBUG_TRACE)
 LDLIBS = -lm

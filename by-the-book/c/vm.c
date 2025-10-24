@@ -69,6 +69,11 @@ static InterpretResult run() {
                 push(constant);
                 break;
             }
+            case OP_NEG: {
+                Value val = pop();
+                push(-val);
+                break;
+            }
         }
     }
 #undef READ_BYTE

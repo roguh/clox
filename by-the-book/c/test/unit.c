@@ -51,9 +51,8 @@ void testRun1() {
 void testRun2() {
     Chunk chunk;
     initChunk(&chunk);
-    for (int i = 0; i < MIN_SIZE_TO_CONSTANT_LONG + 1; i++) {
-        writeConstant(&chunk, i + 3.14159265, 123);
-    }
+    writeConstant(&chunk, 3.14159265, 122);
+    writeChunk(&chunk, OP_NEG, 123);
     writeChunk(&chunk, OP_RETURN, 123);
 
     initVM();
