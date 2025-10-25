@@ -39,9 +39,11 @@ typedef enum {
     TOKEN_IDENTIFIER,
     TOKEN_STRING,
     TOKEN_NUMBER,
+    TOKEN_HEX_NUMBER,
     // Keywords
     TOKEN_AND,
     TOKEN_CLASS,
+    TOKEN_ELSE,
     TOKEN_FALSE,
     TOKEN_FOR,
     TOKEN_FUN,
@@ -59,6 +61,14 @@ typedef enum {
     // Special
     TOKEN_EOF,
 } TokenType;
+
+static bool isNumber(TokenType ty) {
+    return ty == TOKEN_NUMBER || ty == TOKEN_HEX_NUMBER;
+}
+
+static bool isKeyword(TokenType ty) {
+    return ty == TOKEN_AND || ty == TOKEN_CLASS || ty == TOKEN_ELSE || ty == TOKEN_FALSE || ty == TOKEN_FOR || ty == TOKEN_FUN || ty == TOKEN_IF || ty == TOKEN_NIL || ty == TOKEN_OR || ty == TOKEN_PRINT || ty == TOKEN_RETURN || ty == TOKEN_SUPER || ty == TOKEN_THIS || ty == TOKEN_TRUE || ty == TOKEN_VAR || ty == TOKEN_WHILE || ty == TOKEN_ERROR;
+}
 
 typedef struct {
     TokenType type;

@@ -78,6 +78,7 @@ int main(int argc, char** argv) {
         } else if (EQ(argv[i], "-x") || EQ(argv[i], "--lex")) {
             scanAndPrint(argv[i + 1]);
             i++;
+            test = false;
         } else {
             char* contents = readFile(argv[i]);
             interpret(contents);
