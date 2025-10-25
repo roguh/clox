@@ -95,6 +95,7 @@ static TokenType checkKeyword(int start, int length, const char* rest, TokenType
 }
 
 static TokenType identifierType() {
+    // Check the start of the token to see if it's a keyword
     switch (scanner.start[0]) {
     case 'a': return checkKeyword(1, 2, "nd", TOKEN_AND);
     case 'c': return checkKeyword(1, 4, "lass", TOKEN_CLASS);
@@ -110,6 +111,7 @@ static TokenType identifierType() {
 
     // Keywords starting with f: false for fun
     case 'f': 
+        // A token of length > 1
         if (scanner.current - scanner.start > 1) {
             switch(scanner.start[1]) {
                 case 'a': return checkKeyword(2, 3, "lse", TOKEN_FALSE);
@@ -121,6 +123,7 @@ static TokenType identifierType() {
 
     // Keywords starting with t: this true
     case 't': 
+        // A token of length > 1
         if (scanner.current - scanner.start > 1) {
             switch(scanner.start[1]) {
                 case 'h': return checkKeyword(2, 2, "is", TOKEN_THIS);
