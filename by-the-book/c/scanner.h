@@ -38,7 +38,8 @@ typedef enum {
     TOKEN_IDENTIFIER,
     TOKEN_STRING,
     TOKEN_NUMBER,
-    TOKEN_HEX_NUMBER,
+    TOKEN_INTEGER,
+    TOKEN_HEXINT,
     // Keywords
     TOKEN_AND,
     TOKEN_CLASS,
@@ -62,7 +63,7 @@ typedef enum {
 } TokenType;
 
 static bool isNumber(TokenType ty) {
-    return ty == TOKEN_NUMBER || ty == TOKEN_HEX_NUMBER;
+    return ty == TOKEN_NUMBER || ty == TOKEN_HEXINT || ty == TOKEN_INTEGER;
 }
 
 static bool isKeyword(TokenType ty) {

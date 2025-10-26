@@ -165,7 +165,8 @@ static void binary() {
         case TOKEN_IDENTIFIER:
         case TOKEN_STRING:
         case TOKEN_NUMBER:
-        case TOKEN_HEX_NUMBER:
+        case TOKEN_INTEGER:
+        case TOKEN_HEXINT:
         case TOKEN_AND:
         case TOKEN_CLASS:
         case TOKEN_ELSE:
@@ -238,7 +239,8 @@ static void unary() {
         case TOKEN_IDENTIFIER:
         case TOKEN_STRING:
         case TOKEN_NUMBER:
-        case TOKEN_HEX_NUMBER:
+        case TOKEN_INTEGER:
+        case TOKEN_HEXINT:
     // Keywords
         case TOKEN_AND:
         case TOKEN_CLASS:
@@ -265,13 +267,17 @@ static void unary() {
 
 static void number() {
     double value = strtod(parser.previous.start, NULL);
-    emitConstant(value);
+    emitConstant(DOUBLE_VAL(value));
+}
+
+static void integer() {
+    int value = strtol(parser.previous.start, NULL, 10);
+    emitConstant(INTEGER_VAL(value));
 }
 
 static void hexnumber() {
     int value = strtol(parser.previous.start, NULL, 16);
-    // TODO emit integer
-    emitConstant((double)value);
+    emitConstant(INTEGER_VAL(value));
 }
 
 ParseRule rules[] = {
@@ -309,7 +315,8 @@ ParseRule rules[] = {
     [TOKEN_IDENTIFIER]         = {NULL, NULL, PREC_NONE},
     [TOKEN_STRING]             = {NULL, NULL, PREC_NONE},
     [TOKEN_NUMBER]             = {number, NULL, PREC_NONE},
-    [TOKEN_HEX_NUMBER]         = {hexnumber, NULL, PREC_NONE},
+    [TOKEN_INTEGER]            = {integer, NULL, PREC_NONE},
+    [TOKEN_HEXINT]             = {hexnumber, NULL, PREC_NONE},
     [TOKEN_AND]                = {NULL, NULL, PREC_NONE},
     [TOKEN_CLASS]              = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE]               = {NULL, NULL, PREC_NONE},

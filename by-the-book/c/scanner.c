@@ -148,20 +148,26 @@ static Token hexnum() {
     while (isDigit(peek(), true)) {
         advance();
     }
-    return makeToken(TOKEN_HEX_NUMBER);
+    return makeToken(TOKEN_HEXINT);
 }
 
 static Token number() {
+    bool hasDigit = false;
     while (isDigit(peek(), false)) {
         advance();
     }
     if (peek() == '.' && isDigit(peekNext(), false)) {
+        hasDigit = true;
         advance();
         while (isDigit(peek(), false)) {
             advance();
         }
     }
-    return makeToken(TOKEN_NUMBER);
+    if (hasDigit) {
+        return makeToken(TOKEN_NUMBER);
+    } else {
+        return makeToken(TOKEN_INTEGER);
+    }
 }
 
 static Token string(StringType ty) {
