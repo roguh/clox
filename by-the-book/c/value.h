@@ -3,11 +3,15 @@
 
 #include "common.h"
 
+typedef struct Obj Obj;
+typedef struct ObjString ObjString;
+
 typedef enum {
     VAL_NIL,
     VAL_DOUBLE,
     VAL_INT,
     VAL_BOOL,
+    VAL_OBJ,
 } ValueType;
 
 // Flat! Struct is packed to fill 8 bytes on a 64-bit arch
@@ -16,6 +20,7 @@ typedef struct {
     union {
         int _int;
         double _double;
+        Obj* _obj;
     } as;
 } Value;
 
@@ -23,13 +28,16 @@ typedef struct {
 #define DOUBLE_VAL(val) ((Value){VAL_DOUBLE, {._double = val}})
 #define INTEGER_VAL(val) ((Value){VAL_INT, {._int = val}})
 #define BOOL_VAL(val) ((Value){VAL_BOOL, {._int = (bool)val}})
+#define OBJ_VAL(pointer) ((Value){VAL_OBJ, {._obj = (Obj*)pointer})
 
 #define AS_BOOL(value) ((bool)(value).as._int)
+#define AS_OBJ(value) ((value).as._obj)
 
 #define IS_NIL(value) ((value).type == VAL_NIL)
 #define IS_DOUBLE(value) ((value).type == VAL_DOUBLE)
 #define IS_INTEGER(value) ((value).type == VAL_INT)
 #define IS_BOOL(value) ((value).type == VAL_BOOL)
+#define IS_OBJ(value) ((value).type == VAL_OBJ)
 
 typedef struct {
     int capacity;

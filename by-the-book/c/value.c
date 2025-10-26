@@ -2,6 +2,7 @@
 
 #include "value.h"
 #include "memory.h"
+#include "object.h"
 
 void initValues(Values* values) {
     values->count = 0;
@@ -24,6 +25,12 @@ void writeValues(Values* values, Value value) {
     values->count++;
 }
 
+static const char* objectType(ObjType ty) {
+    switch (ty) {
+        OBJ_STRING: return "OBJ_STRING";
+    }
+}
+
 void printValue(Value value) {
     switch (value.type) {
         // Exhaustive!
@@ -31,6 +38,7 @@ void printValue(Value value) {
         case VAL_DOUBLE: printf("%lf", AS_DOUBLE(value)); break;
         case VAL_INT: printf("%d", AS_INTEGER(value)); break;
         case VAL_BOOL: printf("%s", AS_BOOL(value) ? "true" : "false"); break;
+        case VAL_OBJ: printf("<%s %p>", objectType(AS_OBJ(value)->type), (void*)AS_OBJ(value)); break;
     }
 }
 

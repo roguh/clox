@@ -51,11 +51,15 @@ size_t size() {
 }
 
 bool valuesEqual(Value a, Value b) {
+    if (a.type == VAL_OBJ) {
+        return a.type == b.type && AS_OBJ(a) == AS_OBJ(b);
+    }
     switch (a.type) {
         case VAL_NIL: return a.type == b.type;
-        case VAL_BOOL: return AS_BOOL(a) == AS_BOOL(b);
         case VAL_INT: return AS_INTEGER(a) == AS_INTEGER(b);
         case VAL_DOUBLE: return AS_DOUBLE(a) == AS_DOUBLE(b);
+        case VAL_BOOL: return AS_BOOL(a) == AS_BOOL(b);
+        case VAL_OBJ: return false; // unreachable
     }
     return false;
 }
