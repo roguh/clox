@@ -108,6 +108,9 @@ static void endCompiler() {
     emitReturn();
 }
 
+static void parsePrecedence(Precedence) {
+}
+
 static void expression() {
     // Vaughan Pratt's top-down operator precedence parsing
     // Parse an expression starting at the lowest precedence levels

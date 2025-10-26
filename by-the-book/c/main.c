@@ -55,6 +55,8 @@ int main(int argc, char** argv) {
                    "\n"
                    "-c COMMAND or --command COMMAND\n"
                    "    Evaluate the given COMMAND.\n"
+                   "-l CODE or --lex CODE\n"
+                   "    Tokenify (lex) the given CODE.\n"
                    "--debug\n"
                    "    Enable debug-level tracing commands.\n"
                    "--tests\n"

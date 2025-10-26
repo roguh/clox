@@ -252,11 +252,12 @@ Token scanToken() {
         case '#': return makeToken(TOKEN_SIZE);
         case '&': return makeToken(TOKEN_BITAND);
         case '|': return makeToken(TOKEN_BITOR);
-        case '~': return makeToken(TOKEN_BITNEG);
         case '^': return makeToken(TOKEN_BITXOR);
+        case '~': return makeToken(TOKEN_BITNEG);
         case '!': return makeToken(TOKEN_BANG);
         // Division or single-line comment or multi-line comment
         case '/': return makeToken(TOKEN_SLASH);
+        case '%': return makeToken(TOKEN_REMAINDER);
         // One or Two-character tokens
         case '*': return makeToken(match('*') ?
             TOKEN_STAR_STAR : TOKEN_STAR);

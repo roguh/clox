@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "common.h"
 #include "debug.h"
@@ -41,6 +42,8 @@ static InterpretResult run() {
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define READ_CONSTANT_LONG() (vm.chunk->constants.values[READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16])
 #define BIN_OP(op) do { double b = pop() ; double a = pop() ; push(a op b); } while (false)
+#define INT_BIN_OP(op) do { double b = pop() ; double a = pop() ; push((int)a op (int)b); } while (false)
+#define DOUBLE_BIN_OP(func) do { double b = pop() ; double a = pop() ; push(func(a, b)); } while (false)
 
     while (true) {
         if (DEBUG_TRACE) {
@@ -53,6 +56,7 @@ static InterpretResult run() {
             printf("\n");
         }
         uint8_t instruction;
+        // This switch must be exhaustive! -Wswitch-enum
         switch (instruction = READ_BYTE()) {
             case OP_RETURN: {
                 if (size()) {
@@ -85,15 +89,21 @@ static InterpretResult run() {
             }
             case OP_ADD: BIN_OP(+); break;
             case OP_SUB: BIN_OP(-); break;
+            case OP_SIZE: push(sizeof(Value)); break;
+            case OP_BITAND: INT_BIN_OP(&); break;
+            case OP_BITOR: INT_BIN_OP(|); break;
+            case OP_BITXOR: INT_BIN_OP(^); break;
             case OP_MUL: BIN_OP(*); break;
             case OP_DIV: BIN_OP(/); break;
+            case OP_REMAINDER: DOUBLE_BIN_OP(fmod); break;
+            case OP_EXP: DOUBLE_BIN_OP(pow); break;
         }
     }
 }
 
 InterpretResult interpretChunk(Chunk* chunk) {
     vm.chunk = chunk;
-    vm.ip = vm.chunk->code;
+    vm.ip = 0;
     return run();
 }
 
@@ -103,7 +113,7 @@ InterpretResult interpret(const char* program) {
         freeChunk(&chunk);
         return INTERPRET_COMPILE_ERROR;
     }
-    InterpretResult result = interpretChunk(chunk);
+    InterpretResult result = interpretChunk(&chunk);
     freeChunk(&chunk);
     return result;
 }

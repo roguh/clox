@@ -14,28 +14,26 @@ typedef enum {
     TOKEN_MINUS,
     TOKEN_PLUS,
     TOKEN_SEMICOLON,
-    TOKEN_SLASH,
     TOKEN_SIZE, // Lua's size operator
-    TOKEN_STAR,
-    TOKEN_BANG,
-    TOKEN_EQUAL,
-    TOKEN_GREAT,
-    TOKEN_REMAINDER, // TODO %
-    TOKEN_LESS, // TODO <
     TOKEN_BITAND, // TODO bit-ops
     TOKEN_BITOR, // TODO bit-ops
     TOKEN_BITXOR, // TODO bit-ops
     TOKEN_BITNEG, // TODO bit-ops
+    TOKEN_BANG,
+    TOKEN_EQUAL,
+    TOKEN_GREAT,
+    TOKEN_SLASH,
+    TOKEN_REMAINDER, // TODO %
+    TOKEN_STAR,
+    TOKEN_STAR_STAR, // TODO exponential
+    TOKEN_LESS, // TODO <
     // Two or more characters
     TOKEN_BANG_EQUAL,
     TOKEN_EQUAL_EQUAL,
     TOKEN_GREAT_EQUAL,
     TOKEN_LESS_EQUAL,
-    TOKEN_STAR_STAR, // TODO exponential
     TOKEN_LEFT_SHIFT, // TODO bit-ops
     TOKEN_RIGHT_SHIFT, // TODO bit-ops
-    TOKEN_EQUAL_EQUAL_EQUAL, // TODO new token
-    TOKEN_EQUAL_EQUAL_EQUAL_EQUAL, // TODO new token
     // Literals
     TOKEN_IDENTIFIER,
     TOKEN_STRING,

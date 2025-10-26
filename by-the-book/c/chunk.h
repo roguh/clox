@@ -11,8 +11,17 @@ typedef enum {
     OP_NEG,
     OP_ADD,
     OP_SUB,
+    OP_SIZE,
+    OP_BITAND,
+    OP_BITOR,
+    OP_BITXOR,
+    OP_BITNEG,
     OP_MUL,
     OP_DIV,
+    OP_REMAINDER,
+    OP_EXP,
+    OP_LEFT_SHIFT,
+    OP_RIGHT_SHIFT,
     OP_PRINT,
 } OpCode;
 
