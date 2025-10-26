@@ -8,4 +8,6 @@
 
 extern bool DEBUG_TRACE;
 
+#define ERR_PRINT(fmt) fprintf(fmt, ##__VA_ARGS__)
+
 #endif
