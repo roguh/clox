@@ -4,6 +4,9 @@
 #include "../debug.h"
 #include "../vm.h"
 
+// These only test double values
+#define VAL(val) DOUBLE_VAL(val)
+
 void testChunk1() {
     Chunk chunk;
     initChunk(&chunk);
@@ -16,11 +19,11 @@ void testChunk2() {
     Chunk chunk;
     initChunk(&chunk);
     writeChunk(&chunk, OP_CONSTANT, 123, 12);
-    writeChunk(&chunk, addConstant(&chunk, 3.14159265), 123, 12);
+    writeChunk(&chunk, addConstant(&chunk, VAL(3.14159265)), 123, 12);
     writeChunk(&chunk, OP_CONSTANT, 123, 12);
-    writeChunk(&chunk, addConstant(&chunk, 2 * 3.14159265), 123, 12);
+    writeChunk(&chunk, addConstant(&chunk, VAL(2 * 3.14159265)), 123, 12);
     writeChunk(&chunk, OP_CONSTANT, 123, 12);
-    writeChunk(&chunk, addConstant(&chunk, 3 * 3.14159265), 123, 12);
+    writeChunk(&chunk, addConstant(&chunk, VAL(3 * 3.14159265)), 123, 12);
     writeChunk(&chunk, OP_RETURN, 123, 12);
     disChunk(&chunk, "test return constant");
     freeChunk(&chunk);
@@ -30,7 +33,7 @@ void testChunk3() {
     Chunk chunk;
     initChunk(&chunk);
     for (int i = 0; i < MIN_SIZE_TO_CONSTANT_LONG + 1; i++) {
-        writeConstant(&chunk, i + 3.14159265, 123, 12);
+        writeConstant(&chunk, VAL(i + 3.14159265), 123, 12);
     }
     writeChunk(&chunk, OP_RETURN, 123, 12);
     disChunk(&chunk, "test return many constants (expect 2 OP_CONSTANT_LONG instructions)");
@@ -51,7 +54,7 @@ void testRun1() {
 void testRun2() {
     Chunk chunk;
     initChunk(&chunk);
-    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeConstant(&chunk, VAL(3.14159265), 122, 11);
     writeChunk(&chunk, OP_NEG, 123, 12);
     writeChunk(&chunk, OP_RETURN, 123, 12);
 
@@ -65,20 +68,20 @@ void testRun2() {
 void testRun3() {
     Chunk chunk;
     initChunk(&chunk);
-    writeConstant(&chunk, 3.14159265, 122, 11);
-    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeConstant(&chunk, VAL(3.14159265), 122, 11);
+    writeConstant(&chunk, VAL(3.14159265), 122, 11);
     writeChunk(&chunk, OP_ADD, 123, 12);
     writeChunk(&chunk, OP_PRINT, 123, 12);
-    writeConstant(&chunk, 3.14159265, 122, 11);
-    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeConstant(&chunk, VAL(3.14159265), 122, 11);
+    writeConstant(&chunk, VAL(3.14159265), 122, 11);
     writeChunk(&chunk, OP_SUB, 123, 12);
     writeChunk(&chunk, OP_PRINT, 123, 12);
-    writeConstant(&chunk, 3.14159265, 122, 11);
-    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeConstant(&chunk, VAL(3.14159265), 122, 11);
+    writeConstant(&chunk, VAL(3.14159265), 122, 11);
     writeChunk(&chunk, OP_MUL, 123, 12);
     writeChunk(&chunk, OP_PRINT, 123, 12);
-    writeConstant(&chunk, 3.14159265, 122, 11);
-    writeConstant(&chunk, 3.14159265, 122, 11);
+    writeConstant(&chunk, VAL(3.14159265), 122, 11);
+    writeConstant(&chunk, VAL(3.14159265), 122, 11);
     writeChunk(&chunk, OP_DIV, 123, 12);
     writeChunk(&chunk, OP_PRINT, 123, 12);
     writeChunk(&chunk, OP_RETURN, 123, 12);

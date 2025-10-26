@@ -76,6 +76,12 @@ int disInstruction(Chunk* chunk, int offset) {
             return simpleInstruction("OP_RIGHT_SHIFT", offset);
         case OP_PRINT:
             return simpleInstruction("OP_PRINT", offset);
+        case OP_FALSE:
+            return simpleInstruction("OP_FALSE", offset);
+        case OP_NIL:
+            return simpleInstruction("OP_NIL", offset);
+        case OP_TRUE:
+            return simpleInstruction("OP_TRUE", offset);
         default:
             printf("unknown opcode %d\n", instruction);
             return offset + 1;

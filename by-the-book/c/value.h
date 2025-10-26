@@ -7,6 +7,7 @@ typedef enum {
     VAL_NIL,
     VAL_DOUBLE,
     VAL_INT,
+    VAL_BOOL,
 } ValueType;
 
 // Flat! Struct is packed to fill 8 bytes on a 64-bit arch
@@ -21,16 +22,14 @@ typedef struct {
 #define NIL_VAL ((Value){VAL_NIL, {._int = 0}})
 #define DOUBLE_VAL(val) ((Value){VAL_DOUBLE, {._double = val}})
 #define INTEGER_VAL(val) ((Value){VAL_INT, {._int = val}})
-#define BOOL_VAL(val) ((Value){VAL_INT, {._int = (bool)val}})
+#define BOOL_VAL(val) ((Value){VAL_BOOL, {._int = (bool)val}})
 
-#define AS_DOUBLE(value) ((value).as._double)
-#define AS_INTEGER(value) ((value).as._int)
 #define AS_BOOL(value) ((bool)(value).as._int)
 
 #define IS_NIL(value) ((value).type == VAL_NIL)
 #define IS_DOUBLE(value) ((value).type == VAL_DOUBLE)
 #define IS_INTEGER(value) ((value).type == VAL_INT)
-#define IS_BOOL(value) ((value).type == VAL_INT) // Check for only 0 and 1?
+#define IS_BOOL(value) ((value).type == VAL_BOOL)
 
 typedef struct {
     int capacity;
@@ -47,5 +46,8 @@ void initValues(Values* values);
 void freeValues(Values* values);
 void writeValues(Values* values, Value value);
 void printValue(Value value);
+
+double AS_DOUBLE(Value value);
+int AS_INTEGER(Value value);
 
 #endif
