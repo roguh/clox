@@ -29,6 +29,11 @@ Value pop() {
     return *vm.stackTop;
 }
 
+int pop_int() {
+    vm.stackTop--;
+    return (int)*vm.stackTop;
+}
+
 Value top() {
     return *(vm.stackTop - 1);
 }
@@ -42,7 +47,7 @@ static InterpretResult run() {
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define READ_CONSTANT_LONG() (vm.chunk->constants.values[READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16])
 #define BIN_OP(op) do { double b = pop() ; double a = pop() ; push(a op b); } while (false)
-#define INT_BIN_OP(op) do { double b = pop() ; double a = pop() ; push((int)a op (int)b); } while (false)
+#define INT_BIN_OP(op) do { int b = pop_int() ; int a = pop_int() ; push(a op b); } while (false)
 #define DOUBLE_BIN_OP(func) do { double b = pop() ; double a = pop() ; push(func(a, b)); } while (false)
 
     while (true) {
@@ -56,7 +61,7 @@ static InterpretResult run() {
             printf("\n");
         }
         uint8_t instruction;
-        // This switch must be exhaustive! -Wswitch-enum
+        // This switch must be exhaustive! -Wswitch
         switch (instruction = READ_BYTE()) {
             case OP_RETURN: {
                 if (size()) {
@@ -82,14 +87,11 @@ static InterpretResult run() {
                 push(constant);
                 break;
             }
-            case OP_NEG: {
-                Value val = pop();
-                push(-val);
-                break;
-            }
+            case OP_NEG: push(-pop()); break;
+            case OP_BITNEG: push((double)~pop_int()); break;
+            case OP_SIZE: push(sizeof(Value)); break;
             case OP_ADD: BIN_OP(+); break;
             case OP_SUB: BIN_OP(-); break;
-            case OP_SIZE: push(sizeof(Value)); break;
             case OP_BITAND: INT_BIN_OP(&); break;
             case OP_BITOR: INT_BIN_OP(|); break;
             case OP_BITXOR: INT_BIN_OP(^); break;
@@ -102,14 +104,18 @@ static InterpretResult run() {
 }
 
 InterpretResult interpretChunk(Chunk* chunk) {
+    initVM();
     vm.chunk = chunk;
     vm.ip = 0;
-    return run();
+    InterpretResult result = run();
+    freeVM();
+    return result;
 }
 
 InterpretResult interpret(const char* program) {
     Chunk chunk;
-    if (!compile(program, &chunk)) {
+    initChunk(&chunk);
+    if (!compile(program, &chunk, false)) {
         freeChunk(&chunk);
         return INTERPRET_COMPILE_ERROR;
     }

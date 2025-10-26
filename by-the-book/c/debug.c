@@ -52,10 +52,28 @@ int disInstruction(Chunk* chunk, int offset) {
             return simpleInstruction("OP_ADD", offset);
         case OP_SUB:
             return simpleInstruction("OP_SUB", offset);
+        case OP_SIZE:
+            return simpleInstruction("OP_SIZE", offset);
+        case OP_BITAND:
+            return simpleInstruction("OP_BITAND", offset);
+        case OP_BITOR:
+            return simpleInstruction("OP_BITOR", offset);
+        case OP_BITXOR:
+            return simpleInstruction("OP_BITXOR", offset);
+        case OP_BITNEG:
+            return simpleInstruction("OP_BITNEG", offset);
         case OP_MUL:
             return simpleInstruction("OP_MUL", offset);
         case OP_DIV:
             return simpleInstruction("OP_DIV", offset);
+        case OP_REMAINDER:
+            return simpleInstruction("OP_REMAINDER", offset);
+        case OP_EXP:
+            return simpleInstruction("OP_EXP", offset);
+        case OP_LEFT_SHIFT:
+            return simpleInstruction("OP_LEFT_SHIFT", offset);
+        case OP_RIGHT_SHIFT:
+            return simpleInstruction("OP_RIGHT_SHIFT", offset);
         case OP_PRINT:
             return simpleInstruction("OP_PRINT", offset);
         default:
