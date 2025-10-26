@@ -26,7 +26,11 @@ typedef enum {
     OP_EXP,
     OP_LEFT_SHIFT,
     OP_RIGHT_SHIFT,
+    OP_NOT,
     OP_PRINT,
+    OP_EQUAL,
+    OP_GREATER,
+    OP_LESS,
 } OpCode;
 
 typedef struct {

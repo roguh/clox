@@ -144,6 +144,15 @@ static void binary() {
         case TOKEN_BITNEG: emitByte(OP_BITNEG); break;
         case TOKEN_LEFT_SHIFT: emitByte(OP_LEFT_SHIFT); break;
         case TOKEN_RIGHT_SHIFT: emitByte(OP_RIGHT_SHIFT); break;
+        case TOKEN_EQUAL_EQUAL: emitByte(OP_EQUAL); break;
+        case TOKEN_GREAT: emitByte(OP_GREATER); break;
+        case TOKEN_LESS: emitByte(OP_LESS); break;
+        case TOKEN_BANG_EQUAL: emitBytes(OP_EQUAL, OP_NOT); break;
+        case TOKEN_GREAT_EQUAL: emitBytes(OP_LESS, OP_NOT); break;
+        case TOKEN_LESS_EQUAL: emitBytes(OP_GREATER, OP_NOT); break;
+
+        case TOKEN_EQUAL:
+
         case TOKEN_LEFT_PAREN:
         case TOKEN_RIGHT_PAREN:
         case TOKEN_LEFT_BRACE:
@@ -155,13 +164,6 @@ static void binary() {
         case TOKEN_SEMICOLON:
         case TOKEN_SIZE:
         case TOKEN_BANG:
-        case TOKEN_EQUAL:
-        case TOKEN_GREAT:
-        case TOKEN_LESS: // TODO <
-        case TOKEN_BANG_EQUAL:
-        case TOKEN_EQUAL_EQUAL:
-        case TOKEN_GREAT_EQUAL:
-        case TOKEN_LESS_EQUAL:
         case TOKEN_IDENTIFIER:
         case TOKEN_STRING:
         case TOKEN_NUMBER:
@@ -208,6 +210,7 @@ static void unary() {
         case TOKEN_PLUS: break;
         case TOKEN_SIZE: emitByte(OP_SIZE); break;
         case TOKEN_BITNEG: emitByte(OP_BITNEG); break;
+        case TOKEN_BANG: emitByte(OP_NOT); break;
         case TOKEN_LEFT_PAREN:
         case TOKEN_RIGHT_PAREN:
         case TOKEN_LEFT_BRACE:
@@ -220,7 +223,6 @@ static void unary() {
         case TOKEN_BITAND: // TODO bit-ops
         case TOKEN_BITOR: // TODO bit-ops
         case TOKEN_BITXOR: // TODO bit-ops
-        case TOKEN_BANG:
         case TOKEN_EQUAL:
         case TOKEN_GREAT:
         case TOKEN_SLASH:
@@ -308,18 +310,18 @@ ParseRule rules[] = {
     [TOKEN_BITOR]              = {NULL, binary, PREC_BITOR},
     [TOKEN_BITXOR]             = {NULL, binary, PREC_BITXOR},
     [TOKEN_BITNEG]             = {unary, NULL, PREC_NONE},
-    [TOKEN_BANG]               = {NULL, NULL, PREC_NONE},
-    [TOKEN_EQUAL]              = {NULL, NULL, PREC_NONE},
-    [TOKEN_GREAT]              = {NULL, NULL, PREC_NONE},
+    [TOKEN_BANG]               = {unary, NULL, PREC_NONE},
     [TOKEN_SLASH]              = {NULL, binary, PREC_FACTOR},
     [TOKEN_REMAINDER]          = {NULL, binary, PREC_FACTOR},
     [TOKEN_STAR]               = {NULL, binary, PREC_FACTOR},
     [TOKEN_STAR_STAR]          = {NULL, binary, PREC_EXPONENTIAL},
-    [TOKEN_LESS]               = {NULL, NULL, PREC_NONE},
-    [TOKEN_BANG_EQUAL]         = {NULL, NULL, PREC_NONE},
-    [TOKEN_EQUAL_EQUAL]        = {NULL, NULL, PREC_NONE},
-    [TOKEN_GREAT_EQUAL]        = {NULL, NULL, PREC_NONE},
-    [TOKEN_LESS_EQUAL]         = {NULL, NULL, PREC_NONE},
+    [TOKEN_EQUAL]              = {NULL, binary, PREC_EQUALITY},
+    [TOKEN_GREAT]              = {NULL, binary, PREC_EQUALITY},
+    [TOKEN_LESS]               = {NULL, binary, PREC_EQUALITY},
+    [TOKEN_BANG_EQUAL]         = {NULL, binary, PREC_EQUALITY},
+    [TOKEN_EQUAL_EQUAL]        = {NULL, binary, PREC_EQUALITY},
+    [TOKEN_GREAT_EQUAL]        = {NULL, binary, PREC_EQUALITY},
+    [TOKEN_LESS_EQUAL]         = {NULL, binary, PREC_EQUALITY},
     [TOKEN_LEFT_SHIFT]         = {NULL, binary, PREC_SHIFT},
     [TOKEN_RIGHT_SHIFT]        = {NULL, binary, PREC_SHIFT},
     [TOKEN_IDENTIFIER]         = {NULL, NULL, PREC_NONE},

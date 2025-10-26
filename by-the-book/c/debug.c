@@ -38,7 +38,7 @@ int disInstruction(Chunk* chunk, int offset) {
     } else {
         printf("% 4d ", chunk->lines[offset]);
     }
-    uint8_t instruction = chunk->code[offset];
+    OpCode instruction = chunk->code[offset];
     switch (instruction) {
         case OP_RETURN:
             return simpleInstruction("OP_RETURN", offset);
@@ -48,6 +48,14 @@ int disInstruction(Chunk* chunk, int offset) {
             return constantLongInstruction("OP_CONSTANT_LONG", chunk, offset);
         case OP_NEG:
             return simpleInstruction("OP_NEG", offset);
+        case OP_NOT:
+            return simpleInstruction("OP_NOT", offset);
+        case OP_EQUAL:
+            return simpleInstruction("OP_EQUAL", offset);
+        case OP_GREATER:
+            return simpleInstruction("OP_GREATER", offset);
+        case OP_LESS:
+            return simpleInstruction("OP_LESS", offset);
         case OP_ADD:
             return simpleInstruction("OP_ADD", offset);
         case OP_SUB:
