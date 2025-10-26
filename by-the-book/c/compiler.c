@@ -137,6 +137,54 @@ static void binary() {
         case TOKEN_STAR: emitByte(OP_MUL); break;
         case TOKEN_SLASH: emitByte(OP_DIV); break;
         case TOKEN_STAR_STAR: emitByte(OP_EXP); break;
+        case TOKEN_REMAINDER: emitByte(OP_REMAINDER); break;
+        case TOKEN_BITAND: emitByte(OP_BITAND); break;
+        case TOKEN_BITOR: emitByte(OP_BITOR); break;
+        case TOKEN_BITXOR: emitByte(OP_BITXOR); break;
+        case TOKEN_BITNEG: emitByte(OP_BITNEG); break;
+        case TOKEN_LEFT_SHIFT: emitByte(OP_LEFT_SHIFT); break;
+        case TOKEN_RIGHT_SHIFT: emitByte(OP_RIGHT_SHIFT); break;
+        case TOKEN_LEFT_PAREN:
+        case TOKEN_RIGHT_PAREN:
+        case TOKEN_LEFT_BRACE:
+        case TOKEN_RIGHT_BRACE:
+        case TOKEN_RIGHT_SQUARE_BRACE:
+        case TOKEN_LEFT_SQUARE_BRACE:
+        case TOKEN_COMMA:
+        case TOKEN_DOT:
+        case TOKEN_SEMICOLON:
+        case TOKEN_SIZE:
+        case TOKEN_BANG:
+        case TOKEN_EQUAL:
+        case TOKEN_GREAT:
+        case TOKEN_LESS: // TODO <
+        case TOKEN_BANG_EQUAL:
+        case TOKEN_EQUAL_EQUAL:
+        case TOKEN_GREAT_EQUAL:
+        case TOKEN_LESS_EQUAL:
+        case TOKEN_IDENTIFIER:
+        case TOKEN_STRING:
+        case TOKEN_NUMBER:
+        case TOKEN_HEX_NUMBER:
+        case TOKEN_AND:
+        case TOKEN_CLASS:
+        case TOKEN_ELSE:
+        case TOKEN_FALSE:
+        case TOKEN_FOR:
+        case TOKEN_FUN:
+        case TOKEN_IF:
+        case TOKEN_NIL:
+        case TOKEN_OR:
+        case TOKEN_PRINT:
+        case TOKEN_RETURN:
+        case TOKEN_SUPER:
+        case TOKEN_THIS:
+        case TOKEN_TRUE:
+        case TOKEN_VAR:
+        case TOKEN_WHILE:
+        case TOKEN_ERROR:
+        case TOKEN_EOF:
+            break;
     }
 }
 
@@ -155,17 +203,75 @@ static void unary() {
     TokenType opType = parser.previous.type;
     parsePrecedence(PREC_UNARY);
     switch (opType) {
-        case TOKEN_MINUS:
-            emitByte(OP_NEG);
+        case TOKEN_MINUS: emitByte(OP_NEG); break;
+        case TOKEN_PLUS: break;
+        case TOKEN_SIZE: emitByte(OP_SIZE); break;
+        case TOKEN_BITNEG: emitByte(OP_BITNEG); break;
+        case TOKEN_LEFT_PAREN:
+        case TOKEN_RIGHT_PAREN:
+        case TOKEN_LEFT_BRACE:
+        case TOKEN_RIGHT_BRACE:
+        case TOKEN_RIGHT_SQUARE_BRACE: // TODO new token, lists
+        case TOKEN_LEFT_SQUARE_BRACE:
+        case TOKEN_COMMA:
+        case TOKEN_DOT:
+        case TOKEN_SEMICOLON:
+        case TOKEN_BITAND: // TODO bit-ops
+        case TOKEN_BITOR: // TODO bit-ops
+        case TOKEN_BITXOR: // TODO bit-ops
+        case TOKEN_BANG:
+        case TOKEN_EQUAL:
+        case TOKEN_GREAT:
+        case TOKEN_SLASH:
+        case TOKEN_REMAINDER: // TODO %
+        case TOKEN_STAR:
+        case TOKEN_STAR_STAR: // TODO exponential
+        case TOKEN_LESS: // TODO <
+    // Two or more characters
+        case TOKEN_BANG_EQUAL:
+        case TOKEN_EQUAL_EQUAL:
+        case TOKEN_GREAT_EQUAL:
+        case TOKEN_LESS_EQUAL:
+        case TOKEN_LEFT_SHIFT: // TODO bit-ops
+        case TOKEN_RIGHT_SHIFT: // TODO bit-ops
+    // Literals
+        case TOKEN_IDENTIFIER:
+        case TOKEN_STRING:
+        case TOKEN_NUMBER:
+        case TOKEN_HEX_NUMBER:
+    // Keywords
+        case TOKEN_AND:
+        case TOKEN_CLASS:
+        case TOKEN_ELSE:
+        case TOKEN_FALSE:
+        case TOKEN_FOR:
+        case TOKEN_FUN:
+        case TOKEN_IF:
+        case TOKEN_NIL:
+        case TOKEN_OR:
+        case TOKEN_PRINT:
+        case TOKEN_RETURN:
+        case TOKEN_SUPER:
+        case TOKEN_THIS:
+        case TOKEN_TRUE:
+        case TOKEN_VAR:
+        case TOKEN_WHILE:
+        case TOKEN_ERROR:
+    // Special
+        case TOKEN_EOF:
             break;
-        default:
-            return;
     }
 }
 
 static void number() {
     double value = strtod(parser.previous.start, NULL);
     emitConstant(value);
+}
+
+static void hexnumber() {
+    int value = strtol(parser.previous.start, NULL, 16);
+    // TODO emit integer
+    emitConstant((double)value);
 }
 
 ParseRule rules[] = {
@@ -203,7 +309,7 @@ ParseRule rules[] = {
     [TOKEN_IDENTIFIER]         = {NULL, NULL, PREC_NONE},
     [TOKEN_STRING]             = {NULL, NULL, PREC_NONE},
     [TOKEN_NUMBER]             = {number, NULL, PREC_NONE},
-    [TOKEN_HEX_NUMBER]         = {number, NULL, PREC_NONE},
+    [TOKEN_HEX_NUMBER]         = {hexnumber, NULL, PREC_NONE},
     [TOKEN_AND]                = {NULL, NULL, PREC_NONE},
     [TOKEN_CLASS]              = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE]               = {NULL, NULL, PREC_NONE},

@@ -47,6 +47,7 @@ static InterpretResult run() {
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define READ_CONSTANT_LONG() (vm.chunk->constants.values[READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16])
 #define BIN_OP(op) do { double b = pop() ; double a = pop() ; push(a op b); } while (false)
+// TODO int not double
 #define INT_BIN_OP(op) do { int b = pop_int() ; int a = pop_int() ; push(a op b); } while (false)
 #define DOUBLE_BIN_OP(func) do { double b = pop() ; double a = pop() ; push(func(a, b)); } while (false)
 
@@ -88,6 +89,7 @@ static InterpretResult run() {
                 break;
             }
             case OP_NEG: push(-pop()); break;
+            // TODO int not double
             case OP_BITNEG: push((double)~pop_int()); break;
             case OP_SIZE: push(sizeof(Value)); break;
             case OP_ADD: BIN_OP(+); break;
@@ -115,7 +117,7 @@ InterpretResult interpretChunk(Chunk* chunk) {
 InterpretResult interpret(const char* program) {
     Chunk chunk;
     initChunk(&chunk);
-    if (!compile(program, &chunk, false)) {
+    if (!compile(program, &chunk, true)) {
         freeChunk(&chunk);
         return INTERPRET_COMPILE_ERROR;
     }
