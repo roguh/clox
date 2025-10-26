@@ -20,11 +20,12 @@ typedef enum {
     TOKEN_BANG,
     TOKEN_EQUAL,
     TOKEN_GREAT,
+    TOKEN_REMAINDER, // TODO %
     TOKEN_LESS, // TODO <
     TOKEN_BITAND, // TODO bit-ops
     TOKEN_BITOR, // TODO bit-ops
-    TOKEN_BITNEG, // TODO bit-ops
     TOKEN_BITXOR, // TODO bit-ops
+    TOKEN_BITNEG, // TODO bit-ops
     // Two or more characters
     TOKEN_BANG_EQUAL,
     TOKEN_EQUAL_EQUAL,
