@@ -93,11 +93,17 @@ static InterpretResult run() {
 
 InterpretResult interpretChunk(Chunk* chunk) {
     vm.chunk = chunk;
-    vm.ip = 0;
+    vm.ip = vm.chunk->code;
     return run();
 }
 
 InterpretResult interpret(const char* program) {
-    compile(program);
-    return INTERPRET_OK;
+    Chunk chunk;
+    if (!compile(program, &chunk)) {
+        freeChunk(&chunk);
+        return INTERPRET_COMPILE_ERROR;
+    }
+    InterpretResult result = interpretChunk(chunk);
+    freeChunk(&chunk);
+    return result;
 }

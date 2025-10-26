@@ -2,7 +2,12 @@
 
 #include "common.h"
 #include "scanner.h"
+#include "vm.h"
 
-void compile(const char* source) {
-    scanAndPrint(source);
+bool compile(const char* source, Chunk* chunk) {
+    initScanner(source);
+    advance();
+    expression();
+    consume(TOKEN_EOF, "Expect end of expression.");
+    return true;
 }
