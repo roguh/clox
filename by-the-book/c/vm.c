@@ -89,6 +89,7 @@ static InterpretResult run() {
 
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define READ_CONSTANT_LONG() (vm.chunk->constants.values[READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16])
+
 #define BIN_OP(op, _if_double, _if_int) do { \
     Value b = pop(); \
     Value a = pop(); \
@@ -96,11 +97,13 @@ static InterpretResult run() {
         _if_double(AS_DOUBLE(a) op AS_DOUBLE(b)) : \
         _if_int(AS_INTEGER(a) op AS_INTEGER(b))); \
 } while (false)
+
 #define INT_BIN_OP(op) do { \
     int b = pop_int(); \
     int a = pop_int(); \
     push(INTEGER_VAL(a op b)); \
 } while (false)
+
 #define DOUBLE_BIN_OP(func) do { \
     double b = pop_double(); \
     double a = pop_double(); \
@@ -109,7 +112,6 @@ static InterpretResult run() {
 
     while (true) {
         if (DEBUG_TRACE) {
-        disInstruction(vm.chunk, vm.ip);
             printf("[ ");
             for (Value* slot = vm.stack; slot < vm.stackTop; slot++) {
                 printValue(*slot);
@@ -118,6 +120,7 @@ static InterpretResult run() {
                 }
             }
             printf(" ]\n");
+            disInstruction(vm.chunk, vm.ip);
         }
         OpCode instruction;
         // This switch is exhaustive!

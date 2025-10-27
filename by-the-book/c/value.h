@@ -27,7 +27,7 @@ typedef struct {
 #define NIL_VAL ((Value){VAL_NIL, {._int = 0}})
 #define DOUBLE_VAL(val) ((Value){VAL_DOUBLE, {._double = val}})
 #define INTEGER_VAL(val) ((Value){VAL_INT, {._int = val}})
-#define BOOL_VAL(val) ((Value){VAL_BOOL, {._int = (bool)val}})
+#define BOOL_VAL(val) ((Value){VAL_BOOL, {._int = (val) != 0}})
 #define OBJ_VAL(pointer) ((Value){VAL_OBJ, {._obj = (Obj*)(pointer)}})
 
 #define AS_BOOL(value) ((bool)(value).as._int)
