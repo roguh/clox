@@ -19,6 +19,7 @@ main: $(OBJS)
 -include $(DEPS)  # this makes magic happen
 
 clean:
+	rm -f vgcore*
 	rm -f $(DEPS) $(OBJS)
 
 cloc: clean
@@ -27,8 +28,9 @@ cloc: clean
 # Run with file tests
 memory-check: main
 	valgrind --show-leak-kinds=all --leak-check=full ./main --debug --tests
-# TODO very important!
-test-integration:
+
+test-integration: main
+	./test.sh ./main
 
 fmt:
 lint:

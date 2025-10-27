@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "common.h"
 #include "scanner.h"
 
 typedef struct {
@@ -7,6 +6,8 @@ typedef struct {
     const char* current;
     int line;
     int column;
+    int startLine;
+    int startColumn;
 } Scanner;
 
 typedef enum {
@@ -21,6 +22,8 @@ void initScanner(const char* source) {
     scanner.current = source;
     scanner.line = 1;
     scanner.column = 0;
+    scanner.startLine = scanner.line;
+    scanner.startColumn = scanner.column;
 }
 
 static bool isAtEnd() {
@@ -34,6 +37,8 @@ static Token makeToken(TokenType ty) {
     tk.length = (int)(scanner.current - scanner.start);
     tk.line = scanner.line;
     tk.column = scanner.column;
+    tk.startLine = scanner.startLine;
+    tk.startColumn = scanner.startColumn;
     return tk;
 }
 
@@ -50,22 +55,27 @@ static Token errorToken(const char* message) {
 static char advance() {
     scanner.current++;
     scanner.column++;
-    return scanner.current[-1];
+    char c = scanner.current[-1];
+    if (c == '\n') {
+        scanner.line++;
+        scanner.column = 0;
+    }
+    return c;
+}
+
+static char peek() {
+    return *scanner.current;
 }
 
 static bool match(char expected) {
     if (isAtEnd()) {
         return false;
     }
-    if (*scanner.current != expected) {
+    if (peek() != expected) {
         return false;
     }
-    scanner.current++;
+    advance();
     return true;
-}
-
-static char peek() {
-    return *scanner.current;
 }
 
 static char peekNext() {
@@ -110,7 +120,7 @@ static TokenType identifierType() {
     case 'w': return checkKeyword(1, 4, "hile", TOKEN_WHILE);
 
     // Keywords starting with f: false for fun
-    case 'f': 
+    case 'f':
         // A token of length > 1
         if (scanner.current - scanner.start > 1) {
             switch(scanner.start[1]) {
@@ -122,7 +132,7 @@ static TokenType identifierType() {
         break;
 
     // Keywords starting with t: this true
-    case 't': 
+    case 't':
         // A token of length > 1
         if (scanner.current - scanner.start > 1) {
             switch(scanner.start[1]) {
@@ -176,9 +186,6 @@ static Token string(StringType ty) {
         if (peek() == '\\') {
             advance();
         }
-        if (peek() == '\n') {
-            scanner.line++;
-        }
         advance();
     }
 
@@ -195,9 +202,6 @@ static void skipWhitespace() {
         char c = peek();
         switch (c) {
             case '\n':
-                scanner.line++;
-                scanner.column = 0;
-                // Fallthrough
             case ' ':
             case '\t':
             case '\r':
@@ -228,6 +232,8 @@ static void skipWhitespace() {
 
 Token scanToken() {
     skipWhitespace();
+    scanner.startLine = scanner.line;
+    scanner.startColumn = scanner.column;
     scanner.start = scanner.current;
     if (isAtEnd()) {
         return makeToken(TOKEN_EOF);
@@ -260,17 +266,17 @@ Token scanToken() {
         case '|': return makeToken(TOKEN_BITOR);
         case '^': return makeToken(TOKEN_BITXOR);
         case '~': return makeToken(TOKEN_BITNEG);
-        case '!': return makeToken(TOKEN_BANG);
-        // Division or single-line comment or multi-line comment
         case '/': return makeToken(TOKEN_SLASH);
         case '%': return makeToken(TOKEN_REMAINDER);
         // One or Two-character tokens
+        case '!': return makeToken(match('=') ?
+            TOKEN_BANG_EQUAL : TOKEN_BANG);
         case '*': return makeToken(match('*') ?
             TOKEN_STAR_STAR : TOKEN_STAR);
         case '=': return makeToken(match('=') ?
             TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
         case '>': return makeToken(match('=') ?
-            TOKEN_GREAT_EQUAL : 
+            TOKEN_GREAT_EQUAL :
                 (match('>') ? TOKEN_RIGHT_SHIFT: TOKEN_GREAT));
         case '<': return makeToken(match('=') ?
             TOKEN_LESS_EQUAL :

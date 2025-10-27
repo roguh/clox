@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "scanner.h"
-#include "vm.h"
 #include "chunk.h"
 #include "debug.h"
 #include "object.h"
@@ -298,9 +297,9 @@ static void unary() {
 
 static void literal() {
     switch (parser.previous.type) {
-        case TOKEN_FALSE: emitByte(OP_FALSE); break; 
-        case TOKEN_NIL: emitByte(OP_NIL); break; 
-        case TOKEN_TRUE: emitByte(OP_TRUE); break; 
+        case TOKEN_FALSE: emitByte(OP_FALSE); break;
+        case TOKEN_NIL: emitByte(OP_NIL); break;
+        case TOKEN_TRUE: emitByte(OP_TRUE); break;
         default:
             return;
     }

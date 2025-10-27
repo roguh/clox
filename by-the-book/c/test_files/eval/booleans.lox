@@ -1,0 +1,32 @@
+/*
+import itertools
+truth_table = list(itertools.product([True, False], [True, False]))
+ops = "> >= < <= == !=".split()
+for op in ops:
+    for a, b in truth_table:
+        print(a, op, b)
+*/
+print(true > true);
+print(true > false);
+print(false > true);
+print(false > false);
+print(true >= true);
+print(true >= false);
+print(false >= true);
+print(false >= false);
+print(true < true);
+print(true < false);
+print(false < true);
+print(false < false);
+print(true <= true);
+print(true <= false);
+print(false <= true);
+print(false <= false);
+print(true == true);
+print(true == false);
+print(false == true);
+print(false == false);
+print(true != true);
+print(true != false);
+print(false != true);
+print(false != false);
