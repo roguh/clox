@@ -26,7 +26,7 @@ void initScanner(const char* source) {
     scanner.startColumn = scanner.column;
 }
 
-static bool isAtEnd() {
+static bool isAtEnd(void) {
     return *scanner.current == '\0';
 }
 
@@ -52,7 +52,7 @@ static Token errorToken(const char* message) {
     return tk;
 }
 
-static char advance() {
+static char advance(void) {
     scanner.current++;
     scanner.column++;
     char c = scanner.current[-1];
@@ -63,7 +63,7 @@ static char advance() {
     return c;
 }
 
-static char peek() {
+static char peek(void) {
     return *scanner.current;
 }
 
@@ -78,7 +78,7 @@ static bool match(char expected) {
     return true;
 }
 
-static char peekNext() {
+static char peekNext(void) {
     if (isAtEnd()) {
         return '\0';
     }
@@ -104,7 +104,7 @@ static TokenType checkKeyword(int start, int length, const char* rest, TokenType
     return TOKEN_IDENTIFIER;
 }
 
-static TokenType identifierType() {
+static TokenType identifierType(void) {
     // Check the start of the token to see if it's a keyword
     switch (scanner.start[0]) {
     case 'a': return checkKeyword(1, 2, "nd", TOKEN_AND);
@@ -145,14 +145,14 @@ static TokenType identifierType() {
     return TOKEN_IDENTIFIER;
 }
 
-static Token identifier() {
+static Token identifier(void) {
     while (isAlpha(peek()) || isDigit(peek(), false)) {
         advance();
     }
     return makeToken(identifierType());
 }
 
-static Token hexnum() {
+static Token hexnum(void) {
     // Starting 0x
     advance();
     while (isDigit(peek(), true)) {
@@ -161,7 +161,7 @@ static Token hexnum() {
     return makeToken(TOKEN_HEXINT);
 }
 
-static Token number() {
+static Token number(void) {
     bool hasDigit = false;
     while (isDigit(peek(), false)) {
         advance();
@@ -197,7 +197,7 @@ static Token string(StringType ty) {
     return makeToken(TOKEN_STRING);
 }
 
-static void skipWhitespace() {
+static void skipWhitespace(void) {
     while (true) {
         char c = peek();
         switch (c) {
@@ -230,7 +230,7 @@ static void skipWhitespace() {
     }
 }
 
-Token scanToken() {
+Token scanToken(void) {
     skipWhitespace();
     scanner.startLine = scanner.line;
     scanner.startColumn = scanner.column;

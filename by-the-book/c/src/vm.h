@@ -22,11 +22,11 @@ typedef enum {
 
 extern VM vm;
 
-void initVM();
-void freeVM();
+void initVM(void);
+void freeVM(void);
 InterpretResult interpret(const char* string);
 InterpretResult interpretChunk(Chunk* chunk);
 void push(Value value);
-Value pop();
+Value pop(void);
 
 #endif

@@ -1,4 +1,5 @@
 ######### THANK YOU exDM69 from reddit (2014/7/7)
+CC:=clang
 CFLAGS = -std=c99
 CFLAGS += -Wall -Wpedantic -O2 -g -Wno-unused-function
 CFLAGS += -Wswitch # Exhaustive enums if no default

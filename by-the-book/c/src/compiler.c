@@ -34,7 +34,7 @@ typedef enum {
     PREC_PRIMARY,
 } Precedence;
 
-typedef void (*ParseFn)();
+typedef void (*ParseFn)(void);
 
 typedef struct {
     ParseFn prefix;
@@ -68,11 +68,11 @@ static void errorAtCurrent(const char* message) {
     errorAt(&parser.current, message);
 }
 
-static Chunk* currentChunk() {
+static Chunk* currentChunk(void) {
     return parser.thisChunk;
 }
 
-static void advance() {
+static void advance(void) {
     parser.previous = parser.current;
     while (true) {
         parser.current = scanToken();
@@ -104,7 +104,7 @@ static void emitByte(uint8_t byte) {
     writeChunk(currentChunk(), byte, parser.previous.line, parser.previous.column);
 }
 
-static void emitReturn() {
+static void emitReturn(void) {
     emitByte(OP_RETURN);
 }
 
@@ -130,13 +130,13 @@ static void endCompiler(bool debugPrint) {
     }
 }
 
-static void expression();
-static void statement();
-static void declaration();
+static void expression(void);
+static void statement(void);
+static void declaration(void);
 static ParseRule* getRule(TokenType type);
 static void parsePrecedence(Precedence prec);
 
-static void binary() {
+static void binary(void) {
     TokenType opType = parser.previous.type;
     ParseRule* rule = getRule(opType);
     parsePrecedence((Precedence)(rule->precedence + 1));
@@ -202,34 +202,34 @@ static void binary() {
     }
 }
 
-static void expression() {
+static void expression(void) {
     // Vaughan Pratt's top-down operator precedence parsing
     // Parse an expression starting at the lowest precedence levels
     parsePrecedence(PREC_ASSIGNMENT);
 }
 
-static void printStatement() {
+static void printStatement(void) {
     expression();
     consume(TOKEN_SEMICOLON, "Expect ';' after print.");
     emitByte(OP_PRINT);
 }
 
-static void statement() {
+static void statement(void) {
     if (match(TOKEN_PRINT)) {
         printStatement();
     }
 }
 
-static void declaration() {
+static void declaration(void) {
     statement();
 }
 
-static void grouping() {
+static void grouping(void) {
     expression();
     consume(TOKEN_RIGHT_PAREN, "Expect end ')' after expression.");
 }
 
-static void unary() {
+static void unary(void) {
     TokenType opType = parser.previous.type;
     parsePrecedence(PREC_UNARY);
     switch (opType) {
@@ -295,7 +295,7 @@ static void unary() {
     }
 }
 
-static void literal() {
+static void literal(void) {
     switch (parser.previous.type) {
         case TOKEN_FALSE: emitByte(OP_FALSE); break;
         case TOKEN_NIL: emitByte(OP_NIL); break;
@@ -305,21 +305,21 @@ static void literal() {
     }
 }
 
-static void string() {
+static void string(void) {
     emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
 
-static void number() {
+static void number(void) {
     double value = strtod(parser.previous.start, NULL);
     emitConstant(DOUBLE_VAL(value));
 }
 
-static void integer() {
+static void integer(void) {
     int value = strtol(parser.previous.start, NULL, 10);
     emitConstant(INTEGER_VAL(value));
 }
 
-static void hexnumber() {
+static void hexnumber(void) {
     int value = strtol(parser.previous.start, NULL, 16);
     emitConstant(INTEGER_VAL(value));
 }

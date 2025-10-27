@@ -13,16 +13,16 @@
 
 VM vm;
 
-static void resetStack() {
+static void resetStack(void) {
     vm.stackTop = vm.stack;
 }
 
-void initVM() {
+void initVM(void) {
     resetStack();
     vm.objects = NULL;
 }
 
-void freeVM() {
+void freeVM(void) {
     freeObjects();
 }
 
@@ -31,16 +31,16 @@ void push(Value value) {
     vm.stackTop++;
 }
 
-Value pop() {
+Value pop(void) {
     vm.stackTop--;
     return *vm.stackTop;
 }
 
-int pop_int() {
+int pop_int(void) {
     return AS_INTEGER(pop());
 }
 
-double pop_double() {
+double pop_double(void) {
     return AS_DOUBLE(pop());
 }
 
@@ -67,11 +67,11 @@ static void runtimeError(const char* format, ...) {
     resetStack();
 }
 
-size_t size() {
+size_t size(void) {
     return vm.stackTop - vm.stack;
 }
 
-static void concatenate() {
+static void concatenate(void) {
     ObjString* b = AS_STRING(pop());
     ObjString* a = AS_STRING(pop());
     int length = a->length + b->length;
@@ -83,7 +83,7 @@ static void concatenate() {
     push(OBJ_VAL(result));
 }
 
-static InterpretResult run() {
+static InterpretResult run(void) {
 #pragma GCC diagnostic ignored "-Wsequence-point"
 #define READ_BYTE() (vm.chunk->code[vm.ip++])
 

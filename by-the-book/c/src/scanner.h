@@ -82,7 +82,7 @@ typedef struct {
     int startColumn;
 } Token;
 
-Token scanToken();
+Token scanToken(void);
 void initScanner(const char* source);
 void scanAndPrint(const char* source);
 

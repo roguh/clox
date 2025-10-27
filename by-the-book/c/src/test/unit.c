@@ -7,7 +7,7 @@
 // These only test double values
 #define VAL(val) DOUBLE_VAL(val)
 
-void testChunk1() {
+void testChunk1(void) {
     Chunk chunk;
     initChunk(&chunk);
     writeChunk(&chunk, OP_RETURN, 123, 12);
@@ -15,7 +15,7 @@ void testChunk1() {
     freeChunk(&chunk);
 }
 
-void testChunk2() {
+void testChunk2(void) {
     Chunk chunk;
     initChunk(&chunk);
     writeChunk(&chunk, OP_CONSTANT, 123, 12);
@@ -29,7 +29,7 @@ void testChunk2() {
     freeChunk(&chunk);
 }
 
-void testChunk3() {
+void testChunk3(void) {
     Chunk chunk;
     initChunk(&chunk);
     for (int i = 0; i < MIN_SIZE_TO_CONSTANT_LONG + 1; i++) {
@@ -40,7 +40,7 @@ void testChunk3() {
     freeChunk(&chunk);
 }
 
-void testRun1() {
+void testRun1(void) {
     Chunk chunk;
     initChunk(&chunk);
     writeChunk(&chunk, OP_RETURN, 123, 12);
@@ -51,7 +51,7 @@ void testRun1() {
     freeChunk(&chunk);
 }
 
-void testRun2() {
+void testRun2(void) {
     Chunk chunk;
     initChunk(&chunk);
     writeConstant(&chunk, VAL(3.14159265), 122, 11);
@@ -65,7 +65,7 @@ void testRun2() {
     freeChunk(&chunk);
 }
 
-void testRun3() {
+void testRun3(void) {
     Chunk chunk;
     initChunk(&chunk);
     writeConstant(&chunk, VAL(3.14159265), 122, 11);
@@ -93,7 +93,7 @@ void testRun3() {
     freeChunk(&chunk);
 }
 
-void testAll() {
+void testAll(void) {
     testChunk1();
     testChunk2();
     testChunk3();
