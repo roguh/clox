@@ -148,7 +148,12 @@ static InterpretResult run() {
             case OP_NEG: push(DOUBLE_VAL(-pop_double())); break;
             case OP_NOT: push(BOOL_VAL(isFalsey(pop()))); break;
             case OP_BITNEG: push(INTEGER_VAL(~pop_int())); break;
-            case OP_SIZE: push(INTEGER_VAL(sizeof(Value))); break;
+            case OP_SIZE: if (IS_STRING(peek(0))) {
+                push(INTEGER_VAL(strlen(AS_CSTRING(pop()))));
+            } else {
+                push(INTEGER_VAL(sizeof(Value)));
+            }
+            break;
             case OP_GREATER: BIN_OP(>, BOOL_VAL, BOOL_VAL); break;
             case OP_LESS: BIN_OP(<, BOOL_VAL, BOOL_VAL); break;
             case OP_ADD: {
