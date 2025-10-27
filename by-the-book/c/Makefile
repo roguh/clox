@@ -14,6 +14,8 @@ DEPS=$(OBJS:.o=.d)
 
 all: main
 
+commitready: fmt lint unit integration
+
 main: $(OBJS)
 
 -include $(DEPS)  # this makes magic happen
@@ -29,12 +31,13 @@ cloc: clean
 memory-check: main
 	valgrind --show-leak-kinds=all --leak-check=full ./main --debug --tests
 
-test-integration: main
+integration: main
 	./test.sh ./main
+
+unit: main
+	./main --tests
 
 fmt:
 lint:
-test:
-test-unit:
-test-fuzz:
+fuzz:
 security-analysis:
