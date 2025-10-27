@@ -2,3 +2,4 @@ main
 *.bin
 *.o
 *.d
+vgcore*

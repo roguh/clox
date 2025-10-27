@@ -24,10 +24,15 @@ clean:
 cloc: clean
 	cloc .
 
+# Run with file tests
+memory-check: main
+	valgrind --show-leak-kinds=all --leak-check=full ./main --debug --tests
+# TODO very important!
+test-integration:
+
 fmt:
 lint:
 test:
-test-integration:
 test-unit:
 test-fuzz:
 security-analysis:
