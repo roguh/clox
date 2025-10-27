@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "common.h"
-#include "scanner.h"
-#include "vm.h"
-#include "test/unit.h"
+#include "src/common.h"
+#include "src/scanner.h"
+#include "src/vm.h"
+#include "src/test/unit.h"
 
 const char* VERSION = "v0.0.1";
 bool DEBUG_TRACE = false;

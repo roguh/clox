@@ -6,7 +6,7 @@ CFLAGS += -MMD   # dependency generation magic
 LDLIBS = -lm
 LDFLAGS =
 
-SRCS=$(wildcard *.c) $(wildcard test/*.c)
+SRCS=$(wildcard *.c src/*.c src/test/*.c)
 OBJS=$(SRCS:.c=.o)
 DEPS=$(OBJS:.o=.d)
 
