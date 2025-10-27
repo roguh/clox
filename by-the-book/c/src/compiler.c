@@ -92,6 +92,15 @@ static void consume(TokenType type, const char* message) {
     errorAtCurrent(message);
 }
 
+static bool match(TokenType type) {
+    // if !check()
+    if (!(parser.current.type == type)) {
+        return false;
+    }
+    advance();
+    return true;
+}
+
 static void emitByte(uint8_t byte) {
     writeChunk(currentChunk(), byte, parser.previous.line, parser.previous.column);
 }
@@ -123,6 +132,8 @@ static void endCompiler(bool debugPrint) {
 }
 
 static void expression();
+static void statement();
+static void declaration();
 static ParseRule* getRule(TokenType type);
 static void parsePrecedence(Precedence prec);
 
@@ -198,6 +209,22 @@ static void expression() {
     parsePrecedence(PREC_ASSIGNMENT);
 }
 
+static void printStatement() {
+    expression();
+    consume(TOKEN_SEMICOLON, "Expect ';' after print.");
+    emitByte(OP_PRINT);
+}
+
+static void statement() {
+    if (match(TOKEN_PRINT)) {
+        printStatement();
+    }
+}
+
+static void declaration() {
+    statement();
+}
+
 static void grouping() {
     expression();
     consume(TOKEN_RIGHT_PAREN, "Expect end ')' after expression.");
@@ -212,6 +239,8 @@ static void unary() {
         case TOKEN_SIZE: emitByte(OP_SIZE); break;
         case TOKEN_BITNEG: emitByte(OP_BITNEG); break;
         case TOKEN_BANG: emitByte(OP_NOT); break;
+
+        case TOKEN_PRINT:
         case TOKEN_LEFT_PAREN:
         case TOKEN_RIGHT_PAREN:
         case TOKEN_LEFT_BRACE:
@@ -254,7 +283,6 @@ static void unary() {
         case TOKEN_IF:
         case TOKEN_NIL:
         case TOKEN_OR:
-        case TOKEN_PRINT:
         case TOKEN_RETURN:
         case TOKEN_SUPER:
         case TOKEN_THIS:
@@ -379,7 +407,9 @@ bool compile(const char* source, Chunk* chunk, bool debugPrint) {
     parser.thisChunk = chunk;
     initScanner(source);
     advance();
-    expression();
+    while (!match(TOKEN_EOF)) {
+        declaration();
+    }
     consume(TOKEN_EOF, "Expect end of expression.");
     endCompiler(debugPrint);
     return !parser.hadError;
