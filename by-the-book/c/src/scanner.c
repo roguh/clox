@@ -53,9 +53,12 @@ static Token errorToken(const char* message) {
 }
 
 static char advance(void) {
+    if (isAtEnd()) {
+        return '\0';
+    }
+    char c = scanner.current[0];
     scanner.current++;
     scanner.column++;
-    char c = scanner.current[-1];
     if (c == '\n') {
         scanner.line++;
         scanner.column = 0;

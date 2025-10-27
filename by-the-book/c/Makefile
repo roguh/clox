@@ -1,5 +1,4 @@
 ######### THANK YOU exDM69 from reddit (2014/7/7)
-CC:=clang
 CFLAGS = -std=c99
 CFLAGS += -Wall -Wpedantic -O2 -g -Wno-unused-function
 CFLAGS += -Wswitch # Exhaustive enums if no default
@@ -19,7 +18,7 @@ commitready: fmt lint unit integration
 
 main: $(OBJS)
 
--include $(DEPS)  # this makes magic happen
+-include $(DEPS)  # -MMD generates small Makefiles .d that contain the dependencies of each object
 
 clean:
 	rm -f vgcore*
@@ -28,9 +27,9 @@ clean:
 cloc: clean
 	cloc .
 
-# Run with file tests
 memory-check: main
-	valgrind --show-leak-kinds=all --leak-check=full ./main --debug --tests
+	valgrind --quiet --show-leak-kinds=all --leak-check=full ./main --debug --tests
+	./test.sh 'valgrind --show-leak-kinds=all --leak-check=full --quiet ./main'
 
 integration: main
 	./test.sh ./main
