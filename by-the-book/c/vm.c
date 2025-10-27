@@ -1,9 +1,13 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
 #include <math.h>
 
 #include "common.h"
 #include "debug.h"
 #include "compiler.h"
+#include "object.h"
+#include "memory.h"
 #include "value.h"
 #include "vm.h"
 
@@ -42,26 +46,39 @@ static bool isFalsey(Value value) {
     return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
 }
 
-Value top() {
-    return *(vm.stackTop - 1);
+Value peek(int offset) {
+    return vm.stackTop[-(offset + 1)];
+}
+
+static void runtimeError(const char* format, ...) {
+    va_list args;
+    fputs("ERROR: ", stderr);
+    va_start(args, format);
+    vfprintf(stderr,  format, args);
+    va_end(args);
+    fputs("\n", stderr);
+
+    size_t instruction = vm.chunk->code[vm.ip]; // vm.ip-1 ? TODO
+    int line = vm.chunk->lines[instruction];
+    int col = vm.chunk->columns[instruction];
+    fprintf(stderr, "    [%d:%d] in script\n", line, col);
+    resetStack();
 }
 
 size_t size() {
     return vm.stackTop - vm.stack;
 }
 
-bool valuesEqual(Value a, Value b) {
-    if (a.type == VAL_OBJ) {
-        return a.type == b.type && AS_OBJ(a) == AS_OBJ(b);
-    }
-    switch (a.type) {
-        case VAL_NIL: return a.type == b.type;
-        case VAL_INT: return AS_INTEGER(a) == AS_INTEGER(b);
-        case VAL_DOUBLE: return AS_DOUBLE(a) == AS_DOUBLE(b);
-        case VAL_BOOL: return AS_BOOL(a) == AS_BOOL(b);
-        case VAL_OBJ: return false; // unreachable
-    }
-    return false;
+static void concatenate() {
+    ObjString* b = AS_STRING(pop());
+    ObjString* a = AS_STRING(pop());
+    int length = a->length + b->length;
+    char* chars = ALLOCATE(char, length + 1);
+    memcpy(chars, a->chars, a->length);
+    memcpy(chars + a->length, b->chars, b->length);
+    chars[length] = '\0';
+    ObjString* result = allocateString(chars, length);
+    push(OBJ_VAL(result));
 }
 
 static InterpretResult run() {
@@ -93,7 +110,7 @@ static InterpretResult run() {
         disInstruction(vm.chunk, vm.ip);
             printf("[ ");
             for (Value* slot = vm.stack; slot < vm.stackTop; slot++) {
-                printValue(top());
+                printValue(*slot);
                 if (slot < vm.stackTop - 1) {
                     printf(" ");
                 }
@@ -112,7 +129,7 @@ static InterpretResult run() {
             }
             case OP_PRINT: {
                 if (size()) {
-                    printValue(top());
+                    printValue(pop());
                     printf("\n");
                 }
                 break;
@@ -129,7 +146,18 @@ static InterpretResult run() {
             case OP_SIZE: push(INTEGER_VAL(sizeof(Value))); break;
             case OP_GREATER: BIN_OP(>, BOOL_VAL, BOOL_VAL); break;
             case OP_LESS: BIN_OP(<, BOOL_VAL, BOOL_VAL); break;
-            case OP_ADD: BIN_OP(+, DOUBLE_VAL, INTEGER_VAL); break;
+            case OP_ADD: {
+                if (IS_STRING(peek(0)) || IS_STRING(peek(1))) {
+                    if (!(IS_STRING(peek(0)) && IS_STRING(peek(1)))) {
+                        runtimeError("Strings can only be added to other strings");
+                        return INTERPRET_RUNTIME_ERROR;
+                    }
+                    concatenate();
+                } else {
+                    BIN_OP(+, DOUBLE_VAL, INTEGER_VAL);
+                }
+                break;
+            }
             case OP_SUB: BIN_OP(-, DOUBLE_VAL, INTEGER_VAL); break;
             case OP_MUL: BIN_OP(*, DOUBLE_VAL, INTEGER_VAL); break;
             case OP_DIV: BIN_OP(/, DOUBLE_VAL, INTEGER_VAL); break;
@@ -152,7 +180,7 @@ InterpretResult interpretChunk(Chunk* chunk) {
     vm.chunk = chunk;
     vm.ip = 0;
     if (DEBUG_TRACE) {
-        printf("Running!\n");
+        printf("== running! ==\n");
     }
     InterpretResult result = run();
     freeVM();

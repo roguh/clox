@@ -27,8 +27,9 @@ void writeValues(Values* values, Value value) {
 
 static const char* objectType(ObjType ty) {
     switch (ty) {
-        OBJ_STRING: return "OBJ_STRING";
+        case OBJ_STRING: return "OBJ_STRING";
     }
+    return "unknown";
 }
 
 void printValue(Value value) {
@@ -38,7 +39,7 @@ void printValue(Value value) {
         case VAL_DOUBLE: printf("%lf", AS_DOUBLE(value)); break;
         case VAL_INT: printf("%d", AS_INTEGER(value)); break;
         case VAL_BOOL: printf("%s", AS_BOOL(value) ? "true" : "false"); break;
-        case VAL_OBJ: printf("<%s %p>", objectType(AS_OBJ(value)->type), (void*)AS_OBJ(value)); break;
+        case VAL_OBJ: printf("%s", AS_CSTRING(value)); break;
     }
 }
 
@@ -57,3 +58,22 @@ int AS_INTEGER(Value value) {
         return (double)value.as._double;
     }
 }
+
+bool valuesEqual(Value a, Value b) {
+    if (a.type != b.type) {
+        return false;
+    }
+    switch (a.type) {
+        case VAL_NIL: return a.type == b.type;
+        case VAL_INT: return AS_INTEGER(a) == AS_INTEGER(b);
+        case VAL_DOUBLE: return AS_DOUBLE(a) == AS_DOUBLE(b);
+        case VAL_BOOL: return AS_BOOL(a) == AS_BOOL(b);
+        case VAL_OBJ: {
+            ObjString* aS = AS_STRING(a);
+            ObjString* bS = AS_STRING(b);
+            return aS->length == bS->length && memcmp(aS->chars, bS->chars, aS->length) == 0;
+        }
+    }
+    return false;
+}
+

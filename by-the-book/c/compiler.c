@@ -6,6 +6,7 @@
 #include "vm.h"
 #include "chunk.h"
 #include "debug.h"
+#include "object.h"
 
 typedef struct {
     Token current;
@@ -277,6 +278,10 @@ static void literal() {
     }
 }
 
+static void string() {
+    emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
+}
+
 static void number() {
     double value = strtod(parser.previous.start, NULL);
     emitConstant(DOUBLE_VAL(value));
@@ -325,7 +330,7 @@ ParseRule rules[] = {
     [TOKEN_LEFT_SHIFT]         = {NULL, binary, PREC_SHIFT},
     [TOKEN_RIGHT_SHIFT]        = {NULL, binary, PREC_SHIFT},
     [TOKEN_IDENTIFIER]         = {NULL, NULL, PREC_NONE},
-    [TOKEN_STRING]             = {NULL, NULL, PREC_NONE},
+    [TOKEN_STRING]             = {string, NULL, PREC_NONE},
     [TOKEN_NUMBER]             = {number, NULL, PREC_NONE},
     [TOKEN_INTEGER]            = {integer, NULL, PREC_NONE},
     [TOKEN_HEXINT]             = {hexnumber, NULL, PREC_NONE},

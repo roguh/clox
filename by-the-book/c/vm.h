@@ -25,6 +25,5 @@ InterpretResult interpret(const char* string);
 InterpretResult interpretChunk(Chunk* chunk);
 void push(Value value);
 Value pop();
-bool valuesEqual(Value a, Value b);
 
 #endif

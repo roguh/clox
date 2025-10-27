@@ -28,7 +28,7 @@ typedef struct {
 #define DOUBLE_VAL(val) ((Value){VAL_DOUBLE, {._double = val}})
 #define INTEGER_VAL(val) ((Value){VAL_INT, {._int = val}})
 #define BOOL_VAL(val) ((Value){VAL_BOOL, {._int = (bool)val}})
-#define OBJ_VAL(pointer) ((Value){VAL_OBJ, {._obj = (Obj*)pointer})
+#define OBJ_VAL(pointer) ((Value){VAL_OBJ, {._obj = (Obj*)(pointer)}})
 
 #define AS_BOOL(value) ((bool)(value).as._int)
 #define AS_OBJ(value) ((value).as._obj)
@@ -57,5 +57,7 @@ void printValue(Value value);
 
 double AS_DOUBLE(Value value);
 int AS_INTEGER(Value value);
+
+bool valuesEqual(Value a, Value b);
 
 #endif
