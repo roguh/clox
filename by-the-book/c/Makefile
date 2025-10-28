@@ -1,7 +1,7 @@
 ######### THANK YOU exDM69 from reddit (2014/7/7)
 CFLAGS = -std=c99
 CFLAGS += -Wall -Wpedantic -O2 -g -Wno-unused-function
-CFLAGS += -Wswitch # Exhaustive enums if no default
+CFLAGS += -Werror=switch # Exhaustive enums if no default
 CFLAGS += -MMD   # dependency generation magic
 LDLIBS = -lm
 LDFLAGS =

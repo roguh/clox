@@ -36,7 +36,7 @@ void printValue(Value value) {
     switch (value.type) {
         // Exhaustive!
         case VAL_NIL: printf("nil"); break;
-        case VAL_DOUBLE: printf("%lf", AS_DOUBLE(value)); break;
+        case VAL_DOUBLE: printf("%.16lg", AS_DOUBLE(value)); break;
         case VAL_INT: printf("%d", AS_INTEGER(value)); break;
         case VAL_BOOL: printf("%s", AS_BOOL(value) ? "true" : "false"); break;
         case VAL_OBJ: printf("%s", AS_CSTRING(value)); break;
