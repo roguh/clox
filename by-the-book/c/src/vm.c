@@ -8,6 +8,7 @@
 #include "compiler.h"
 #include "object.h"
 #include "memory.h"
+#include "hashmap.h"
 #include "value.h"
 #include "vm.h"
 
@@ -19,10 +20,12 @@ static void resetStack(void) {
 
 void initVM(void) {
     resetStack();
+    hashmap_init(&vm.strings, 1024, (hash_function)hashAny);
     vm.objects = NULL;
 }
 
 void freeVM(void) {
+    hashmap_free(&vm.strings);
     freeObjects();
 }
 
@@ -74,12 +77,13 @@ size_t size(void) {
 static void concatenate(void) {
     ObjString* b = AS_STRING(pop());
     ObjString* a = AS_STRING(pop());
-    int length = a->length + b->length;
+    size_t length = a->length + b->length;
     char* chars = ALLOCATE(char, length + 1);
     memcpy(chars, a->chars, a->length);
     memcpy(chars + a->length, b->chars, b->length);
     chars[length] = '\0';
-    ObjString* result = allocateString(chars, length);
+    size_t hash = hashString(chars, length);
+    ObjString* result = allocateString(chars, length, hash);
     push(OBJ_VAL(result));
 }
 
