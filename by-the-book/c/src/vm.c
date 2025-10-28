@@ -20,11 +20,13 @@ static void resetStack(void) {
 void initVM(void) {
     resetStack();
     hashmap_init(&vm.strings, 1024, (hash_function)hashAny);
+    hashmap_init(&vm.globals, 32, (hash_function)hashAny);
     vm.objects = NULL;
 }
 
 void freeVM(void) {
     hashmap_free(&vm.strings);
+    hashmap_free(&vm.globals);
     freeObjects();
 }
 
@@ -92,6 +94,8 @@ static InterpretResult run(void) {
 
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define READ_CONSTANT_LONG() (vm.chunk->constants.values[READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16])
+#define READ_STRING() AS_STRING(READ_CONSTANT())
+#define READ_STRING_LONG() AS_STRING(READ_CONSTANT_LONG())
 
 #define BIN_OP(op, _if_double, _if_int) do { \
     Value b = pop(); \
@@ -127,18 +131,27 @@ static InterpretResult run(void) {
         }
         OpCode instruction;
         switch (instruction = READ_BYTE()) { // This switch is exhaustive!
-            case OP_RETURN: {
-                if (size()) {
-                    printValue(pop());
-                    printf("\n");
-                }
-                return INTERPRET_OK;
-            }
+            case OP_RETURN: return INTERPRET_OK;
             case OP_PRINT: {
                 if (size()) {
                     printValue(pop());
                     printf("\n");
                 }
+                break;
+            }
+            case OP_POP: 
+                if (size()) {
+                    pop();
+                }
+                break;
+            case OP_DEFINE_GLOBAL: {
+                ObjString* name =  READ_STRING();
+                hashmap_set(&vm.globals, OBJ_VAL(name), pop());
+                break;
+            }
+            case OP_DEFINE_GLOBAL_LONG: {
+                ObjString* name =  READ_STRING_LONG();
+                hashmap_set(&vm.globals, OBJ_VAL(name), pop());
                 break;
             }
             case OP_EQUAL: {

@@ -13,6 +13,7 @@ typedef struct {
     Value stack[STACK_MAX];
     Value* stackTop;
     Obj* objects;
+    hashmap_t globals;
     hashmap_t strings;
 } VM;
 

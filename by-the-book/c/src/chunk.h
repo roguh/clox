@@ -8,6 +8,9 @@ typedef enum {
     // TODO assert less than 256 ops total
     OP_RETURN,
     OP_PRINT,
+    OP_POP,
+    OP_DEFINE_GLOBAL,
+    OP_DEFINE_GLOBAL_LONG,
     // Values
     OP_CONSTANT,
     OP_CONSTANT_LONG,
@@ -50,8 +53,9 @@ typedef struct {
 void initChunk(Chunk* chunk);
 void freeChunk(Chunk* chunk);
 void writeChunk(Chunk* chunk, uint8_t byte, int line, int column);
-void writeConstant(Chunk* chunk, Value value, int line, int column);
 int addConstant(Chunk* chunk, Value value);
+int writeConstantByOffset(Chunk* chunk, OpCode instr, OpCode instrLong, int offset, int line, int column);
+int writeConstant(Chunk* chunk, Value value, int line, int column);
 
 
 #endif

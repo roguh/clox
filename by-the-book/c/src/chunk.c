@@ -37,16 +37,21 @@ int addConstant(Chunk* chunk, Value value) {
     return chunk->constants.count - 1;
 }
 
-void writeConstant(Chunk* chunk, Value value, int line, int column) {
-    int offset = addConstant(chunk, value);
+int writeConstantByOffset(Chunk* chunk, OpCode instr, OpCode instrLong, int offset, int line, int column) {
     if (chunk->constants.count < MIN_SIZE_TO_CONSTANT_LONG) {
-        writeChunk(chunk, OP_CONSTANT, line, column);
+        writeChunk(chunk, instr, line, column);
         writeChunk(chunk, (uint8_t)offset, line, column);
     } else {
-        writeChunk(chunk, OP_CONSTANT_LONG, line, column);
+        writeChunk(chunk, instrLong, line, column);
         // not only 1 but 3 bytes!
         writeChunk(chunk, (uint8_t)offset, line, column);
         writeChunk(chunk, (uint8_t)(offset >> 8), line, column);
         writeChunk(chunk, (uint8_t)(offset >> 16), line, column);
     }
+    return offset;
+}
+
+int writeConstant(Chunk* chunk, Value value, int line, int column) {
+    int offset = addConstant(chunk, value);
+    return writeConstantByOffset(chunk, OP_CONSTANT, OP_CONSTANT_LONG, offset, line, column);
 }

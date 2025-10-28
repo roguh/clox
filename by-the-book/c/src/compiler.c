@@ -113,14 +113,17 @@ static void emitBytes(uint8_t b1, uint8_t b2) {
     emitByte(b2);
 }
 
-static uint8_t makeConstant(Value value) {
+static int makeConstant(Value value) {
     int constant = addConstant(parser.thisChunk, value);
-    // TODO handle long_constant
-    return (uint8_t)constant;
+    return constant;
 }
 
-static void emitConstant(Value value) {
-    emitBytes(OP_CONSTANT, makeConstant(value));
+static int emitConstant(Value value) {
+    return writeConstant(currentChunk(), value, parser.previous.line, parser.previous.column);
+}
+
+static void defineVariable(int global) {
+    writeConstantByOffset(currentChunk(), OP_DEFINE_GLOBAL, OP_DEFINE_GLOBAL_LONG, global, parser.previous.line, parser.previous.column);
 }
 
 static void endCompiler(bool debugPrint) {
@@ -208,20 +211,78 @@ static void expression(void) {
     parsePrecedence(PREC_ASSIGNMENT);
 }
 
+static int identifierConstant(Token* name) {
+    return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
+}
+
+static int parseVariable(const char* errMessage) {
+    consume(TOKEN_IDENTIFIER, errMessage);
+    return identifierConstant(&parser.previous);
+}
+
+static void varDeclaration(void) {
+    int global = parseVariable("Expect variable name.");
+    if (match(TOKEN_EQUAL)) {
+        expression();
+    } else {
+        emitByte(OP_NIL);
+    }
+    consume(TOKEN_SEMICOLON, "Expect ';' after variable declaration");
+    defineVariable(global);
+}
+
 static void printStatement(void) {
     expression();
     consume(TOKEN_SEMICOLON, "Expect ';' after print.");
     emitByte(OP_PRINT);
 }
 
+static void expressionStatement(void) {
+    expression();
+    consume(TOKEN_SEMICOLON, "Expect ';' after print.");
+    emitByte(OP_POP);
+}
+
 static void statement(void) {
     if (match(TOKEN_PRINT)) {
         printStatement();
+    } else {
+        expressionStatement();
     }
 }
 
+static void synchronize(void) {
+    parser.panicMode = false;
+    while (parser.current.type != TOKEN_EOF) {
+        if (parser.previous.type == TOKEN_SEMICOLON) {
+            return;
+        }
+        switch (parser.current.type) {
+            case TOKEN_CLASS:
+            case TOKEN_FUN:
+            case TOKEN_VAR:
+            case TOKEN_FOR:
+            case TOKEN_IF:
+            case TOKEN_WHILE:
+            case TOKEN_PRINT:
+            case TOKEN_RETURN:
+                return;
+            default:
+                ;
+        }
+    }
+    advance();
+}
+
 static void declaration(void) {
-    statement();
+    if (match(TOKEN_VAR)) {
+        varDeclaration();
+    } else {
+        statement();
+    }
+    if (parser.panicMode) {
+        synchronize();
+    }
 }
 
 static void grouping(void) {
