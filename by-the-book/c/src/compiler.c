@@ -42,7 +42,20 @@ typedef struct {
     Precedence precedence;
 } ParseRule;
 
+typedef struct {
+    Token name;
+    int depth;
+} Local;
+
+typedef struct {
+    int localCount;
+    int scopeDepth;
+    int localsSize;
+    Local locals[];
+} Compiler;
+
 Parser parser;
+Compiler* current = NULL;
 
 static void errorAt(Token* token, const char* message) {
     if (parser.panicMode) {
@@ -120,6 +133,14 @@ static int makeConstant(Value value) {
 
 static int emitConstant(Value value) {
     return writeConstant(currentChunk(), value, parser.previous.line, parser.previous.column);
+}
+
+static void initCompiler(size_t size) {
+    Compiler* compiler = malloc(sizeof(Compiler) + sizeof(Local) * size);
+    compiler->localCount = 0;
+    compiler->scopeDepth = 0;
+    compiler->localsSize = size;
+    current = compiler;
 }
 
 static void defineVariable(int global) {
@@ -491,6 +512,7 @@ bool compile(const char* source, Chunk* chunk, bool debugPrint) {
     parser.panicMode = false;
     parser.thisChunk = chunk;
     initScanner(source);
+    initCompiler(256);
     advance();
     while (!match(TOKEN_EOF)) {
         declaration();
