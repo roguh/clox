@@ -210,3 +210,13 @@ InterpretResult interpret(const char* program) {
     freeChunk(&chunk);
     return result;
 }
+
+InterpretResult interpretStream(const char* program, Chunk* chunk) {
+    initChunk(chunk);
+    if (!compile(program, chunk, DEBUG_TRACE)) {
+        freeChunk(chunk);
+        return INTERPRET_COMPILE_ERROR;
+    }
+    InterpretResult result = interpretChunk(chunk);
+    return result;
+}

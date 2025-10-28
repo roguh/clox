@@ -28,6 +28,7 @@ void initVM(void);
 void freeVM(void);
 InterpretResult interpret(const char* string);
 InterpretResult interpretChunk(Chunk* chunk);
+InterpretResult interpretStream(const char* program, Chunk* chunk);
 void push(Value value);
 Value pop(void);
 
