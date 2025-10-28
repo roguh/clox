@@ -1,0 +1,6 @@
+var a = 12; print(a); a = 13; print(a);
+
+var breakfast = "beignets";
+var beverage = "covfefe";
+breakfast = breakfast + " with " + beverage;
+print(breakfast);

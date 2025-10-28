@@ -34,7 +34,7 @@ typedef enum {
     PREC_PRIMARY,
 } Precedence;
 
-typedef void (*ParseFn)(void);
+typedef void (*ParseFn)(bool canAssign);
 
 typedef struct {
     ParseFn prefix;
@@ -139,7 +139,7 @@ static void declaration(void);
 static ParseRule* getRule(TokenType type);
 static void parsePrecedence(Precedence prec);
 
-static void binary(void) {
+static void binary(bool canAssign) {
     TokenType opType = parser.previous.type;
     ParseRule* rule = getRule(opType);
     parsePrecedence((Precedence)(rule->precedence + 1));
@@ -285,12 +285,12 @@ static void declaration(void) {
     }
 }
 
-static void grouping(void) {
+static void grouping(bool canAssign) {
     expression();
     consume(TOKEN_RIGHT_PAREN, "Expect end ')' after expression.");
 }
 
-static void unary(void) {
+static void unary(bool canAssign) {
     TokenType opType = parser.previous.type;
     parsePrecedence(PREC_UNARY);
     switch (opType) {
@@ -356,7 +356,7 @@ static void unary(void) {
     }
 }
 
-static void literal(void) {
+static void literal(bool canAssign) {
     switch (parser.previous.type) {
         case TOKEN_FALSE: emitByte(OP_FALSE); break;
         case TOKEN_NIL: emitByte(OP_NIL); break;
@@ -366,31 +366,41 @@ static void literal(void) {
     }
 }
 
-static void string(void) {
+static void string(bool canAssign) {
     emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
 
-static void namedVariable(Token name) {
+static void namedVariable(Token name, bool canAssign) {
     int offset = identifierConstant(&name);
-    writeConstantByOffset(currentChunk(), OP_GET_GLOBAL, OP_GET_GLOBAL_LONG, offset, parser.previous.line, parser.previous.column);
+
+    OpCode instr, instrLong;
+    if (canAssign && match(TOKEN_EQUAL)) {
+        expression();
+        instr = OP_SET_GLOBAL;
+        instrLong = OP_SET_GLOBAL_LONG;
+    } else {
+        instr = OP_GET_GLOBAL;
+        instrLong = OP_GET_GLOBAL_LONG;
+    }
+    writeConstantByOffset(currentChunk(), instr, instrLong, offset, parser.previous.line, parser.previous.column);
     
 }
 
-static void variable(void) {
-    namedVariable(parser.previous);
+static void variable(bool canAssign) {
+    namedVariable(parser.previous, canAssign);
 }
 
-static void number(void) {
+static void number(bool canAssign) {
     double value = strtod(parser.previous.start, NULL);
     emitConstant(DOUBLE_VAL(value));
 }
 
-static void integer(void) {
+static void integer(bool canAssign) {
     int value = strtol(parser.previous.start, NULL, 10);
     emitConstant(INTEGER_VAL(value));
 }
 
-static void hexnumber(void) {
+static void hexnumber(bool canAssign) {
     int value = strtol(parser.previous.start, NULL, 16);
     emitConstant(INTEGER_VAL(value));
 }
@@ -462,12 +472,17 @@ static void parsePrecedence(Precedence precedence) {
         return;
     }
     // The first token is ALWAYS a prefix, these include values and parenthesis groupings
-    prefixRule();
+    bool canAssign = precedence <= PREC_ASSIGNMENT;
+    prefixRule(canAssign);
 
     while (precedence <= getRule(parser.current.type)->precedence) {
         advance();
         ParseFn infixRule = getRule(parser.previous.type)->infix;
-        infixRule();
+        infixRule(canAssign);
+    }
+
+    if (canAssign && match(TOKEN_EQUAL)) {
+        error("Invalid assignment target.");
     }
 }
 

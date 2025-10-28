@@ -146,13 +146,38 @@ static InterpretResult run(void) {
                 break;
             case OP_DEFINE_GLOBAL:
             case OP_DEFINE_GLOBAL_LONG: {
-                ObjString* name =  instruction == OP_DEFINE_GLOBAL ? READ_STRING() : READ_STRING_LONG();
+                ObjString* name; 
+                if (instruction == OP_DEFINE_GLOBAL) {
+                    name = READ_STRING();
+                } else {
+                    name = READ_STRING_LONG();
+                }
                 hashmap_add(&vm.globals, OBJ_VAL(name), pop());
+                break;
+            }
+            case OP_SET_GLOBAL_LONG:
+            case OP_SET_GLOBAL: {
+                ObjString* name; 
+                if (instruction == OP_SET_GLOBAL) {
+                    name = READ_STRING();
+                } else {
+                    name = READ_STRING_LONG();
+                }
+                // TODO peek(0) or pop()?
+                if (!hashmap_set(&vm.globals, OBJ_VAL(name), peek(0))) {
+                    runtimeError("Undefined variable '%s'.", name->chars);
+                    return INTERPRET_RUNTIME_ERROR;
+                }
                 break;
             }
             case OP_GET_GLOBAL_LONG:
             case OP_GET_GLOBAL: {
-                ObjString* name =  instruction == OP_GET_GLOBAL ? READ_STRING() : READ_STRING_LONG();
+                ObjString* name; 
+                if (instruction == OP_GET_GLOBAL) {
+                    name = READ_STRING();
+                } else {
+                    name = READ_STRING_LONG();
+                }
                 bool notFound = false;
                 Value value = hashmap_get(&vm.globals, OBJ_VAL(name), &notFound);
                 if (notFound) {

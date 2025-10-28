@@ -54,6 +54,10 @@ int disInstruction(Chunk* chunk, int offset) {
             return constantInstruction("OP_GET_GLOBAL", chunk, offset);
         case OP_GET_GLOBAL_LONG:
             return constantLongInstruction("OP_GET_GLOBAL_LONG", chunk, offset);
+        case OP_SET_GLOBAL:
+            return constantInstruction("OP_SET_GLOBAL", chunk, offset);
+        case OP_SET_GLOBAL_LONG:
+            return constantLongInstruction("OP_SET_GLOBAL_LONG", chunk, offset);
         case OP_NEG:
             return simpleInstruction("OP_NEG", offset);
         case OP_NOT:
