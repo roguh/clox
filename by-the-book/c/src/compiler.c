@@ -370,6 +370,16 @@ static void string(void) {
     emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
 
+static void namedVariable(Token name) {
+    int offset = identifierConstant(&name);
+    writeConstantByOffset(currentChunk(), OP_GET_GLOBAL, OP_GET_GLOBAL_LONG, offset, parser.previous.line, parser.previous.column);
+    
+}
+
+static void variable(void) {
+    namedVariable(parser.previous);
+}
+
 static void number(void) {
     double value = strtod(parser.previous.start, NULL);
     emitConstant(DOUBLE_VAL(value));
@@ -417,7 +427,7 @@ ParseRule rules[] = {
     [TOKEN_LESS_EQUAL]         = {NULL, binary, PREC_EQUALITY},
     [TOKEN_LEFT_SHIFT]         = {NULL, binary, PREC_SHIFT},
     [TOKEN_RIGHT_SHIFT]        = {NULL, binary, PREC_SHIFT},
-    [TOKEN_IDENTIFIER]         = {NULL, NULL, PREC_NONE},
+    [TOKEN_IDENTIFIER]         = {variable, NULL, PREC_NONE},
     [TOKEN_STRING]             = {string, NULL, PREC_NONE},
     [TOKEN_NUMBER]             = {number, NULL, PREC_NONE},
     [TOKEN_INTEGER]            = {integer, NULL, PREC_NONE},

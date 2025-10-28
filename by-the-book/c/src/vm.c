@@ -144,14 +144,22 @@ static InterpretResult run(void) {
                     pop();
                 }
                 break;
-            case OP_DEFINE_GLOBAL: {
-                ObjString* name =  READ_STRING();
-                hashmap_set(&vm.globals, OBJ_VAL(name), pop());
+            case OP_DEFINE_GLOBAL:
+            case OP_DEFINE_GLOBAL_LONG: {
+                ObjString* name =  instruction == OP_DEFINE_GLOBAL ? READ_STRING() : READ_STRING_LONG();
+                hashmap_add(&vm.globals, OBJ_VAL(name), pop());
                 break;
             }
-            case OP_DEFINE_GLOBAL_LONG: {
-                ObjString* name =  READ_STRING_LONG();
-                hashmap_set(&vm.globals, OBJ_VAL(name), pop());
+            case OP_GET_GLOBAL_LONG:
+            case OP_GET_GLOBAL: {
+                ObjString* name =  instruction == OP_GET_GLOBAL ? READ_STRING() : READ_STRING_LONG();
+                bool notFound = false;
+                Value value = hashmap_get(&vm.globals, OBJ_VAL(name), &notFound);
+                if (notFound) {
+                    runtimeError("Undefined variable '%s'.", name->chars);
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                push(value);
                 break;
             }
             case OP_EQUAL: {
@@ -225,7 +233,6 @@ InterpretResult interpret(const char* program) {
 }
 
 InterpretResult interpretStream(const char* program, Chunk* chunk) {
-    initChunk(chunk);
     if (!compile(program, chunk, DEBUG_TRACE)) {
         freeChunk(chunk);
         return INTERPRET_COMPILE_ERROR;

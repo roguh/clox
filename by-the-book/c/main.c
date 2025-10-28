@@ -14,14 +14,16 @@ static void repl(void) {
     Chunk chunks[1024] = {0};
     char line[1<<20] = {0};
     initVM();
+    initChunk(&chunks[0]);
     while (true) {
         printf("> ");
         if (!fgets(line, sizeof(line), stdin)) {
             printf("\n");;
             break;
         }
-        interpretStream(line, &chunks[chunk++]);
+        interpretStream(line, &chunks[chunk]);
     }
+    chunk = 1;
     for (int i = 0; i < chunk; i++) {
         freeChunk(&chunks[i]);
     }
