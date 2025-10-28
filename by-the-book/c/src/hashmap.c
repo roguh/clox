@@ -28,7 +28,7 @@ size_t hashAny(Value val) {
         case VAL_DOUBLE: return hashInt(AS_INTEGER(val));
         case VAL_INT: return hashInt(AS_INTEGER(val));
         case VAL_BOOL: return hashInt(AS_INTEGER(val));
-        case VAL_OBJ: return hashString(AS_CSTRING(val), STRING_LENGTH(val));
+        case VAL_OBJ: return AS_STRING(val)->hash;
     }
     return (size_t)0; // unreachable thanks to -Werror=switch
 }

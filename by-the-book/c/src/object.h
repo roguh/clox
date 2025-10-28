@@ -24,8 +24,8 @@ struct Obj {
 struct ObjString {
     Obj obj;
     size_t length;
-    char* chars;
     size_t hash;
+    char chars[];
 };
 
 static inline bool isObjType(Value value, ObjType type) {
@@ -34,5 +34,6 @@ static inline bool isObjType(Value value, ObjType type) {
 
 ObjString* copyString(const char* chars, size_t length);
 ObjString* allocateString(char* chars, size_t length, size_t hash);
+void freeObject(Obj* obj);
 
 #endif

@@ -15,9 +15,6 @@ static Obj* allocateObj(size_t size, ObjType type) {
     return object;
 }
 
-#define ALLOCATE_OBJ(type, objectType) \
-    (type*)allocateObj(sizeof(type), objectType)
-
 // takeString is allocateString
 ObjString* allocateString(char* chars, size_t length, size_t hash) {
     ObjString* interned = hashmap_get_str(&vm.strings, chars, length, hash);
@@ -25,10 +22,13 @@ ObjString* allocateString(char* chars, size_t length, size_t hash) {
         FREE_ARRAY(char, chars, length + 1);
         return interned;
     }
-    ObjString* string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
+    ObjString* string = (ObjString*)allocateObj(sizeof(ObjString) + sizeof(char) * (length + 1), OBJ_STRING);
     string->length = length;
-    string->chars = chars;
     string->hash = hash;
+    memcpy(string->chars, chars, length);
+    FREE_ARRAY(char, chars, length + 1); // TODO inefficient ugh
+    // Turn the chars into a C-string
+    string->chars[length] = '\0';
     hashmap_add(&vm.strings, OBJ_VAL(string), NIL_VAL);
     return string;
 }
@@ -39,9 +39,23 @@ ObjString* copyString(const char* chars, size_t length) {
     if (interned) {
         return interned;
     }
-    char* heapChars = ALLOCATE(char, length + 1);
-    memcpy(heapChars, chars, length);
+    ObjString* string = (ObjString*)allocateObj(sizeof(ObjString) + sizeof(char) * (length + 1), OBJ_STRING);
+    string->length = length;
+    string->hash = hash;
+    memcpy(string->chars, chars, length);
     // Turn the chars into a C-string
-    heapChars[length] = '\0';
-    return allocateString(heapChars, length, hash);
+    string->chars[length] = '\0';
+    hashmap_add(&vm.strings, OBJ_VAL(string), NIL_VAL);
+    return string;
 }
+
+void freeObject(Obj* obj) {
+    switch (obj->type) {
+        case OBJ_STRING: {
+            ObjString* string = (ObjString*)obj;
+            free(string);
+            break;
+        }
+    }
+}
+
