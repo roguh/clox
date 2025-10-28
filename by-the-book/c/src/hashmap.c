@@ -23,14 +23,18 @@ size_t hashInt(unsigned int elem) {
 }
 
 size_t hashAny(Value val) {
-    switch (val.type) {
+    switch (val.type) { // Exhaustive!
         case VAL_NIL: return hashInt(0);
         case VAL_DOUBLE: return hashInt(AS_INTEGER(val));
         case VAL_INT: return hashInt(AS_INTEGER(val));
         case VAL_BOOL: return hashInt(AS_INTEGER(val));
-        case VAL_OBJ: return AS_STRING(val)->hash;
+        case VAL_OBJ: {
+            switch (AS_OBJ(val)->type) {
+                case OBJ_STRING: return AS_STRING(val)->hash;
+            }
+        }
     }
-    return (size_t)0; // unreachable thanks to -Werror=switch
+    return (size_t)0; // unreachable
 }
 
 /**

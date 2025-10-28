@@ -25,16 +25,8 @@ void writeValues(Values* values, Value value) {
     values->count++;
 }
 
-static const char* objectType(ObjType ty) {
-    switch (ty) {
-        case OBJ_STRING: return "OBJ_STRING";
-    }
-    return "unknown";
-}
-
 void printValue(Value value) {
-    switch (value.type) {
-        // Exhaustive!
+    switch (value.type) { // Exhaustive
         case VAL_NIL: printf("nil"); break;
         case VAL_DOUBLE: printf("%.16lg", AS_DOUBLE(value)); break;
         case VAL_INT: printf("%d", AS_INTEGER(value)); break;
@@ -63,7 +55,7 @@ bool valuesEqual(Value a, Value b) {
     if (a.type != b.type) {
         return false;
     }
-    switch (a.type) {
+    switch (a.type) { // Exhaustive
         case VAL_NIL: return a.type == b.type;
         case VAL_INT: return AS_INTEGER(a) == AS_INTEGER(b);
         case VAL_DOUBLE: return AS_DOUBLE(a) == AS_DOUBLE(b);

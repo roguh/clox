@@ -8,7 +8,6 @@
 #include "compiler.h"
 #include "object.h"
 #include "memory.h"
-#include "hashmap.h"
 #include "value.h"
 #include "vm.h"
 
@@ -82,8 +81,8 @@ static void concatenate(void) {
     memcpy(chars, a->chars, a->length);
     memcpy(chars + a->length, b->chars, b->length);
     chars[length] = '\0';
-    size_t hash = hashString(chars, length);
-    ObjString* result = allocateString(chars, length, hash);
+    ObjString* result = copyString(chars, length);
+    free(chars);
     push(OBJ_VAL(result));
 }
 
@@ -127,8 +126,7 @@ static InterpretResult run(void) {
             disInstruction(vm.chunk, vm.ip);
         }
         OpCode instruction;
-        // This switch is exhaustive!
-        switch (instruction = READ_BYTE()) {
+        switch (instruction = READ_BYTE()) { // This switch is exhaustive!
             case OP_RETURN: {
                 if (size()) {
                     printValue(pop());

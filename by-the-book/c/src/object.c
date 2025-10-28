@@ -15,24 +15,6 @@ static Obj* allocateObj(size_t size, ObjType type) {
     return object;
 }
 
-// takeString is allocateString
-ObjString* allocateString(char* chars, size_t length, size_t hash) {
-    ObjString* interned = hashmap_get_str(&vm.strings, chars, length, hash);
-    if (interned) {
-        FREE_ARRAY(char, chars, length + 1);
-        return interned;
-    }
-    ObjString* string = (ObjString*)allocateObj(sizeof(ObjString) + sizeof(char) * (length + 1), OBJ_STRING);
-    string->length = length;
-    string->hash = hash;
-    memcpy(string->chars, chars, length);
-    FREE_ARRAY(char, chars, length + 1); // TODO inefficient ugh
-    // Turn the chars into a C-string
-    string->chars[length] = '\0';
-    hashmap_add(&vm.strings, OBJ_VAL(string), NIL_VAL);
-    return string;
-}
-    
 ObjString* copyString(const char* chars, size_t length) {
     size_t hash = hashString(chars, length);
     ObjString* interned = hashmap_get_str(&vm.strings, chars, length, hash);
