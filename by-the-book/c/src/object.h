@@ -39,7 +39,7 @@ struct ObjArray {
     Obj obj;
     size_t length;
     size_t capacity;
-    Value values[];
+    Value* values;
 };
 
 static inline bool isObjType(Value value, ObjType type) {
@@ -50,8 +50,8 @@ ObjString* copyString(const char* chars, size_t length);
 ObjString* allocateString(char* chars, size_t length, size_t hash);
 
 ObjArray* allocateArray(size_t capacity);
-ObjArray* reallocArray(ObjArray* array, size_t capacity);
-ObjArray* insertArray(ObjArray* array, int index, Value value); // might grow array, return old value or (nil?)
+void reallocArray(ObjArray* array, size_t capacity);
+void insertArray(ObjArray* array, int index, Value value); // might grow array, return old value or (nil?)
 Value getArray(ObjArray* array, int index); // bounds check!!!
 Value removeArray(ObjArray* array, int index); // shift values, might shrink array, return old value or (nil?)
 

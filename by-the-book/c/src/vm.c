@@ -280,8 +280,7 @@ static InterpretResult run(void) {
                         return INTERPRET_RUNTIME_ERROR;
                     }
                     push(OBJ_VAL(copyString(&string->chars[i], 1)));
-                }
-                 else {
+                } else {
                     runtimeError("Indexing into a non-array, non-string, non-hashmap value");
                     return INTERPRET_RUNTIME_ERROR;
                 }
@@ -362,6 +361,7 @@ InterpretResult compileAndPrint(const char* string) {
     }
     disChunk(&chunk, "compileAndPrint");
     freeChunk(&chunk);
+    freeVM();
     return INTERPRET_OK;
 }
 

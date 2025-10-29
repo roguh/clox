@@ -38,37 +38,38 @@ ObjHashmap* allocateHashmap(size_t capacity) {
 }
 
 ObjArray* allocateArray(size_t capacity) {
-    ObjArray* array = (ObjArray*)allocateObj(sizeof(ObjArray) + sizeof(Value) * capacity, OBJ_ARRAY);
+    ObjArray* array = (ObjArray*)allocateObj(sizeof(ObjArray), OBJ_ARRAY);
     array->capacity = capacity;
     array->length = 0;
+    array->values = (Value*)calloc(capacity, sizeof(Value));
     return array;
 }
-ObjArray* reallocArray(ObjArray* array, size_t capacity) {
+void reallocArray(ObjArray* array, size_t capacity) {
     if (capacity == array->capacity) {
-        return array;
+        return;
     }
-    ObjArray* new_array = realloc(array, sizeof(ObjArray) + sizeof(Value) * capacity);
-    if (new_array == NULL) {
+    array->values = realloc(array->values, sizeof(Value) * capacity);
+    if (array->values == NULL) {
         fprintf(stderr, "Failed to reallocate array\n");
         exit(1);
     }
-    new_array->capacity = capacity;
-    return new_array;
+    array->capacity = capacity;
+    return;
 }
-ObjArray* insertArray(ObjArray* array, int index, Value value) {
+void insertArray(ObjArray* array, int index, Value value) {
     if (index < 0) {
         index = array->length + index;
     }
     if (index > array->length) {
-        return array;
+        return;
     }
     if (array->length + 1 == array->capacity) {
-        array = reallocArray(array, array->capacity * 2);
-        array->capacity *= 2;
+        ERR_PRINT("REALLOC FROM %u to %u\n", array->capacity, array->capacity * 2);
+        reallocArray(array, array->capacity * 2);
     }
     array->values[index] = value;
     array->length++;
-    return array;
+    return;
 }
 Value getArray(ObjArray* array, int index) {
     if (index < 0) {
@@ -90,6 +91,7 @@ void freeObject(Obj* obj) {
         }
         case OBJ_ARRAY: {
             ObjArray* array = (ObjArray*)obj;
+            free(array->values);
             free(array);
             break;
         }
