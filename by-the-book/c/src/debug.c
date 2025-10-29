@@ -10,6 +10,18 @@ void disChunk(Chunk* chunk, const char* name) {
     }
 }
 
+static int constantByteInstruction(const char* name, Chunk* chunk, int offset) {
+    uint8_t slot = chunk->code[offset + 1];
+    printf("%-16s %4d (local)\n", name, slot);
+    return offset + 2;
+}
+
+static int constantLongByteInstruction(const char* name, Chunk* chunk, int offset) {
+    int slot = chunk->code[offset + 1] | chunk->code[offset + 2] << 8 | chunk->code[offset + 3] << 16;
+    printf("%-16s %4d (local)\n", name, slot);
+    return offset + 4;
+}
+
 static int constantInstruction(const char* name, Chunk* chunk, int offset) {
     uint8_t addr = chunk->code[offset + 1];
     printf("%-16s %4d '", name, addr);
@@ -58,6 +70,14 @@ int disInstruction(Chunk* chunk, int offset) {
             return constantInstruction("OP_SET_GLOBAL", chunk, offset);
         case OP_SET_GLOBAL_LONG:
             return constantLongInstruction("OP_SET_GLOBAL_LONG", chunk, offset);
+        case OP_GET_LOCAL:
+            return constantByteInstruction("OP_GET_LOCAL", chunk, offset);
+        case OP_GET_LOCAL_LONG:
+            return constantLongByteInstruction("OP_GET_LOCAL_LONG", chunk, offset);
+        case OP_SET_LOCAL:
+            return constantByteInstruction("OP_SET_LOCAL", chunk, offset);
+        case OP_SET_LOCAL_LONG:
+            return constantLongByteInstruction("OP_SET_LOCAL_LONG", chunk, offset);
         case OP_NEG:
             return simpleInstruction("OP_NEG", offset);
         case OP_NOT:

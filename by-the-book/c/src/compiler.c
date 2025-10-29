@@ -274,7 +274,7 @@ static void addLocal(Token name) {
     local->name = name;
     local->depth = current->scopeDepth;
     // TODO realloc if too many locals
-    if (current->localCount == 255) {
+    if (current->localCount == 1024) {
         error("Too many local variables.");
         return ;
     }
@@ -463,20 +463,45 @@ static void string(bool canAssign) {
     emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
 
+static int resolveLocal(Compiler* compiler, Token* name) {
+    for (int i = compiler->localCount - 1; i >= 0; i--) {
+        Local local = compiler->locals[i];
+        if (identifiersEqual(name, &local.name)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 static void namedVariable(Token name, bool canAssign) {
-    int offset = identifierConstant(&name);
+    int offset = resolveLocal(current, &name);
 
     OpCode instr, instrLong;
     if (canAssign && match(TOKEN_EQUAL)) {
         expression();
-        instr = OP_SET_GLOBAL;
-        instrLong = OP_SET_GLOBAL_LONG;
+        if (offset != -1) {
+            // Local variables
+            instr = OP_SET_LOCAL;
+            instrLong = OP_SET_LOCAL_LONG;
+        } else {
+            // Global variables
+            offset = identifierConstant(&name);
+            instr = OP_SET_GLOBAL;
+            instrLong = OP_SET_GLOBAL_LONG;
+        }
     } else {
-        instr = OP_GET_GLOBAL;
-        instrLong = OP_GET_GLOBAL_LONG;
+        if (offset != -1) {
+            // Local variables
+            instr = OP_GET_LOCAL;
+            instrLong = OP_GET_LOCAL_LONG;
+        } else {
+            // Global variables
+            offset = identifierConstant(&name);
+            instr = OP_GET_GLOBAL;
+            instrLong = OP_GET_GLOBAL_LONG;
+        }
     }
     writeConstantByOffset(currentChunk(), instr, instrLong, offset, parser.previous.line, parser.previous.column);
-    
 }
 
 static void variable(bool canAssign) {
@@ -584,7 +609,7 @@ bool compile(const char* source, Chunk* chunk, bool debugPrint) {
     parser.panicMode = false;
     parser.thisChunk = chunk;
     initScanner(source);
-    initCompiler(256);
+    initCompiler(1024);
     advance();
     while (!match(TOKEN_EOF)) {
         declaration();

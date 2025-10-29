@@ -93,7 +93,8 @@ static InterpretResult run(void) {
 #define READ_BYTE() (vm.chunk->code[vm.ip++])
 
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
-#define READ_CONSTANT_LONG() (vm.chunk->constants.values[READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16])
+#define READ_24BITS() (READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16)
+#define READ_CONSTANT_LONG() (vm.chunk->constants.values[READ_24BITS()])
 #define READ_STRING() AS_STRING(READ_CONSTANT())
 #define READ_STRING_LONG() AS_STRING(READ_CONSTANT_LONG())
 
@@ -146,24 +147,13 @@ static InterpretResult run(void) {
                 break;
             case OP_DEFINE_GLOBAL:
             case OP_DEFINE_GLOBAL_LONG: {
-                ObjString* name; 
-                if (instruction == OP_DEFINE_GLOBAL) {
-                    name = READ_STRING();
-                } else {
-                    name = READ_STRING_LONG();
-                }
+                ObjString* name = (instruction == OP_DEFINE_GLOBAL) ? READ_STRING() : READ_STRING_LONG();
                 hashmap_add(&vm.globals, OBJ_VAL(name), pop());
                 break;
             }
             case OP_SET_GLOBAL_LONG:
             case OP_SET_GLOBAL: {
-                ObjString* name; 
-                if (instruction == OP_SET_GLOBAL) {
-                    name = READ_STRING();
-                } else {
-                    name = READ_STRING_LONG();
-                }
-                // TODO peek(0) or pop()?
+                ObjString* name = (instruction == OP_SET_GLOBAL) ? READ_STRING() : READ_STRING_LONG();
                 if (!hashmap_set(&vm.globals, OBJ_VAL(name), peek(0))) {
                     runtimeError("Undefined variable '%s'.", name->chars);
                     return INTERPRET_RUNTIME_ERROR;
@@ -172,12 +162,7 @@ static InterpretResult run(void) {
             }
             case OP_GET_GLOBAL_LONG:
             case OP_GET_GLOBAL: {
-                ObjString* name; 
-                if (instruction == OP_GET_GLOBAL) {
-                    name = READ_STRING();
-                } else {
-                    name = READ_STRING_LONG();
-                }
+                ObjString* name = (instruction == OP_GET_GLOBAL) ? READ_STRING() : READ_STRING_LONG();
                 bool notFound = false;
                 Value value = hashmap_get(&vm.globals, OBJ_VAL(name), &notFound);
                 if (notFound) {
@@ -185,6 +170,18 @@ static InterpretResult run(void) {
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 push(value);
+                break;
+            }
+            case OP_SET_LOCAL_LONG:
+            case OP_SET_LOCAL: {
+                int slot = (instruction == OP_SET_LOCAL) ? READ_BYTE() : READ_24BITS();
+                vm.stack[slot] = peek(0);
+                break;
+            }
+            case OP_GET_LOCAL_LONG:
+            case OP_GET_LOCAL: {
+                int slot = (instruction == OP_GET_LOCAL) ? READ_BYTE() : READ_24BITS();
+                push(vm.stack[slot]);
                 break;
             }
             case OP_EQUAL: {
