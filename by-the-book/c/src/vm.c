@@ -209,6 +209,33 @@ static InterpretResult run(void) {
                 }
                 break;
             }
+            case OP_INIT_ARRAY: {
+                ObjArray* array = allocateArray(8);
+                push(OBJ_VAL(array));
+                break;
+            }
+            case OP_INSERT_ARRAY: {
+                Value value = pop();
+                ObjArray* array = AS_ARRAY(peek(0));
+                insertArray(array, array->length, value);
+                break;
+            }
+            case OP_SUBSCRIPT: {
+                Value index = pop();
+                ObjArray* array = AS_ARRAY(peek(0));
+                // TODO implement slices (absolutely scrumptious!)
+                if (!IS_INTEGER(index)) {
+                    runtimeError("Array index must be an integer");
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                int i = AS_INTEGER(index);
+                if (i < 0 || i >= array->length) {
+                    runtimeError("Array index out of bounds");
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                push(array->values[i]);
+                break;
+            }
             case OP_CONSTANT: push(READ_CONSTANT()); break;
             case OP_CONSTANT_LONG: push(READ_CONSTANT_LONG()); break;
             case OP_NEG: push(DOUBLE_VAL(-pop_double())); break;

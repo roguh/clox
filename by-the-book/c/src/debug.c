@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "debug.h"
+#include "chunk.h"
 #include "value.h"
 
 void disChunk(Chunk* chunk, const char* name) {
@@ -136,6 +137,12 @@ int disInstruction(Chunk* chunk, int offset) {
             return simpleInstruction("OP_NIL", offset);
         case OP_TRUE:
             return simpleInstruction("OP_TRUE", offset);
+        case OP_INIT_ARRAY:
+            return simpleInstruction("OP_INIT_ARRAY", offset);
+        case OP_SUBSCRIPT:
+            return simpleInstruction("OP_SUBSCRIPT", offset);
+        case OP_INSERT_ARRAY:
+            return simpleInstruction("OP_INSERT_ARRAY", offset);
         case OP_INVALID:
             return simpleInstruction("OP_INVALID", offset);
     }

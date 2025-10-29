@@ -5,11 +5,14 @@
 #include "value.h"
 
 #define OBJ_TYPE(value) (AS_OBJ(value)->type)
+
 #define IS_STRING(value) isObjType(value, OBJ_STRING)
 #define AS_STRING(value) ((ObjString*)AS_OBJ(value))
-#define AS_CSTRING(value) (((ObjString*)AS_OBJ(value))->chars)
-#define STRING_LENGTH(value) (((ObjString*)AS_OBJ(value))->length)
-#define ARRAY_LENGTH(value) (((ObjArray*)AS_OBJ(value))->length)
+#define AS_CSTRING(value) (AS_STRING(value)->chars)
+#define STRING_LENGTH(value) (AS_STRING(value)->length)
+
+#define AS_ARRAY(value) (((ObjArray*)AS_OBJ(value)))
+#define ARRAY_LENGTH(value) (AS_ARRAY(value)->length)
 
 typedef enum {
     OBJ_STRING,
@@ -47,9 +50,9 @@ ObjString* allocateString(char* chars, size_t length, size_t hash);
 
 ObjArray* allocateArray(size_t capacity);
 ObjArray* reallocArray(ObjArray* array, size_t capacity);
-Value insertArray(ObjArray* array, size_t index, Value value); // might grow array, return old value or (nil?)
-Value removeArray(ObjArray* array, size_t index); // shift values, might shrink array, return old value or (nil?)
-Value getArray(ObjArray* array, size_t i); // bounds check!!!
+ObjArray* insertArray(ObjArray* array, int index, Value value); // might grow array, return old value or (nil?)
+Value getArray(ObjArray* array, int index); // bounds check!!!
+Value removeArray(ObjArray* array, int index); // shift values, might shrink array, return old value or (nil?)
 
 void freeObject(Obj* obj);
 

@@ -249,8 +249,11 @@ static void binary(bool canAssign) {
         case TOKEN_RIGHT_PAREN:
         case TOKEN_LEFT_BRACE:
         case TOKEN_RIGHT_BRACE:
+        case TOKEN_LEFT_SQUARE_BRACE: {
+            consume(TOKEN_RIGHT_SQUARE_BRACE, "Expect ']' after array subscript.");
+            emitByte(OP_SUBSCRIPT);
+        }
         case TOKEN_RIGHT_SQUARE_BRACE:
-        case TOKEN_LEFT_SQUARE_BRACE:
         case TOKEN_COMMA:
         case TOKEN_DOT:
         case TOKEN_SEMICOLON:
@@ -658,14 +661,31 @@ static void or_(bool canAssign) {
     patchJump(endJump);
 }
 
+static void array(bool canAssign) {
+    // Array literal
+    emitByte(OP_INIT_ARRAY); // TODO support more than 1 array
+    while (!(check(TOKEN_RIGHT_SQUARE_BRACE) && !check(TOKEN_EOF))) {
+        expression();
+        if (!check(TOKEN_RIGHT_SQUARE_BRACE)) {
+            consume(TOKEN_COMMA, "Expect ',' after variable declaration");
+        } else {
+            // Optional comma at end of list
+            match(TOKEN_COMMA);
+        }
+        emitByte(OP_INSERT_ARRAY);
+    }
+    consume(TOKEN_RIGHT_SQUARE_BRACE, "Expect ']' at end of array.");
+}
+
+
 ParseRule rules[] = {
     // TODO exhaustive
     [TOKEN_LEFT_PAREN]         = {grouping, NULL, PREC_NONE},
     [TOKEN_RIGHT_PAREN]        = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE]         = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE]        = {NULL, NULL, PREC_NONE},
+    [TOKEN_LEFT_SQUARE_BRACE]  = {array, binary, PREC_CALL},
     [TOKEN_RIGHT_SQUARE_BRACE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LEFT_SQUARE_BRACE]  = {NULL, NULL, PREC_NONE},
     [TOKEN_COMMA]              = {NULL, NULL, PREC_NONE},
     [TOKEN_DOT]                = {NULL, NULL, PREC_NONE},
     [TOKEN_MINUS]              = {unary, binary, PREC_TERM},

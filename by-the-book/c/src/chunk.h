@@ -32,6 +32,10 @@ typedef enum {
     OP_NIL,
     OP_TRUE,
     OP_FALSE,
+    // Arrays
+    OP_INIT_ARRAY,
+    OP_SUBSCRIPT,
+    OP_INSERT_ARRAY,
     // Arithmetic
     OP_NEG,
     OP_ADD,

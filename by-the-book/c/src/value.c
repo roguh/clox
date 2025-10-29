@@ -31,7 +31,30 @@ void printValue(Value value) {
         case VAL_DOUBLE: printf("%.16lg", AS_DOUBLE(value)); break;
         case VAL_INT: printf("%d", AS_INTEGER(value)); break;
         case VAL_BOOL: printf("%s", AS_BOOL(value) ? "true" : "false"); break;
-        case VAL_OBJ: printf("%s", AS_CSTRING(value)); break;
+        case VAL_OBJ: {
+            switch (AS_OBJ(value)->type) {
+                case OBJ_STRING:
+                    printf("%s", AS_CSTRING(value)); break;
+                case OBJ_ARRAY:
+                    printf("[");
+                    for (int i = 0; i < AS_ARRAY(value)->length; i++) {
+                        printValue(AS_ARRAY(value)->values[i]);
+                        if (i < AS_ARRAY(value)->length - 1) {
+                            printf(", ");
+                        }
+                    }
+                    printf("]");
+                    break;
+                case OBJ_HASHMAP:
+                    printf("{");
+                    // TODO hashmap_iterator()
+                    printf("}");
+                    break;
+                default:
+                    printf("<unknown object>");
+                    break;
+            }
+        }
     }
 }
 
@@ -68,4 +91,3 @@ bool valuesEqual(Value a, Value b) {
     }
     return false;
 }
-
