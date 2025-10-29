@@ -340,7 +340,7 @@ static InterpretResult run(void) {
                     runtimeErrorLog("Ignoring division by zero! Returning infinity.");
                     pop();
                     pop();
-                    push(DOUBLE_VAL(1e1000));
+                    push(DOUBLE_VAL(INFINITY));
                     break;
                 }
                 BIN_OP(/, DOUBLE_VAL, INTEGER_VAL);
@@ -356,6 +356,8 @@ static InterpretResult run(void) {
             case OP_NIL: push(NIL_VAL); break;
             case OP_FALSE: push(BOOL_VAL(false)); break;
             case OP_TRUE: push(BOOL_VAL(true)); break;
+            case OP_INF: push(DOUBLE_VAL(INFINITY)); break;
+            case OP_NAN: push(DOUBLE_VAL(NAN)); break;
         }
     }
 }

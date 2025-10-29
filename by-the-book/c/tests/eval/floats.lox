@@ -1,0 +1,15 @@
+// Standard values
+print([0.0, 1.0, -1.0, 3.141592653589793, -12345.6789,]);
+print([1.2345678901234567e+20, -9.876543210987654e-15,]);
+
+// Edge cases
+print([0.0, -0.0,]);
+print([Infinity, -Infinity, NaN,]); // Or inf, -inf, nan depending on implementation
+print([inf, -inf, nan,]); // Or inf, -inf, nan depending on implementation
+
+print(1.7976931348623157e+308); // Max double value
+print(-1.7976931348623157e+308); // Min double value
+print(4.9e-324); // Smallest positive subnormal number
+
+// Formatting variations
+print([007.12, 123.00, 1.2e+05, 1.2E-03,]);

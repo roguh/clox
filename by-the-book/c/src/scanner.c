@@ -113,8 +113,6 @@ static TokenType identifierType(void) {
     case 'a': return checkKeyword(1, 2, "nd", TOKEN_AND);
     case 'c': return checkKeyword(1, 4, "lass", TOKEN_CLASS);
     case 'e': return checkKeyword(1, 3, "lse", TOKEN_ELSE);
-    case 'i': return checkKeyword(1, 1, "f", TOKEN_IF);
-    case 'n': return checkKeyword(1, 2, "il", TOKEN_NIL);
     case 'o': return checkKeyword(1, 1, "r", TOKEN_OR);
     case 'p': return checkKeyword(1, 4, "rint", TOKEN_PRINT);
     case 'r': return checkKeyword(1, 5, "eturn", TOKEN_RETURN);
@@ -122,6 +120,26 @@ static TokenType identifierType(void) {
     case 'v': return checkKeyword(1, 2, "ar", TOKEN_VAR);
     case 'w': return checkKeyword(1, 4, "hile", TOKEN_WHILE);
 
+    // Keywords starting with i: Infinity inf if
+    case 'I': return checkKeyword(1, 7, "nfinity", TOKEN_INF);
+    case 'i':
+        if (scanner.current - scanner.start > 1) {
+            switch(scanner.start[1]) {
+                case 'f': return TOKEN_IF;
+                case 'n': return checkKeyword(2, 1, "f", TOKEN_INF);
+            }
+        }
+        break;
+    // Keywords starting with n: nil nan NaN
+    case 'N': return checkKeyword(1, 2, "aN", TOKEN_NAN);
+    case 'n':
+        if (scanner.current - scanner.start > 1) {
+            switch(scanner.start[1]) {
+                case 'i': return checkKeyword(2, 1, "l", TOKEN_NIL);
+                case 'a': return checkKeyword(2, 1, "n", TOKEN_NAN);
+            }
+        }
+        break;
     // Keywords starting with f: false for fun
     case 'f':
         // A token of length > 1
@@ -169,13 +187,29 @@ static Token number(void) {
     while (isDigit(peek(), false)) {
         advance();
     }
+    /*
+      From JSON RFC 8259 (December 2017)
+
+      number = [ minus ] int [ frac ] [ exp ]
+      decimal-point = %x2E       ; .
+      digit1-9 = %x31-39         ; 1-9
+      e = %x65 / %x45            ; e E
+      exp = e [ minus / plus ] 1*DIGIT
+      frac = decimal-point 1*DIGIT
+      int = zero / ( digit1-9 *DIGIT )
+      minus = %x2D               ; -
+      plus = %x2B                ; +
+      zero = %x30                ; 0
+    */
     if (peek() == 'e' || peek() == 'E' || peek() == '-' || peek() == '.') {
+        // Float fractional part
         hasDigit = true;
         advance();
         while (isDigit(peek(), false)
             || ((peek() == 'e' || peek() == 'E') && (peekNext() == '-' || peekNext() == '+' || isDigit(peekNext(), false)))
             || ((peek() == '-' || peek() == '+') && isDigit(peekNext(), false))
             ) {
+            // Float exponent part
             advance();
         }
     }

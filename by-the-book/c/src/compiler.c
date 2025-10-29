@@ -245,6 +245,8 @@ static void binary(bool canAssign) {
 
         case TOKEN_EQUAL:
         case TOKEN_COLON:
+        case TOKEN_NAN:
+        case TOKEN_INF:
 
         case TOKEN_LEFT_PAREN:
         case TOKEN_RIGHT_PAREN:
@@ -511,6 +513,8 @@ static void unary(bool canAssign) {
         case TOKEN_BITNEG: emitByte(OP_BITNEG); break;
         case TOKEN_BANG: emitByte(OP_NOT); break;
 
+        case TOKEN_NAN:
+        case TOKEN_INF:
         case TOKEN_PRINT:
         case TOKEN_COLON:
         case TOKEN_LEFT_PAREN:
@@ -573,6 +577,8 @@ static void literal(bool canAssign) {
         case TOKEN_FALSE: emitByte(OP_FALSE); break;
         case TOKEN_NIL: emitByte(OP_NIL); break;
         case TOKEN_TRUE: emitByte(OP_TRUE); break;
+        case TOKEN_NAN: emitByte(OP_NAN); break;
+        case TOKEN_INF: emitByte(OP_INF); break;
         default:
             return;
     }
@@ -699,6 +705,8 @@ static void hashmap(bool canAssign) {
 
 ParseRule rules[] = {
     // TODO exhaustive
+    [TOKEN_NAN]                = {literal, NULL, PREC_NONE},
+    [TOKEN_INF]                = {literal, NULL, PREC_NONE},
     [TOKEN_COLON]              = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_PAREN]         = {grouping, NULL, PREC_NONE},
     [TOKEN_RIGHT_PAREN]        = {NULL, NULL, PREC_NONE},

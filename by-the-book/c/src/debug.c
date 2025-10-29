@@ -137,6 +137,10 @@ int disInstruction(Chunk* chunk, int offset) {
             return simpleInstruction("OP_NIL", offset);
         case OP_TRUE:
             return simpleInstruction("OP_TRUE", offset);
+        case OP_NAN:
+            return simpleInstruction("OP_NAN", offset);
+        case OP_INF:
+            return simpleInstruction("OP_INF", offset);
         case OP_INIT_ARRAY:
             return simpleInstruction("OP_INIT_ARRAY", offset);
         case OP_INSERT_ARRAY:

@@ -12,10 +12,11 @@ identifier = ('identifier', raw, lambda: random.choice(string.ascii_letters + '_
 
 numbers = [
 
+('nan float', float, lambda: random.choice([float('inf'), float('nan'), float('inf')])),
 ('0.0-1.0', float, lambda: random.random()),
 # TODO support sci
 # ('0.0-1e250', float, lambda: 1e250 * random.random()),
-('0.0-1e10', float, lambda: 1e10 * random.random()),
+('-1e10-1e10', float, lambda: 2e10 * random.random() - 1e10),
 
 ('0-1000', int, lambda: random.randint(0, 1000)),
 ('-1000-1000', int, lambda: random.randint(-1000, 1000)),
