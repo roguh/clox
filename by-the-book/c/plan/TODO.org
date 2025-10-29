@@ -1,0 +1,23 @@
+* lox extensions
+** integers
+** arrays
+** hashmaps
+** line, col debug info
+** TODO nicer for-loops
+at least copy lua
+* implement lambda solver
+** implement bigints
+** bind to libgmp, add extern-c support; COMPARE with hand-rolled bigint implementation
+** competitive solutions (beat the print(value) crowd)
+* transgirl's transpiler
+the only goal is to get big point on code.golf
+** compile to Python, Lua, other similar languages, Berry, Go, unholy Rust, C, code.golf x86
+** write C compiler yasssssssss
+** implement some codegolf in lox, run locally, run against ALL HOLES and make sure each output language has good quality
+    config: hasNativeBigInt, use X algorithm here/there, hasNativeHashmaps
+* implement a byte compression algorithm in lox
+* code quality
+`-Werror=switch` is so dope
+** DONE add tests against .lox code files
+** add C linters, analyzers, the whole shebang
+** add github actions, binaries for windows, riscv, arm, x86, arch package

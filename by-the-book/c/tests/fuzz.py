@@ -87,3 +87,6 @@ if "arithmetic" in out:
 
 if "strings" in out:
     print()
+
+# abbreviated arithmetic to include in commitready
+# strings, lists, hashmaps, nested, nested with arith

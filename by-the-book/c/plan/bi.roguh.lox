@@ -1,0 +1,137 @@
+// fast: 32-bit int embedded in Value vs Value (64bit + tag)
+// fast: array with just 32-bit Values or 8-bit Values
+var base = 10; // no change plz
+
+// TODO fun fromstr10(string)
+{
+    var a = [];
+    // for char in string
+    {
+        // TODO nicer string iteration, regexes?
+        // TODO insert at beginning OR reverse()
+        // TODO char to int
+        insert(a, 0, int(char) - 48);
+    }
+    return a;
+}
+
+var ibase = fromint(base);
+
+// TODO fun fromint(i)
+{
+    if (i == 0) {
+        return [0];
+    }
+    var a = [];
+    while (i != 0) {
+        a[#a] = i % base;
+        // TODO verify integer division
+        i = i / base;
+    }
+    return a;
+}
+
+// TODO fun split(num, ix)
+{
+    // TODO mltiple return values? return as array and allow unpacking array
+    var lo = [];
+    var hi = [];
+    // TODO nicer range loop
+    // for i=1..#num {
+    for (var i=1; i < #num; i++) {
+        // TODO test fallthrough assignment
+        var h = i <= ix and lo or hi;
+        h[#num] = num[i];
+    }
+    return lo, hi;
+}
+
+// TODO fun mul(a, b)
+{
+    // TODO unambiguous if EXPR {} ?
+    if #a <= 2 or #b <= 2 {
+        return _mul(a, b);
+    }
+    // allow // as int-div
+    var maxSize = (#a >= #b and #a or #b) // 2;
+    var [l1, h1] = split(a, maxSize);
+    var [l2, h2] = split(b, maxSize);
+    var k0 = mul(l1, l2);
+    var k1 = mul(add(l1, h2), add(l2, h2));
+    var k2 = mul(h1, h2);
+    // k0 + (k - k2 - k0) * B^max + k2 * B^2max
+    return add(
+        _mul(k2, pow(ibase, fromint(maxSize * 2))),
+        add(
+            _mul(sub(k1, add(k2, k0)), pow(ibase, fromint(maxSize))),
+            k0
+        )
+    );
+}
+
+// TODO fun halve(a)
+{
+    var magic = 0;
+    var c = zeros(#a);
+    for i = #a, 1, -1 {
+        var digit = (a[i] >> 1) + magic;
+        magic = (a[i] & 1) * (base // 2);
+        c[i] = digit;
+    }
+    while (c[#c] == 0) {
+        del c[#c];
+    }
+    return c;
+}
+
+
+
+
+
+
+
+
+// TODO fun test()
+{
+    // TODO assertions
+    assert(base == 10)
+    print(show10(fromstr10("123456")))
+    print()
+    // TODO lua concat (same as + ??)
+    // TODO Python string %
+    // TODO Python f-strings, support all printf %%
+    print('sub ' .. (123456 - 231))
+    print(show10(sub(fromint(123456), fromint(231))))
+    print(show10(sub(fromint(123456), fromint(123455))))
+    print(show10(sub(fromint(123456), fromint(123456))))
+    print()
+    print('div ' .. (123456 // 231))
+    print(show10(div(fromint(123456), fromint(231))))
+    print(show10(div(fromint(123456), fromint(123456))))
+    print()
+    for i=1,2 do
+        m = [_mul, mul][i]
+        print(show10(m(fromint(2), fromint(3))))
+        print(show10(m(fromint(123456), fromint(231))))
+        local t = fromint(100)
+        print(show10(m(t, t)))
+        print()
+    end
+    for i=1,2 do
+        p = [pow, slowpow][i]
+        print(show10(p(fromint(2), fromint(100))))
+        print(show10(p(fromint(1000), fromint(100))))
+        print(show10(p(fromint(2), fromint(1000), _mul)))
+        print(show10(p(fromint(2), fromint(1000), mul)))
+        print()
+    end
+    print(show10(halve(fromint(123456))))
+    print(show10(halve(fromint(123455))))
+    print()
+    print(show10(pow(halve(mul(add([1, 2, 3], [4, 5]), [3, 2, 1])), fromint(100), mul)))
+    print(show10(factorial(50)))
+    print()
+    print(show10(sqrt(fromint(2000000000))))
+    print(show10(sqrt(pow(fromint(20), fromint(50)))))
+    print(e_str())
+}
