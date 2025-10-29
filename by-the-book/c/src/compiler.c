@@ -244,6 +244,7 @@ static void binary(bool canAssign) {
         case TOKEN_LESS_EQUAL: emitBytes(OP_GREATER, OP_NOT); break;
 
         case TOKEN_EQUAL:
+        case TOKEN_COLON:
 
         case TOKEN_LEFT_PAREN:
         case TOKEN_RIGHT_PAREN:
@@ -511,6 +512,7 @@ static void unary(bool canAssign) {
         case TOKEN_BANG: emitByte(OP_NOT); break;
 
         case TOKEN_PRINT:
+        case TOKEN_COLON:
         case TOKEN_LEFT_PAREN:
         case TOKEN_RIGHT_PAREN:
         case TOKEN_LEFT_BRACE:
@@ -663,11 +665,11 @@ static void or_(bool canAssign) {
 
 static void array(bool canAssign) {
     // Array literal
-    emitByte(OP_INIT_ARRAY); // TODO support more than 1 array
+    emitByte(OP_INIT_ARRAY);
     while (!(check(TOKEN_RIGHT_SQUARE_BRACE) && !check(TOKEN_EOF))) {
         expression();
         if (!check(TOKEN_RIGHT_SQUARE_BRACE)) {
-            consume(TOKEN_COMMA, "Expect ',' after variable declaration");
+            consume(TOKEN_COMMA, "Expect ',' after array element");
         } else {
             // Optional comma at end of list
             match(TOKEN_COMMA);
@@ -677,12 +679,30 @@ static void array(bool canAssign) {
     consume(TOKEN_RIGHT_SQUARE_BRACE, "Expect ']' at end of array.");
 }
 
+static void hashmap(bool canAssign) {
+    emitByte(OP_INIT_HASHMAP);
+    while (!(check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF))) {
+        expression();
+        consume(TOKEN_COLON, "Expect ':' after hashmap key");
+        expression();
+        if (!check(TOKEN_RIGHT_BRACE)) {
+            consume(TOKEN_COMMA, "Expect ',' after hashmap element");
+        } else {
+            // Optional comma at end of list
+            match(TOKEN_COMMA);
+        }
+        emitByte(OP_INSERT_HASHMAP);
+    }
+    consume(TOKEN_RIGHT_BRACE, "Expect '}' at end of hashmap.");
+}
+
 
 ParseRule rules[] = {
     // TODO exhaustive
+    [TOKEN_COLON]              = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_PAREN]         = {grouping, NULL, PREC_NONE},
     [TOKEN_RIGHT_PAREN]        = {NULL, NULL, PREC_NONE},
-    [TOKEN_LEFT_BRACE]         = {NULL, NULL, PREC_NONE},
+    [TOKEN_LEFT_BRACE]         = {hashmap, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE]        = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_SQUARE_BRACE]  = {array, binary, PREC_CALL},
     [TOKEN_RIGHT_SQUARE_BRACE] = {NULL, NULL, PREC_NONE},

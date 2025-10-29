@@ -31,6 +31,11 @@ ObjString* copyString(const char* chars, size_t length) {
     return string;
 }
 
+ObjHashmap* allocateHashmap(size_t capacity) {
+    ObjHashmap* hashmap = (ObjHashmap*)allocateObj(sizeof(ObjHashmap), OBJ_HASHMAP);
+    hashmap_init(&hashmap->map, capacity, hashAny);
+    return hashmap;
+}
 
 ObjArray* allocateArray(size_t capacity) {
     ObjArray* array = (ObjArray*)allocateObj(sizeof(ObjArray) + sizeof(Value) * capacity, OBJ_ARRAY);

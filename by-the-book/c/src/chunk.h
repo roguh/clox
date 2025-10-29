@@ -36,6 +36,9 @@ typedef enum {
     OP_INIT_ARRAY,
     OP_SUBSCRIPT,
     OP_INSERT_ARRAY,
+    // Hashmaps
+    OP_INIT_HASHMAP,
+    OP_INSERT_HASHMAP,
     // Arithmetic
     OP_NEG,
     OP_ADD,

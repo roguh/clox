@@ -1,0 +1,7 @@
+print({1:2, 'abc': 'def', "\"land's end\"": 3});
+var hm = {'a':12,12:'a'}; print(hm['a']); print(hm[12]);
+var nested = {12:{12:{12:[{12:[13,14]},15]}}};
+print(nested[12]);
+print(nested[12][12]);
+print(nested[12][12][12][0]);
+print(nested[12][12][12][0][12][1]);

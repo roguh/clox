@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "common.h"
 #include "hashmap.h"
 #include "value.h"
@@ -32,8 +34,14 @@ size_t hashAny(Value val) {
             switch (AS_OBJ(val)->type) {
                 case OBJ_STRING: return AS_STRING(val)->hash;
                 // TODO raise error!
-                case OBJ_ARRAY: return 0;
-                case OBJ_HASHMAP: return 0;
+                case OBJ_ARRAY: {
+                    ERR_PRINT("Unhashable type ARRAY");
+                    exit(99);
+                }
+                case OBJ_HASHMAP: {
+                    ERR_PRINT("Unhashable type HASHMAP");
+                    exit(99);
+                }
             }
         }
     }
@@ -105,6 +113,13 @@ size_t _hashmap_index(hashmap_t* map, HASHMAP_KEY_TYPE key) {
 
 /**
  * Call the given function on all the hashmap's key-value pairs.
+ *
+ * The iterator function is called with the following arguments:
+ * - map: The hashmap being iterated over
+ * - index: The index of the current key-value pair
+ * - key: The key of the current key-value pair
+ * - value: The value of the current key-value pair
+ * - data: The data passed to hashmap_iter
  *
  * Returns false if the hashmap is empty.
  */

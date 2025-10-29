@@ -139,10 +139,14 @@ int disInstruction(Chunk* chunk, int offset) {
             return simpleInstruction("OP_TRUE", offset);
         case OP_INIT_ARRAY:
             return simpleInstruction("OP_INIT_ARRAY", offset);
-        case OP_SUBSCRIPT:
-            return simpleInstruction("OP_SUBSCRIPT", offset);
         case OP_INSERT_ARRAY:
             return simpleInstruction("OP_INSERT_ARRAY", offset);
+        case OP_INIT_HASHMAP:
+            return simpleInstruction("OP_INIT_HASHMAP", offset);
+        case OP_INSERT_HASHMAP:
+            return simpleInstruction("OP_INSERT_HASHMAP", offset);
+        case OP_SUBSCRIPT:
+            return simpleInstruction("OP_SUBSCRIPT", offset);
         case OP_INVALID:
             return simpleInstruction("OP_INVALID", offset);
     }

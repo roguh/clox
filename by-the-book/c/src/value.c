@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "value.h"
+#include "hashmap.h"
 #include "memory.h"
 #include "object.h"
 
@@ -25,7 +26,18 @@ void writeValues(Values* values, Value value) {
     values->count++;
 }
 
-void printValue(Value value) {
+static void _printValue(Value value, bool printQuotes);
+
+void printHashmapItem(hashmap_t* map, long unsigned int index, Value key, Value value, void* data) {
+    _printValue(key, true);
+    printf(": ");
+    _printValue(value, true);
+    if (index < hashmap_len(map) - 1) {
+        printf(", ");
+    }
+}
+
+static void _printValue(Value value, bool printQuotes) {
     switch (value.type) { // Exhaustive
         case VAL_NIL: printf("nil"); break;
         case VAL_DOUBLE: printf("%.16lg", AS_DOUBLE(value)); break;
@@ -34,11 +46,39 @@ void printValue(Value value) {
         case VAL_OBJ: {
             switch (AS_OBJ(value)->type) {
                 case OBJ_STRING:
-                    printf("%s", AS_CSTRING(value)); break;
+                    if (printQuotes) {
+                        char qChar = '"';
+                        bool escapeQuotes = false;
+                        for (int i = 0; i < AS_STRING(value)->length; i++) {
+                            if (AS_CSTRING(value)[i] == '"') {
+                                qChar = '\'';
+                            }
+                            if (qChar == '\'' && AS_CSTRING(value)[i] == '\'') {
+                                escapeQuotes = true;
+                            }
+                        }
+                        if (escapeQuotes) {
+                            printf("\"");
+                            for (int i = 0; i < AS_STRING(value)->length; i++) {
+                                char c = AS_CSTRING(value)[i];
+                                if (c == '"') {
+                                    printf("\\\"");
+                                } else {
+                                    printf("%c", c);
+                                }
+                            }
+                            printf("\"");
+                        } else {
+                            printf("%c%s%c", qChar, AS_CSTRING(value), qChar);
+                        }
+                    } else {
+                        printf("%s", AS_CSTRING(value));
+                    }
+                    break;
                 case OBJ_ARRAY:
                     printf("[");
                     for (int i = 0; i < AS_ARRAY(value)->length; i++) {
-                        printValue(AS_ARRAY(value)->values[i]);
+                        _printValue(AS_ARRAY(value)->values[i], true);
                         if (i < AS_ARRAY(value)->length - 1) {
                             printf(", ");
                         }
@@ -47,7 +87,7 @@ void printValue(Value value) {
                     break;
                 case OBJ_HASHMAP:
                     printf("{");
-                    // TODO hashmap_iterator()
+                    hashmap_iter(&AS_HASHMAP(value)->map, printHashmapItem, NULL);
                     printf("}");
                     break;
                 default:
@@ -56,6 +96,10 @@ void printValue(Value value) {
             }
         }
     }
+}
+
+void printValue(Value value) {
+    _printValue(value, false);
 }
 
 double AS_DOUBLE(Value value) {

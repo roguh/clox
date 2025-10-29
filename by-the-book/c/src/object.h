@@ -11,15 +11,16 @@
 #define AS_CSTRING(value) (AS_STRING(value)->chars)
 #define STRING_LENGTH(value) (AS_STRING(value)->length)
 
+#define IS_ARRAY(value) isObjType(value, OBJ_ARRAY)
 #define AS_ARRAY(value) (((ObjArray*)AS_OBJ(value)))
 #define ARRAY_LENGTH(value) (AS_ARRAY(value)->length)
+
+#define IS_HASHMAP(value) isObjType(value, OBJ_HASHMAP)
 
 typedef enum {
     OBJ_STRING,
     OBJ_ARRAY,
     OBJ_HASHMAP,
-    // TODO OBJ_ARRAY, OBJ_INT_ARRAY, OBJ_DOUBLE_ARRAY
-    // TODO OBJ_HASHMAP
 } ObjType;
 
 struct Obj {
@@ -53,6 +54,8 @@ ObjArray* reallocArray(ObjArray* array, size_t capacity);
 ObjArray* insertArray(ObjArray* array, int index, Value value); // might grow array, return old value or (nil?)
 Value getArray(ObjArray* array, int index); // bounds check!!!
 Value removeArray(ObjArray* array, int index); // shift values, might shrink array, return old value or (nil?)
+
+ObjHashmap* allocateHashmap(size_t capacity);
 
 void freeObject(Obj* obj);
 

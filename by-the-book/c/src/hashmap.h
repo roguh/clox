@@ -46,7 +46,7 @@ typedef struct hashmap_t {
     hashmap_scheme_t open_addressing_scheme;
 } hashmap_t;
 
-#define AS_HASHMAP(value) (((ObjHashmap*)AS_OBJ(value))->map)
+#define AS_HASHMAP(value) (((ObjHashmap*)AS_OBJ(value)))
 #define HASHMAP_LENGTH(value) (hashmap_len(((ObjArray*)AS_OBJ(value))->map))
 
 struct ObjHashmap {

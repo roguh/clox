@@ -6,6 +6,7 @@
 #include "common.h"
 #include "debug.h"
 #include "compiler.h"
+#include "hashmap.h"
 #include "object.h"
 #include "memory.h"
 #include "value.h"
@@ -220,20 +221,58 @@ static InterpretResult run(void) {
                 insertArray(array, array->length, value);
                 break;
             }
+            case OP_INIT_HASHMAP: {
+                ObjHashmap* hm = allocateHashmap(8);
+                push(OBJ_VAL(hm));
+                break;
+            }
+            case OP_INSERT_HASHMAP: {
+                Value value = pop();
+                Value key = pop();
+                ObjHashmap* hm = AS_HASHMAP(peek(0));
+                hashmap_add(&hm->map, key, value);
+                break;
+            }
             case OP_SUBSCRIPT: {
-                Value index = pop();
-                ObjArray* array = AS_ARRAY(peek(0));
+                Value key = pop();
+                if (IS_HASHMAP(peek(0))) {
+                    ObjHashmap* hm = AS_HASHMAP(peek(0));
+                    push(hashmap_get(&hm->map, key, NULL));
+                    break;
+                }
+
                 // TODO implement slices (absolutely scrumptious!)
-                if (!IS_INTEGER(index)) {
+                if (!IS_INTEGER(key)) {
                     runtimeError("Array index must be an integer");
                     return INTERPRET_RUNTIME_ERROR;
                 }
-                int i = AS_INTEGER(index);
-                if (i < 0 || i >= array->length) {
-                    runtimeError("Array index out of bounds");
+                int i = AS_INTEGER(key);
+
+                if (IS_ARRAY(peek(0))) {
+                    ObjArray* array = AS_ARRAY(peek(0));
+                    if (i < 0) {
+                        i = array->length + i;
+                    }
+                    if (i < 0 || i >= array->length) {
+                        runtimeError("Array index out of bounds");
+                        return INTERPRET_RUNTIME_ERROR;
+                    }
+                    push(array->values[i]);
+                } else if (IS_STRING(peek(0))) {
+                    ObjString* string = AS_STRING(peek(0));
+                    if (i < 0) {
+                        i = string->length + i;
+                    }
+                    if (i < 0 || i >= string->length) {
+                        runtimeError("String index out of bounds");
+                        return INTERPRET_RUNTIME_ERROR;
+                    }
+                    push(OBJ_VAL(copyString(&string->chars[i], 1)));
+                }
+                 else {
+                    runtimeError("Indexing into a non-array, non-string, non-hashmap value");
                     return INTERPRET_RUNTIME_ERROR;
                 }
-                push(array->values[i]);
                 break;
             }
             case OP_CONSTANT: push(READ_CONSTANT()); break;
