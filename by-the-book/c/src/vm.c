@@ -262,6 +262,19 @@ InterpretResult interpretChunk(Chunk* chunk) {
     return result;
 }
 
+InterpretResult compileAndPrint(const char* string) {
+    initVM();
+    Chunk chunk;
+    initChunk(&chunk);
+    if (!compile(string, &chunk, DEBUG_TRACE)) {
+        freeChunk(&chunk);
+        return INTERPRET_COMPILE_ERROR;
+    }
+    disChunk(&chunk, "compileAndPrint");
+    freeChunk(&chunk);
+    return INTERPRET_OK;
+}
+
 InterpretResult interpret(const char* program) {
     initVM();
     Chunk chunk;

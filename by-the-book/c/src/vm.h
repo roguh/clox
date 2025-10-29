@@ -27,6 +27,7 @@ extern VM vm;
 
 void initVM(void);
 void freeVM(void);
+InterpretResult compileAndPrint(const char* string);
 InterpretResult interpret(const char* string);
 InterpretResult interpretChunk(Chunk* chunk);
 InterpretResult interpretStream(const char* program, Chunk* chunk);

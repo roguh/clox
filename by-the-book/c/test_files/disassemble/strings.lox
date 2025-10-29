@@ -1,4 +1,4 @@
-"abcdef"; '123'; "123456\"" "multi
+"abcdef"; '123'; "123456\""; "multi
 line
 string!";
 "after multiline?";

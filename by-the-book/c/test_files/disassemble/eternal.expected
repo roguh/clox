@@ -1,0 +1,5 @@
+== compileAndPrint ==
+0000    1 OP_CONSTANT         0 'foreeeeeeeever'
+0002    | OP_PRINT
+0003    | OP_NEG_JUMP         3 -> 0
+0007    | OP_RETURN

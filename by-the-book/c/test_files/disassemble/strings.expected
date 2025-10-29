@@ -1,0 +1,16 @@
+== compileAndPrint ==
+0000    1 OP_CONSTANT         0 'abcdef'
+0002    | OP_POP
+0003    | OP_CONSTANT         1 '123'
+0005    | OP_POP
+0006    | OP_CONSTANT         2 '123456\"'
+0008    | OP_POP
+0009    3 OP_CONSTANT         3 'multi
+line
+string!'
+0011    | OP_POP
+0012    4 OP_CONSTANT         4 'after multiline?'
+0014    | OP_POP
+0015    5 OP_CONSTANT         5 'abc'
+0017    | OP_POP
+0018    | OP_RETURN

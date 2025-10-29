@@ -83,6 +83,8 @@ int main(int argc, char** argv) {
                    "    Evaluate the given COMMAND.\n"
                    "-l CODE or --lex CODE\n"
                    "    Tokenify (lex) the given CODE.\n"
+                   "-d CODE or --dis CODE\n"
+                   "    Compile and print the given CODE as c-lox bytecode.\n"
                    "--debug\n"
                    "    Enable debug-level tracing commands.\n"
                    "--tests\n"
@@ -105,6 +107,10 @@ int main(int argc, char** argv) {
             ran = true;
         } else if (EQ(argv[i], "-x") || EQ(argv[i], "--lex")) {
             scanAndPrint(argv[i + 1]);
+            i++;
+            ran = true;
+        } else if (EQ(argv[i], "-d") || EQ(argv[i], "--dis")) {
+            compileAndPrint(argv[i + 1]);
             i++;
             ran = true;
         } else {

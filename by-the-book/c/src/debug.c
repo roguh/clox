@@ -24,7 +24,7 @@ static int constantLongByteInstruction(const char* name, Chunk* chunk, int offse
 
 static int jumpInstruction(const char* name, int sign, Chunk* chunk, int offset) {
     int jump = chunk->code[offset + 1] | chunk->code[offset + 2] << 8 | chunk->code[offset + 3] << 16;
-    printf("%-16s %4d -> %d\n", name, offset, offset + SIZE_OF_24BIT_ARGS + sign * jump);
+    printf("%-16s %4d -> %d\n", name, offset, offset + SIZE_OF_24BIT_ARGS + 1 + sign * jump);
     return offset + 4;
 }
 
