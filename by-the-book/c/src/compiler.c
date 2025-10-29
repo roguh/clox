@@ -146,6 +146,10 @@ static void initCompiler(size_t size) {
     current = compiler;
 }
 
+static void freeCompiler() {
+    free(current);
+}
+
 static void markInitialized() {
     current->locals[current->localCount - 1].depth = current->scopeDepth;
 }
@@ -626,5 +630,6 @@ bool compile(const char* source, Chunk* chunk, bool debugPrint) {
     }
     consume(TOKEN_EOF, "Expect end of expression.");
     endCompiler(debugPrint);
+    freeCompiler();
     return !parser.hadError;
 }
