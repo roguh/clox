@@ -15,6 +15,12 @@ static Obj* allocateObj(size_t size, ObjType type) {
     return object;
 }
 
+ObjFunction* newFunction(void) {
+    ObjFunction* func = (ObjFunction*)allocateObj(sizeof(ObjFunction), OBJ_FUNCTION);
+    initChunk(&func->chunk);
+    return func;
+}
+
 ObjString* copyString(const char* chars, size_t length) {
     size_t hash = hashString(chars, length);
     ObjString* interned = hashmap_get_str(&vm.strings, chars, length, hash);
@@ -44,6 +50,7 @@ ObjArray* allocateArray(size_t capacity) {
     array->values = (Value*)calloc(capacity, sizeof(Value));
     return array;
 }
+
 void reallocArray(ObjArray* array, size_t capacity) {
     if (capacity == array->capacity) {
         return;
@@ -56,6 +63,7 @@ void reallocArray(ObjArray* array, size_t capacity) {
     array->capacity = capacity;
     return;
 }
+
 void insertArray(ObjArray* array, int index, Value value) {
     if (index < 0) {
         index = array->length + index;
@@ -71,6 +79,7 @@ void insertArray(ObjArray* array, int index, Value value) {
     array->length++;
     return;
 }
+
 Value getArray(ObjArray* array, int index) {
     if (index < 0) {
         index = array->length + index;
@@ -80,10 +89,17 @@ Value getArray(ObjArray* array, int index) {
     }
     return array->values[index];
 }
+
 Value removeArray(ObjArray* array, int index); // shift values, might shrink array, return old value or (nil?)
 
 void freeObject(Obj* obj) {
     switch (obj->type) {
+        case OBJ_FUNCTION: {
+            ObjFunction* func = (ObjFunction*)obj;
+            freeChunk(&func->chunk);
+            free(func);
+            break;
+        }
         case OBJ_STRING: {
             ObjString* string = (ObjString*)obj;
             free(string);

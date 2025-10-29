@@ -55,7 +55,6 @@ typedef ValueArray Values;
 void initValues(Values* values);
 void freeValues(Values* values);
 void writeValues(Values* values, Value value);
-void printValue(Value value);
 
 double AS_DOUBLE(Value value);
 int AS_INTEGER(Value value);

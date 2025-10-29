@@ -3,6 +3,6 @@
 
 #include "object.h"
 
-bool compile(const char* source, Chunk* chunk, bool debugPrint);
+ObjFunction* compile(const char* source, bool debugPrint);
 
 #endif

@@ -11,6 +11,7 @@
 #include "memory.h"
 #include "value.h"
 #include "vm.h"
+#include "print.h"
 
 VM vm;
 
@@ -375,36 +376,31 @@ InterpretResult interpretChunk(Chunk* chunk) {
 
 InterpretResult compileAndPrint(const char* string) {
     initVM();
-    Chunk chunk;
-    initChunk(&chunk);
-    if (!compile(string, &chunk, DEBUG_TRACE)) {
-        freeChunk(&chunk);
+    ObjFunction* func = compile(string, DEBUG_TRACE);
+    if (!func) {
         return INTERPRET_COMPILE_ERROR;
     }
-    disChunk(&chunk, "compileAndPrint");
-    freeChunk(&chunk);
+    disChunk(&func->chunk, "compileAndPrint");
     freeVM();
     return INTERPRET_OK;
 }
 
-InterpretResult interpret(const char* program) {
+InterpretResult interpret(const char* string) {
     initVM();
-    Chunk chunk;
-    initChunk(&chunk);
-    if (!compile(program, &chunk, DEBUG_TRACE)) {
-        freeChunk(&chunk);
+    ObjFunction* func = compile(string, DEBUG_TRACE);
+    if (!func) {
         return INTERPRET_COMPILE_ERROR;
     }
-    InterpretResult result = interpretChunk(&chunk);
-    freeChunk(&chunk);
+    InterpretResult result = interpretChunk(&func->chunk);
     return result;
 }
 
-InterpretResult interpretStream(const char* program, Chunk* chunk) {
-    if (!compile(program, chunk, DEBUG_TRACE)) {
-        freeChunk(chunk);
+InterpretResult interpretStream(const char* string, Chunk* _chunk) {
+    ObjFunction* func = compile(string, DEBUG_TRACE);
+    // func->chunk = *chunk; TODO HOW TO REPL!
+    if (!func) {
         return INTERPRET_COMPILE_ERROR;
     }
-    InterpretResult result = interpretChunk(chunk);
+    InterpretResult result = interpretChunk(&func->chunk);
     return result;
 }

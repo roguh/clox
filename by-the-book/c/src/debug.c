@@ -3,6 +3,7 @@
 #include "debug.h"
 #include "chunk.h"
 #include "value.h"
+#include "print.h"
 
 void disChunk(Chunk* chunk, const char* name) {
     printf("== %s ==\n", name);

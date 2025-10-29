@@ -7,12 +7,13 @@
 #include "debug.h"
 #include "object.h"
 
+#define MAX_NUMBER_OF_VARIABLES_IN_SCOPE 1024 // TODO user-configurable? growable?
+
 typedef struct {
     Token current;
     Token previous;
     bool hadError;
     bool panicMode;
-    Chunk* thisChunk;
 } Parser;
 
 typedef enum {
@@ -47,10 +48,17 @@ typedef struct {
     int depth;
 } Local;
 
+typedef enum {
+    TYPE_FUNCTION,
+    TYPE_GLOBAL,
+} FunctionType;
+
 typedef struct {
     int localCount;
     int scopeDepth;
     int localsSize;
+    ObjFunction* function;
+    FunctionType type;
     Local locals[];
 } Compiler;
 
@@ -82,7 +90,10 @@ static void errorAtCurrent(const char* message) {
 }
 
 static Chunk* currentChunk(void) {
-    return parser.thisChunk;
+    if (!current->function) {
+        return NULL;
+    }
+    return &current->function->chunk;
 }
 
 static void advance(void) {
@@ -158,7 +169,7 @@ static void patchJump(int offset) {
 }
 
 static int makeConstant(Value value) {
-    int constant = addConstant(parser.thisChunk, value);
+    int constant = addConstant(currentChunk(), value);
     return constant;
 }
 
@@ -166,12 +177,20 @@ static int emitConstant(Value value) {
     return writeConstant(currentChunk(), value, parser.previous.line, parser.previous.column);
 }
 
-static void initCompiler(size_t size) {
+static void initCompiler(size_t size, FunctionType type) {
     Compiler* compiler = malloc(sizeof(Compiler) + sizeof(Local) * size);
+    compiler->function = newFunction();
+    compiler->type = type;
     compiler->localCount = 0;
     compiler->scopeDepth = 0;
     compiler->localsSize = size;
     current = compiler;
+
+    // Claim the first variable at the top of the stack for special reason
+    Local first = current->locals[current->localCount++];
+    first.depth = 0;
+    first.name.start = "";
+    first.name.length = 0;
 }
 
 static void freeCompiler(void) {
@@ -191,11 +210,15 @@ static void defineVariable(int global) {
     }
 }
 
-static void endCompiler(bool debugPrint) {
+static ObjFunction* endCompiler(bool debugPrint) {
+    ObjFunction* func = current->function;
     emitReturn();
     if (debugPrint) {
-        disChunk(currentChunk(), "code");
+        // TODO filename and script directory
+        const char* name = func->name ? func->name->chars : "<script>";
+        disChunk(currentChunk(), name);
     }
+    return func;
 }
 
 static void beginScope(void) {
@@ -787,18 +810,17 @@ static void parsePrecedence(Precedence precedence) {
     }
 }
 
-bool compile(const char* source, Chunk* chunk, bool debugPrint) {
+ObjFunction* compile(const char* source, bool debugPrint) {
     parser.hadError = false;
     parser.panicMode = false;
-    parser.thisChunk = chunk;
     initScanner(source);
-    initCompiler(1024);
+    initCompiler(MAX_NUMBER_OF_VARIABLES_IN_SCOPE, TYPE_GLOBAL);
     advance();
     while (!match(TOKEN_EOF)) {
         declaration();
     }
     consume(TOKEN_EOF, "Expect end of expression.");
-    endCompiler(debugPrint);
+    ObjFunction* func = endCompiler(debugPrint);
     freeCompiler();
-    return !parser.hadError;
+    return parser.hadError ? NULL : func;
 }

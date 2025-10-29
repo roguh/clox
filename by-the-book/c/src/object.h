@@ -2,9 +2,13 @@
 #define clox_object_h
 
 #include "common.h"
+#include "chunk.h"
 #include "value.h"
 
 #define OBJ_TYPE(value) (AS_OBJ(value)->type)
+
+#define IS_FUNCTION(value) isObjType(value, OBJ_FUNCTION)
+#define AS_FUNCTION(value) ((ObjFunction*)AS_OBJ(value))
 
 #define IS_STRING(value) isObjType(value, OBJ_STRING)
 #define AS_STRING(value) ((ObjString*)AS_OBJ(value))
@@ -18,6 +22,7 @@
 #define IS_HASHMAP(value) isObjType(value, OBJ_HASHMAP)
 
 typedef enum {
+    OBJ_FUNCTION,
     OBJ_STRING,
     OBJ_ARRAY,
     OBJ_HASHMAP,
@@ -27,6 +32,16 @@ struct Obj {
     ObjType type;
     struct Obj* next;
 };
+
+typedef struct {
+    Obj obj;
+    int arity;
+    Chunk chunk;
+    ObjString* name;
+    // For debugging and documentation purposes
+    ObjString* paramNames;
+    ObjString* docs;
+} ObjFunction;
 
 struct ObjString {
     Obj obj;
@@ -45,6 +60,8 @@ struct ObjArray {
 static inline bool isObjType(Value value, ObjType type) {
     return IS_OBJ(value) && AS_OBJ(value)->type == type;
 }
+
+ObjFunction* newFunction(void);
 
 ObjString* copyString(const char* chars, size_t length);
 ObjString* allocateString(char* chars, size_t length, size_t hash);

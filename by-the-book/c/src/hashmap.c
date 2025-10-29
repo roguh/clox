@@ -34,6 +34,11 @@ size_t hashAny(Value val) {
             switch (AS_OBJ(val)->type) {
                 case OBJ_STRING: return AS_STRING(val)->hash;
                 // TODO raise error!
+                // TODO objectName()
+                case OBJ_FUNCTION: {
+                    hashmap_debug("Unhashable type FUNCTION");
+                    exit(99);
+                }
                 case OBJ_ARRAY: {
                     hashmap_debug("Unhashable type ARRAY");
                     exit(99);
