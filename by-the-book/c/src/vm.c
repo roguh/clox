@@ -57,7 +57,7 @@ Value peek(int offset) {
     return vm.stackTop[-(offset + 1)];
 }
 
-static void runtimeError(const char* format, ...) {
+static void runtimeErrorLog(const char* format, ...) {
     va_list args;
     fputs("ERROR: ", stderr);
     va_start(args, format);
@@ -65,12 +65,12 @@ static void runtimeError(const char* format, ...) {
     va_end(args);
     fputs("\n", stderr);
 
-    size_t instruction = vm.chunk->code[vm.ip]; // vm.ip-1 ? TODO
-    int line = vm.chunk->lines[instruction];
-    int col = vm.chunk->columns[instruction];
+    int line = vm.chunk->lines[vm.ip];
+    int col = vm.chunk->columns[vm.ip];
     fprintf(stderr, "    [%d:%d] in script\n", line, col);
-    resetStack();
 }
+
+#define runtimeError(...) { runtimeErrorLog(__VA_ARGS__); resetStack(); }
 
 size_t size(void) {
     return vm.stackTop - vm.stack;
@@ -180,6 +180,16 @@ static InterpretResult run(void) {
             case OP_GET_GLOBAL_LONG:
             case OP_GET_GLOBAL: {
                 ObjString* name = (instruction == OP_GET_GLOBAL) ? READ_STRING() : READ_STRING_LONG();
+                if (memcmp(name->chars, "__line__", name->length) == 0) {
+                    int line = vm.chunk->lines[vm.ip];
+                    push(INTEGER_VAL(line));
+                    break;
+                }
+                if (memcmp(name->chars, "__col__", name->length) == 0) {
+                    int col = vm.chunk->columns[vm.ip];
+                    push(INTEGER_VAL(col));
+                    break;
+                }
                 bool notFound = false;
                 Value value = hashmap_get(&vm.globals, OBJ_VAL(name), &notFound);
                 if (notFound) {
@@ -325,7 +335,17 @@ static InterpretResult run(void) {
             }
             case OP_SUB: BIN_OP(-, DOUBLE_VAL, INTEGER_VAL); break;
             case OP_MUL: BIN_OP(*, DOUBLE_VAL, INTEGER_VAL); break;
-            case OP_DIV: BIN_OP(/, DOUBLE_VAL, INTEGER_VAL); break;
+            case OP_DIV: {
+                if (AS_DOUBLE(peek(0)) == 0.0) {
+                    runtimeErrorLog("Ignoring division by zero! Returning infinity.");
+                    pop();
+                    pop();
+                    push(DOUBLE_VAL(1e1000));
+                    break;
+                }
+                BIN_OP(/, DOUBLE_VAL, INTEGER_VAL);
+                break;
+            }
             case OP_BITAND: INT_BIN_OP(&); break;
             case OP_BITOR: INT_BIN_OP(|); break;
             case OP_BITXOR: INT_BIN_OP(^); break;

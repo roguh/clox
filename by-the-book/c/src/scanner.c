@@ -169,10 +169,13 @@ static Token number(void) {
     while (isDigit(peek(), false)) {
         advance();
     }
-    if (peek() == '.' && isDigit(peekNext(), false)) {
+    if (peek() == 'e' || peek() == 'E' || peek() == '-' || peek() == '.') {
         hasDigit = true;
         advance();
-        while (isDigit(peek(), false)) {
+        while (isDigit(peek(), false)
+            || ((peek() == 'e' || peek() == 'E') && (peekNext() == '-' || peekNext() == '+' || isDigit(peekNext(), false)))
+            || ((peek() == '-' || peek() == '+') && isDigit(peekNext(), false))
+            ) {
             advance();
         }
     }

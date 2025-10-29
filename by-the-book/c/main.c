@@ -45,7 +45,7 @@ static char* readFile(const char* fname) {
     /* Get the number of bytes */
     fseek(infile, 0L, SEEK_END);
     numbytes = ftell(infile);
-    if (numbytes > 1<<24) {
+    if (numbytes > 1<<29) {
         ERR_PRINT("Error: too much file\n");
         exit(1);
     }
