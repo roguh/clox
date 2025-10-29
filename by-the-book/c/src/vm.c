@@ -294,6 +294,10 @@ static InterpretResult run(void) {
             case OP_BITNEG: push(INTEGER_VAL(~pop_int())); break;
             case OP_SIZE: if (IS_STRING(peek(0))) {
                 push(INTEGER_VAL(strlen(AS_CSTRING(pop()))));
+            } else if (IS_ARRAY(peek(0))) {
+                push(INTEGER_VAL(ARRAY_LENGTH(pop())));
+            } else if (IS_HASHMAP(peek(0))) {
+                push(INTEGER_VAL(HASHMAP_LENGTH(pop())));
             } else {
                 push(INTEGER_VAL(sizeof(Value)));
             }
