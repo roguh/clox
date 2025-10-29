@@ -146,11 +146,17 @@ static void initCompiler(size_t size) {
     current = compiler;
 }
 
+static void markInitialized() {
+    current->locals[current->localCount - 1].depth = current->scopeDepth;
+}
+
 static void defineVariable(int global) {
     if (current->scopeDepth == 0) {
         writeConstantByOffset(currentChunk(), OP_DEFINE_GLOBAL, OP_DEFINE_GLOBAL_LONG, global, parser.previous.line, parser.previous.column);
+    } else {
+        markInitialized();
+        // No op-codes needed to define local variables at runtime
     }
-    // No code needed to define local variables at runtime
 }
 
 static void endCompiler(bool debugPrint) {
@@ -272,7 +278,8 @@ static bool identifiersEqual(Token* a, Token* b) {
 static void addLocal(Token name) {
     Local* local = &current->locals[current->localCount++];
     local->name = name;
-    local->depth = current->scopeDepth;
+    // First, it starts uninitialized
+    local->depth = -1;
     // TODO realloc if too many locals
     if (current->localCount == 1024) {
         error("Too many local variables.");
@@ -467,6 +474,9 @@ static int resolveLocal(Compiler* compiler, Token* name) {
     for (int i = compiler->localCount - 1; i >= 0; i--) {
         Local local = compiler->locals[i];
         if (identifiersEqual(name, &local.name)) {
+            if (local.depth == -1) {
+                error("Can't read local variable in its own initializer.");
+            }
             return i;
         }
     }

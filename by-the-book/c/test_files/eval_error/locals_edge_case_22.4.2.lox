@@ -1,0 +1,1 @@
+{var a='out'; {var a=a; print(a); a='in'; print(a);} print(a);}
