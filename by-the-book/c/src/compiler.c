@@ -104,9 +104,12 @@ static void consume(TokenType type, const char* message) {
     errorAtCurrent(message);
 }
 
+static bool check(TokenType type) {
+    return parser.current.type == type;
+}
+
 static bool match(TokenType type) {
-    // if !check()
-    if (!(parser.current.type == type)) {
+    if (!check(type)) {
         return false;
     }
     advance();
@@ -144,13 +147,29 @@ static void initCompiler(size_t size) {
 }
 
 static void defineVariable(int global) {
-    writeConstantByOffset(currentChunk(), OP_DEFINE_GLOBAL, OP_DEFINE_GLOBAL_LONG, global, parser.previous.line, parser.previous.column);
+    if (current->scopeDepth == 0) {
+        writeConstantByOffset(currentChunk(), OP_DEFINE_GLOBAL, OP_DEFINE_GLOBAL_LONG, global, parser.previous.line, parser.previous.column);
+    }
+    // No code needed to define local variables at runtime
 }
 
 static void endCompiler(bool debugPrint) {
     emitReturn();
     if (debugPrint) {
         disChunk(currentChunk(), "code");
+    }
+}
+
+static void beginScope() {
+    current->scopeDepth++;
+}
+
+static void endScope() {
+    current->scopeDepth--;
+    while (current->localCount > 0
+        && current->locals[current->localCount - 1].depth > current->scopeDepth) {
+        emitByte(OP_POP);
+        current->localCount--;
     }
 }
 
@@ -232,12 +251,61 @@ static void expression(void) {
     parsePrecedence(PREC_ASSIGNMENT);
 }
 
+static void block() {
+    while (!(check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF))) {
+        declaration();
+    }
+    consume(TOKEN_RIGHT_BRACE, "Expect '}' after block.");
+}
+
 static int identifierConstant(Token* name) {
     return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
 }
 
+static bool identifiersEqual(Token* a, Token* b) {
+    if (a->length != b->length) {
+        return false;
+    }
+    return memcmp(a->start, b->start, a->length) == 0;
+}
+
+static void addLocal(Token name) {
+    Local* local = &current->locals[current->localCount++];
+    local->name = name;
+    local->depth = current->scopeDepth;
+    // TODO realloc if too many locals
+    if (current->localCount == 255) {
+        error("Too many local variables.");
+        return ;
+    }
+}
+
+static void declareVariable() {
+    if (current->scopeDepth == 0) {
+        return;
+    }
+    Token name = parser.previous;
+    for (int i = current->localCount - 1; i >= 0; i--) {
+        Local local = current->locals[i];
+        // Iterate through all variables in the current scope
+        // Backwards for-loop, check name equality
+        if (local.depth != -1 && local.depth < current->scopeDepth) {
+            break;
+        }
+        if (identifiersEqual(&name, &local.name)) {
+            error("A variable exists with this name in this scope.");
+        }
+    }
+    addLocal(name);
+}
+
 static int parseVariable(const char* errMessage) {
     consume(TOKEN_IDENTIFIER, errMessage);
+    declareVariable();
+    if (current->scopeDepth > 0) {
+        return 0;
+    }
+    // A name-lookup is only needed for globals
     return identifierConstant(&parser.previous);
 }
 
@@ -267,6 +335,10 @@ static void expressionStatement(void) {
 static void statement(void) {
     if (match(TOKEN_PRINT)) {
         printStatement();
+    } else if (match(TOKEN_LEFT_BRACE)) {
+        beginScope();
+        block();
+        endScope();
     } else {
         expressionStatement();
     }
