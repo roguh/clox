@@ -50,7 +50,7 @@ void reallocArray(ObjArray* array, size_t capacity) {
     }
     array->values = realloc(array->values, sizeof(Value) * capacity);
     if (array->values == NULL) {
-        fprintf(stderr, "Failed to reallocate array\n");
+        ERR_PRINT("Failed to reallocate array\n");
         exit(1);
     }
     array->capacity = capacity;
@@ -64,7 +64,7 @@ void insertArray(ObjArray* array, int index, Value value) {
         return;
     }
     if (array->length + 1 == array->capacity) {
-        ERR_PRINT("REALLOC FROM %u to %u\n", array->capacity, array->capacity * 2);
+        ERR_PRINT("Array: Growing capacity from %zu to %zu\n", array->capacity, array->capacity * 2);
         reallocArray(array, array->capacity * 2);
     }
     array->values[index] = value;

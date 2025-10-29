@@ -39,14 +39,14 @@ static char* readFile(const char* fname) {
     infile = fopen(fname, "r");
     /* quit if the file does not exist */
     if(infile == NULL) {
-        printf("Error: not enough file\n");
+        ERR_PRINT("Error: not enough file\n");
         exit(1);
     }
     /* Get the number of bytes */
     fseek(infile, 0L, SEEK_END);
     numbytes = ftell(infile);
-    if (numbytes > 1<<16) {
-        printf("Error: too much file\n");
+    if (numbytes > 1<<24) {
+        ERR_PRINT("Error: too much file\n");
         exit(1);
     }
     /* reset the file position indicator to
@@ -69,12 +69,12 @@ int main(int argc, char** argv) {
     for (int i = 1; i < argc; i++) {
         if (EQ(argv[i], "--debug") || EQ(argv[i], "-d")) {
             DEBUG_TRACE = true;
-            printf("====== DEBUG_TRACE=true\n");
+            ERR_PRINT("====== DEBUG_TRACE=true\n");
         } else if (EQ(argv[i], "--tests")) {
             test = true;
             ran = true;
         } else if (EQ(argv[i], "--help") || EQ(argv[i], "-h")) {
-            printf("roguh's Lox C VM (2025) version %s\n"
+            ERR_PRINT("roguh's Lox C VM (2025) version %s\n"
                    "Usage: %s [--debug] [--command|-c string] [--tests] [FILES...]\n"
                    "\n"
                    "(no arguments)\n"

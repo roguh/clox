@@ -35,11 +35,11 @@ size_t hashAny(Value val) {
                 case OBJ_STRING: return AS_STRING(val)->hash;
                 // TODO raise error!
                 case OBJ_ARRAY: {
-                    ERR_PRINT("Unhashable type ARRAY");
+                    hashmap_debug("Unhashable type ARRAY");
                     exit(99);
                 }
                 case OBJ_HASHMAP: {
-                    ERR_PRINT("Unhashable type HASHMAP");
+                    hashmap_debug("Unhashable type HASHMAP");
                     exit(99);
                 }
             }
@@ -63,7 +63,7 @@ void hashmap_init(hashmap_t* map, size_t capacity, hash_function hasher) {
         while (new_capacity < capacity) {
             new_capacity <<= 1;
         }
-        hashmap_debug("DEBUG: Rounded capacity up to power of 2, %zu -> %zu\n", capacity, new_capacity);
+        hashmap_debug("Hashmap: Rounded capacity up to power of 2, %zu -> %zu\n", capacity, new_capacity);
         capacity = new_capacity;
     }
 
@@ -254,7 +254,7 @@ void _move_to_new(hashmap_t* old, size_t index, HASHMAP_KEY_TYPE key, HASHMAP_VA
     hashmap_t* newmap = (hashmap_t*)data;
     if (!hashmap_add_without_grow(newmap, key, value)) {
         // What to do if this add fails!?
-        hashmap_debug("WARNING! UNABLE TO ADD KEY %zu\n", index);
+        hashmap_debug("Hashmap: WARNING! UNABLE TO ADD KEY %zu\n", index);
     }
 }
 
@@ -275,7 +275,7 @@ void hashmap_grow(hashmap_t* map, size_t factor) {
 
     hashmap_iter(map, _move_to_new, (void*)&newmap);
     if (newmap.total != map->total) {
-        hashmap_debug("WARNING! RESIZE FAILURE? newmap size=%zu old size=%zu\n", newmap.total, map->total);
+        hashmap_debug("Hashmap: WARNING! RESIZE FAILURE! newmap size=%zu old size=%zu\n", newmap.total, map->total);
     }
     // Replace map->entries with the newmap map's entries
     _hashmap_free_entries(map);
@@ -294,7 +294,7 @@ bool hashmap_add(hashmap_t* map, HASHMAP_KEY_TYPE key, HASHMAP_VALUE_TYPE value)
     // Resize if needed....
     if (map->total * 2 > map->capacity) {
         hashmap_grow(map, 2);
-        hashmap_debug("DEBUG: Growing capacity up to %zu\n", map->capacity);
+        hashmap_debug("Hashmap: Growing capacity up to %zu\n", map->capacity);
     }
     return hashmap_add_without_grow(map, key, value);
 }
