@@ -25,6 +25,7 @@ typedef enum {
     // Jumps
     OP_JUMP_IF_FALSE,
     OP_JUMP,
+    OP_NEG_JUMP,
     // Values
     OP_CONSTANT,
     OP_CONSTANT_LONG,

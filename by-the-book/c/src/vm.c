@@ -144,7 +144,7 @@ static InterpretResult run(void) {
                 }
                 break;
             }
-            case OP_POP: 
+            case OP_POP:
                 if (size()) {
                     pop();
                 }
@@ -195,6 +195,11 @@ static InterpretResult run(void) {
             case OP_JUMP: {
                 int offset = READ_24BITS();
                 vm.ip += offset; // wat about negative
+                break;
+            }
+            case OP_NEG_JUMP: {
+                int offset = READ_24BITS();
+                vm.ip -= offset; // wat about negative
                 break;
             }
             case OP_JUMP_IF_FALSE: {

@@ -1,0 +1,14 @@
+while (false) {
+    print("nope");
+}
+var i = 1;
+var x = 1;
+while (i < 18) {
+    i = i + 1 ;
+    x = x * 2;
+    print(i);
+    print(x);
+    if (i > 20) { return; }
+}
+print("END OF LOOP:");
+print(x);

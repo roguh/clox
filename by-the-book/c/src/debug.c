@@ -88,6 +88,8 @@ int disInstruction(Chunk* chunk, int offset) {
             return jumpInstruction("OP_JUMP_IF_FALSE", 1, chunk, offset);
         case OP_JUMP:
             return jumpInstruction("OP_JUMP", 1, chunk, offset);
+        case OP_NEG_JUMP:
+            return jumpInstruction("OP_NEG_JUMP", -1, chunk, offset);
         case OP_NEG:
             return simpleInstruction("OP_NEG", offset);
         case OP_NOT:

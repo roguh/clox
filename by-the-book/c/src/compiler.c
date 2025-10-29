@@ -129,6 +129,15 @@ static void emitBytes(uint8_t b1, uint8_t b2) {
     emitByte(b2);
 }
 
+static int emitNegJump(int jumpTo) {
+    emitByte(OP_NEG_JUMP);
+    int offset = currentChunk() ->count - jumpTo + SIZE_OF_24BIT_ARGS;
+    if (offset > 1 << 24) {
+        error("Too much jump!");
+    }
+    write24Bit(currentChunk(), offset, parser.previous.line, parser.previous.line);
+}
+
 static int emitJump(OpCode instr) {
     emitByte(instr);
     write24Bit(currentChunk(), (unsigned)-1, parser.previous.line, parser.previous.line);
@@ -356,6 +365,19 @@ static void printStatement(void) {
     emitByte(OP_PRINT);
 }
 
+static void whileStatement(void) {
+    int loopStart = currentChunk()->count;
+    consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
+    expression();
+    consume(TOKEN_RIGHT_PAREN, "Expect ')' after 'while'.");
+    int exitJump = emitJump(OP_JUMP_IF_FALSE);
+    emitByte(OP_POP);
+    statement();
+    emitNegJump(loopStart);
+    patchJump(exitJump);
+    emitByte(OP_POP);
+}
+
 static void expressionStatement(void) {
     expression();
     consume(TOKEN_SEMICOLON, "Expect ';' after print.");
@@ -383,6 +405,11 @@ static void statement(void) {
         printStatement();
     } else if (match(TOKEN_IF)) {
         ifStatement();
+    } else if (match(TOKEN_WHILE)) {
+        whileStatement();
+    } else if (match(TOKEN_RETURN)) {
+        emitByte(OP_RETURN);
+        consume(TOKEN_SEMICOLON, "Expect ';' after return.");
     } else if (match(TOKEN_LEFT_BRACE)) {
         beginScope();
         block();
