@@ -129,7 +129,7 @@ static void emitBytes(uint8_t b1, uint8_t b2) {
     emitByte(b2);
 }
 
-static int emitNegJump(int jumpTo) {
+static void emitNegJump(int jumpTo) {
     emitByte(OP_NEG_JUMP);
     int offset = currentChunk() ->count - jumpTo + SIZE_OF_24BIT_ARGS;
     if (offset > 1 << 24) {
@@ -174,11 +174,11 @@ static void initCompiler(size_t size) {
     current = compiler;
 }
 
-static void freeCompiler() {
+static void freeCompiler(void) {
     free(current);
 }
 
-static void markInitialized() {
+static void markInitialized(void) {
     current->locals[current->localCount - 1].depth = current->scopeDepth;
 }
 
@@ -198,11 +198,11 @@ static void endCompiler(bool debugPrint) {
     }
 }
 
-static void beginScope() {
+static void beginScope(void) {
     current->scopeDepth++;
 }
 
-static void endScope() {
+static void endScope(void) {
     current->scopeDepth--;
     while (current->localCount > 0
         && current->locals[current->localCount - 1].depth > current->scopeDepth) {
@@ -289,7 +289,7 @@ static void expression(void) {
     parsePrecedence(PREC_ASSIGNMENT);
 }
 
-static void block() {
+static void block(void) {
     while (!(check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF))) {
         declaration();
     }
@@ -319,7 +319,7 @@ static void addLocal(Token name) {
     }
 }
 
-static void declareVariable() {
+static void declareVariable(void) {
     if (current->scopeDepth == 0) {
         return;
     }
