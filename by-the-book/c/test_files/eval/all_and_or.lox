@@ -1,0 +1,47 @@
+if (false and true) {
+    print("true");
+} else {
+    print("false");
+}
+
+if (true and false) {
+    print("true");
+} else {
+    print("false");
+}
+
+if (true and true) {
+    print("true");
+} else {
+    print("false");
+}
+
+if (false and false) {
+    print("true");
+} else {
+    print("false");
+}
+
+if (false or true) {
+    print("true");
+} else {
+    print("false");
+}
+
+if (true or false) {
+    print("true");
+} else {
+    print("false");
+}
+
+if (true or true) {
+    print("true");
+} else {
+    print("false");
+}
+
+if (false or false) {
+    print("true");
+} else {
+    print("false");
+}
