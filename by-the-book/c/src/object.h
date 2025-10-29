@@ -9,9 +9,12 @@
 #define AS_STRING(value) ((ObjString*)AS_OBJ(value))
 #define AS_CSTRING(value) (((ObjString*)AS_OBJ(value))->chars)
 #define STRING_LENGTH(value) (((ObjString*)AS_OBJ(value))->length)
+#define ARRAY_LENGTH(value) (((ObjArray*)AS_OBJ(value))->length)
 
 typedef enum {
     OBJ_STRING,
+    OBJ_ARRAY,
+    OBJ_HASHMAP,
     // TODO OBJ_ARRAY, OBJ_INT_ARRAY, OBJ_DOUBLE_ARRAY
     // TODO OBJ_HASHMAP
 } ObjType;
@@ -28,12 +31,26 @@ struct ObjString {
     char chars[];
 };
 
+struct ObjArray {
+    Obj obj;
+    size_t length;
+    size_t capacity;
+    Value values[];
+};
+
 static inline bool isObjType(Value value, ObjType type) {
     return IS_OBJ(value) && AS_OBJ(value)->type == type;
 }
 
 ObjString* copyString(const char* chars, size_t length);
 ObjString* allocateString(char* chars, size_t length, size_t hash);
+
+ObjArray* allocateArray(size_t capacity);
+ObjArray* reallocArray(ObjArray* array, size_t capacity);
+Value insertArray(ObjArray* array, size_t index, Value value); // might grow array, return old value or (nil?)
+Value removeArray(ObjArray* array, size_t index); // shift values, might shrink array, return old value or (nil?)
+Value getArray(ObjArray* array, size_t i); // bounds check!!!
+
 void freeObject(Obj* obj);
 
 #endif

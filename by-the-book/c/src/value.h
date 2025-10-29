@@ -5,6 +5,8 @@
 
 typedef struct Obj Obj;
 typedef struct ObjString ObjString;
+typedef struct ObjArray ObjArray;
+typedef struct ObjHashmap ObjHashmap;
 
 typedef enum {
     VAL_NIL,

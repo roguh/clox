@@ -38,6 +38,16 @@ void freeObject(Obj* obj) {
             free(string);
             break;
         }
+        case OBJ_ARRAY: {
+            ObjArray* array = (ObjArray*)obj;
+            free(array);
+            break;
+        }
+        case OBJ_HASHMAP: {
+            ObjHashmap* hashmap = (ObjHashmap*)obj;
+            hashmap_free(&hashmap->map);
+            free(hashmap);
+            break;
+        }
     }
 }
-

@@ -31,6 +31,9 @@ size_t hashAny(Value val) {
         case VAL_OBJ: {
             switch (AS_OBJ(val)->type) {
                 case OBJ_STRING: return AS_STRING(val)->hash;
+                // TODO raise error!
+                case OBJ_ARRAY: return 0;
+                case OBJ_HASHMAP: return 0;
             }
         }
     }
@@ -128,7 +131,7 @@ hashmap_item* _hashmap_get(hashmap_t* map, HASHMAP_KEY_TYPE key, size_t* _collis
     while (collisions < map->max_collisions) {
         hashmap_item* entry = &map->entries[index];
         // If the item contains the key and is not empty, return it
-        if (HASHMAP_EQUAL(entry->key, key) 
+        if (HASHMAP_EQUAL(entry->key, key)
                 || entry->empty) {
             if (_collisions) {
                 *_collisions = collisions;
@@ -167,7 +170,7 @@ ObjString* hashmap_get_str(hashmap_t* map, const char* chars, size_t length, siz
             return NULL;
         } else {
             ObjString* str_key = AS_STRING(entry.key);
-            if (str_key->length == length 
+            if (str_key->length == length
              && str_key->hash == hash
              && memcmp(str_key->chars, chars, length) == 0) {
                 return str_key;
@@ -325,4 +328,3 @@ bool hashmap_remove(hashmap_t* map, HASHMAP_KEY_TYPE key) {
     map->total--;
     return true;
 }
-
