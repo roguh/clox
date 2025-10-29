@@ -129,6 +129,25 @@ static void emitBytes(uint8_t b1, uint8_t b2) {
     emitByte(b2);
 }
 
+static int emitJump(OpCode instr) {
+    emitByte(instr);
+    write24Bit(currentChunk(), (unsigned)-1, parser.previous.line, parser.previous.line);
+    return currentChunk()->count - SIZE_OF_24BIT_ARGS;
+}
+
+static void patchJump(int offset) {
+    int jump = currentChunk()->count - offset - 3;
+    if (jump < 0) {
+        error("Negative jump!");
+    }
+    if (jump > 1 << 24) {
+        error("Too much jump!");
+    }
+    currentChunk()->code[offset + 0] = (uint8_t)((jump) & 0xff);
+    currentChunk()->code[offset + 1] = (uint8_t)((jump >> 8) & 0xff);
+    currentChunk()->code[offset + 2] = (uint8_t)((jump >> 16) & 0xff);
+}
+
 static int makeConstant(Value value) {
     int constant = addConstant(parser.thisChunk, value);
     return constant;
@@ -343,9 +362,27 @@ static void expressionStatement(void) {
     emitByte(OP_POP);
 }
 
+static void ifStatement(void) {
+    consume(TOKEN_LEFT_PAREN, "Expect '(' after 'if'.");
+    expression();
+    consume(TOKEN_RIGHT_PAREN, "Expect '(' after 'if'.");
+    int thenJump = emitJump(OP_JUMP_IF_FALSE);
+    emitByte(OP_POP);
+    statement();
+    int elseJump = emitJump(OP_JUMP);
+    patchJump(thenJump);
+    emitByte(OP_POP);
+    if (match(TOKEN_ELSE)) {
+        statement();
+    }
+    patchJump(elseJump);
+}
+
 static void statement(void) {
     if (match(TOKEN_PRINT)) {
         printStatement();
+    } else if (match(TOKEN_IF)) {
+        ifStatement();
     } else if (match(TOKEN_LEFT_BRACE)) {
         beginScope();
         block();

@@ -12,13 +12,19 @@ void disChunk(Chunk* chunk, const char* name) {
 
 static int constantByteInstruction(const char* name, Chunk* chunk, int offset) {
     uint8_t slot = chunk->code[offset + 1];
-    printf("%-16s %4d (local)\n", name, slot);
+    printf("%-16s %4d\n", name, slot);
     return offset + 2;
 }
 
 static int constantLongByteInstruction(const char* name, Chunk* chunk, int offset) {
     int slot = chunk->code[offset + 1] | chunk->code[offset + 2] << 8 | chunk->code[offset + 3] << 16;
-    printf("%-16s %4d (local)\n", name, slot);
+    printf("%-16s %4d\n", name, slot);
+    return offset + 4;
+}
+
+static int jumpInstruction(const char* name, int sign, Chunk* chunk, int offset) {
+    int jump = chunk->code[offset + 1] | chunk->code[offset + 2] << 8 | chunk->code[offset + 3] << 16;
+    printf("%-16s %4d -> %d\n", name, offset, offset + SIZE_OF_24BIT_ARGS + sign * jump);
     return offset + 4;
 }
 
@@ -78,6 +84,10 @@ int disInstruction(Chunk* chunk, int offset) {
             return constantByteInstruction("OP_SET_LOCAL", chunk, offset);
         case OP_SET_LOCAL_LONG:
             return constantLongByteInstruction("OP_SET_LOCAL_LONG", chunk, offset);
+        case OP_JUMP_IF_FALSE:
+            return jumpInstruction("OP_JUMP_IF_FALSE", 1, chunk, offset);
+        case OP_JUMP:
+            return jumpInstruction("OP_JUMP", 1, chunk, offset);
         case OP_NEG:
             return simpleInstruction("OP_NEG", offset);
         case OP_NOT:
@@ -124,6 +134,8 @@ int disInstruction(Chunk* chunk, int offset) {
             return simpleInstruction("OP_NIL", offset);
         case OP_TRUE:
             return simpleInstruction("OP_TRUE", offset);
+        case OP_INVALID:
+            return simpleInstruction("OP_INVALID", offset);
     }
     printf("unknown opcode %d\n", instruction);
     return offset + 1;

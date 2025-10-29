@@ -37,6 +37,12 @@ int addConstant(Chunk* chunk, Value value) {
     return chunk->constants.count - 1;
 }
 
+void write24Bit(Chunk* chunk, int offset, int line, int column) {
+    writeChunk(chunk, (uint8_t)((offset) & 0xff), line, column);
+    writeChunk(chunk, (uint8_t)((offset >> 8) & 0xff), line, column);
+    writeChunk(chunk, (uint8_t)((offset >> 16) & 0xff), line, column);
+}
+
 int writeConstantByOffset(Chunk* chunk, OpCode instr, OpCode instrLong, int offset, int line, int column) {
     if (chunk->constants.count < MIN_SIZE_TO_CONSTANT_LONG) {
         writeChunk(chunk, instr, line, column);
@@ -44,9 +50,7 @@ int writeConstantByOffset(Chunk* chunk, OpCode instr, OpCode instrLong, int offs
     } else {
         writeChunk(chunk, instrLong, line, column);
         // not only 1 but 3 bytes!
-        writeChunk(chunk, (uint8_t)offset, line, column);
-        writeChunk(chunk, (uint8_t)(offset >> 8), line, column);
-        writeChunk(chunk, (uint8_t)(offset >> 16), line, column);
+        write24Bit(chunk, offset, line, column);
     }
     return offset;
 }

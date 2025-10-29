@@ -132,6 +132,10 @@ static InterpretResult run(void) {
         }
         OpCode instruction;
         switch (instruction = READ_BYTE()) { // This switch is exhaustive!
+            case OP_INVALID: {
+                runtimeError("Unexpected null instruction!");
+                return INTERPRET_RUNTIME_ERROR;
+            }
             case OP_RETURN: return INTERPRET_OK;
             case OP_PRINT: {
                 if (size()) {
@@ -186,6 +190,18 @@ static InterpretResult run(void) {
             }
             case OP_EQUAL: {
                 push(BOOL_VAL(valuesEqual(pop(), pop())));
+                break;
+            }
+            case OP_JUMP: {
+                int offset = READ_24BITS();
+                vm.ip += offset; // wat about negative
+                break;
+            }
+            case OP_JUMP_IF_FALSE: {
+                int offset = READ_24BITS();
+                if (isFalsey(peek(0))) {
+                    vm.ip += offset; // wat about negative
+                }
                 break;
             }
             case OP_CONSTANT: push(READ_CONSTANT()); break;
