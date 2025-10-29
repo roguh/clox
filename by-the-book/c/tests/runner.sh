@@ -5,7 +5,7 @@ i=0
 BIN="${1:-./main}"
 
 echo "==== TOKENIZER TESTS ===="
-for f in $(ls test_files/lex/*.lox); do
+for f in $(ls tests/lex/*.lox); do
     echo "== TEST: $f =="
     name="${f%.*}"
     $BIN --lex "$(cat $f)" > "$name.out"
@@ -16,7 +16,7 @@ done
 echo
 echo
 echo "==== DISASSEMBLY TESTS ===="
-for f in $(ls test_files/disassemble/*.lox); do
+for f in $(ls tests/disassemble/*.lox); do
     echo "== TEST: $f =="
     name="${f%.*}"
     $BIN --dis "$(cat $f)" > "$name.out"
@@ -27,7 +27,7 @@ done
 echo
 echo
 echo "==== EXECUTION TESTS ===="
-for f in $(ls test_files/eval/*.lox); do
+for f in $(ls tests/eval/*.lox); do
     echo "== TEST: $f =="
     name="${f%.*}"
     $BIN "$f" > "$name.out"
