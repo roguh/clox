@@ -62,7 +62,7 @@ ObjArray* insertArray(ObjArray* array, int index, Value value) {
     if (index > array->length) {
         return array;
     }
-    if (array->length == array->capacity) {
+    if (array->length + 1 == array->capacity) {
         array = reallocArray(array, array->capacity * 2);
         array->capacity *= 2;
     }

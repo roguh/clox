@@ -89,6 +89,18 @@ static void concatenate(void) {
     push(OBJ_VAL(result));
 }
 
+static void concatenateArrays(void) {
+    ObjArray* b = AS_ARRAY(pop());
+    ObjArray* a = AS_ARRAY(pop());
+    size_t length = a->length + b->length;
+    // TODO make capacity a power of 2
+    ObjArray* result = allocateArray(length);
+    memcpy(result->values, a->values, a->length * sizeof(Value));
+    memcpy(result->values + a->length, b->values, b->length * sizeof(Value));
+    result->length = length;
+    push(OBJ_VAL(result));
+}
+
 static InterpretResult run(void) {
 #pragma GCC diagnostic ignored "-Wsequence-point"
 #define READ_BYTE() (vm.chunk->code[vm.ip++])
@@ -294,7 +306,15 @@ static InterpretResult run(void) {
                         runtimeError("Strings can only be added to other strings");
                         return INTERPRET_RUNTIME_ERROR;
                     }
+                    // TODO convert stuff to string
+                    // TODO string interpolation whooo, fast string builder?
                     concatenate();
+                } else if (IS_ARRAY(peek(0)) || IS_ARRAY(peek(1))) {
+                    if (!(IS_ARRAY(peek(0)) && IS_ARRAY(peek(1)))) {
+                        runtimeError("Arrays can only be added to other arrays");
+                        return INTERPRET_RUNTIME_ERROR;
+                    }
+                    concatenateArrays();
                 } else {
                     BIN_OP(+, DOUBLE_VAL, INTEGER_VAL);
                 }
