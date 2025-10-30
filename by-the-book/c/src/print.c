@@ -24,6 +24,9 @@ void printValueExtra(Value value, bool printQuotes) {
                 case OBJ_FUNCTION:
                     printFunction(AS_FUNCTION(value));
                     break;
+                case OBJ_NATIVE:
+                    printNative(AS_NATIVE(value));
+                    break;
                 case OBJ_STRING:
                     if (printQuotes) {
                         char qChar = '"';
@@ -69,9 +72,6 @@ void printValueExtra(Value value, bool printQuotes) {
                     hashmap_iter(&AS_HASHMAP(value)->map, printHashmapItem, NULL);
                     printf("}");
                     break;
-                default:
-                    printf("<unknown object>");
-                    break;
             }
         }
     }
@@ -83,5 +83,9 @@ void printValue(Value value) {
 
 void printFunction(ObjFunction* func) {
     printf("<fn %s>", func->name ? func->name->chars : "<no_name>");
+}
+
+void printNative(ObjNative* func) {
+    printf("<native %s>", func->name ? func->name->chars : "<no_name>");
 }
 

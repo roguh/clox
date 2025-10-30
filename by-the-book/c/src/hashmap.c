@@ -39,6 +39,10 @@ size_t hashAny(Value val) {
                     hashmap_debug("Unhashable type FUNCTION");
                     exit(99);
                 }
+                case OBJ_NATIVE: {
+                    hashmap_debug("Unhashable type NATIVE");
+                    exit(99);
+                }
                 case OBJ_ARRAY: {
                     hashmap_debug("Unhashable type ARRAY");
                     exit(99);

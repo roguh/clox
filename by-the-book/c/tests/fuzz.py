@@ -83,7 +83,7 @@ if "arithmetic" in out:
                             # expect = eval(eq)
                             print(
                                 # print({expect}=={eq});
-                                f"{{print(__line__);var a={a};var b={b};var c={c};print({eq});}}"
+                                f"{{print(__line__());var a={a};var b={b};var c={c};print({eq});}}"
                             )
 
 if "strings" in out:

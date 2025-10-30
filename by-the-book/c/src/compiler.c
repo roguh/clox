@@ -184,23 +184,24 @@ static int emitConstant(Value value) {
 }
 
 static void initCompiler(size_t localsSize, FunctionType type) {
+    ObjString* name;
+    if (type != TYPE_GLOBAL) {
+        name = copyString(
+            parser.previous.start,
+            parser.previous.length
+        );
+    } else {
+        name = copyString("<top_level>", sizeof("<top_level>"));
+    }
+
     Compiler* compiler = malloc(sizeof(Compiler) + sizeof(Local) * localsSize);
     compiler->enclosing = current;
-    compiler->function = newFunction();
+    compiler->function = newFunction(name);
     compiler->type = type;
     compiler->localCount = 0;
     compiler->scopeDepth = 0;
     compiler->localsSize = localsSize;
     current = compiler;
-
-    if (type != TYPE_GLOBAL) {
-        current->function->name = copyString(
-            parser.previous.start,
-            parser.previous.length
-        );
-    } else {
-        current->function->name = copyString("<top_level>", sizeof("<top_level>"));
-    }
 
     // Claim the first variable at the top of the stack for special reason
     Local* first = &current->locals[current->localCount++];

@@ -260,6 +260,16 @@ static void skipWhitespace(bool semicolonsAreWhitespace) {
                     break;
                 }
                 return;
+            case '#':
+                // Skip the shebang line in a script
+                if (peekNext() == '!') {
+                    while (!(peek() == '\n' || isAtEnd())) {
+                        advance();
+                    }
+                } else {
+                    return;
+                }
+                break;
             case '/':
                 if (peekNext() == '*') {
                     while (!((peek() == '*' && peekNext() == '/') || isAtEnd())) {

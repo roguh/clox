@@ -10,6 +10,9 @@
 #define IS_FUNCTION(value) isObjType(value, OBJ_FUNCTION)
 #define AS_FUNCTION(value) ((ObjFunction*)AS_OBJ(value))
 
+#define IS_NATIVE(value) isObjType(value, OBJ_NATIVE)
+#define AS_NATIVE(value) (((ObjNative*)AS_OBJ(value)))
+
 #define IS_STRING(value) isObjType(value, OBJ_STRING)
 #define AS_STRING(value) ((ObjString*)AS_OBJ(value))
 #define AS_CSTRING(value) (AS_STRING(value)->chars)
@@ -23,6 +26,7 @@
 
 typedef enum {
     OBJ_FUNCTION,
+    OBJ_NATIVE,
     OBJ_STRING,
     OBJ_ARRAY,
     OBJ_HASHMAP,
@@ -43,6 +47,18 @@ typedef struct {
     ObjString* docs;
 } ObjFunction;
 
+typedef Value (*NativeFn)(int argCount, Value* args);
+
+typedef struct {
+    Obj obj;
+    int arity;
+    NativeFn function;
+    ObjString* name;
+    // For debugging and documentation purposes
+    ObjString* paramNames;
+    ObjString* docs;
+} ObjNative;
+
 struct ObjString {
     Obj obj;
     size_t length;
@@ -61,7 +77,8 @@ static inline bool isObjType(Value value, ObjType type) {
     return IS_OBJ(value) && AS_OBJ(value)->type == type;
 }
 
-ObjFunction* newFunction(void);
+ObjFunction* newFunction(ObjString* name);
+ObjNative* newNative(ObjString* name, int arity, NativeFn func);
 
 ObjString* copyString(const char* chars, size_t length);
 ObjString* allocateString(char* chars, size_t length, size_t hash);

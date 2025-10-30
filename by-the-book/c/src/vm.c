@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
+#include <time.h>
 
 #include "common.h"
 #include "debug.h"
@@ -17,14 +18,42 @@ VM vm;
 
 #define runtimeError(...) { runtimeErrorLog(__VA_ARGS__); resetStack(); }
 
+static Value clockNative(int argCount, Value* args) {
+    return DOUBLE_VAL((double)clock() / CLOCKS_PER_SEC);
+}
+
+static Value lineNative(int argCount, Value* args) {
+    CallFrame* frame = &vm.frames[vm.frameCount - 1];
+    int line = frame->function->chunk.lines[frame->ip - frame->function->chunk.code - 1];
+    return INTEGER_VAL(line);
+}
+
+static Value colNative(int argCount, Value* args) {
+    CallFrame* frame = &vm.frames[vm.frameCount - 1];
+    int col = frame->function->chunk.columns[frame->ip - frame->function->chunk.code - 1];
+    return INTEGER_VAL(col);
+}
+
 static void resetStack(void) {
     vm.stackTop = vm.stack;
+}
+
+static void defineNative(const char* name, int arity, NativeFn function) {
+    ObjString* _name = copyString(name, strlen(name));
+    hashmap_add(
+        &vm.globals,
+        OBJ_VAL(_name),
+        OBJ_VAL(newNative(_name, arity, function))
+    );
 }
 
 void initVM(void) {
     resetStack();
     hashmap_init(&vm.strings, 1024, (hash_function)hashAny);
     hashmap_init(&vm.globals, 32, (hash_function)hashAny);
+    defineNative("clock", 0, clockNative);
+    defineNative("__line__", 0, lineNative);
+    defineNative("__col__", 0, colNative);
     vm.objects = NULL;
     vm.frameCount = 0;
 }
@@ -77,11 +106,14 @@ Value peek(int offset) {
     return vm.stackTop[-(offset + 1)];
 }
 
-static bool call(ObjFunction* func, int argCount) {
-    if (argCount != func->arity) {
-        runtimeError("%s() expected %d arguments but got %d.", func->name->chars, func->arity, argCount);
-        return false;
+#define ARITY_CHECK(func) \
+    if (argCount != func->arity) { \
+        runtimeError("%s() expected %d arguments but got %d.", func->name->chars, func->arity, argCount); \
+        return false; \
     }
+
+static bool call(ObjFunction* func, int argCount) {
+    ARITY_CHECK(func)
     if (vm.frameCount == FRAMES_MAX) {
         runtimeError("Stack overflow.");
         return false;
@@ -98,12 +130,61 @@ static bool callValue(Value callee, int argCount) {
         switch (OBJ_TYPE(callee)) {
             case OBJ_FUNCTION:
                 return call(AS_FUNCTION(callee), argCount);
-            default:
+            case OBJ_NATIVE: {
+                ObjNative* func = AS_NATIVE(callee);
+                ARITY_CHECK(func)
+                Value result = func->function(argCount, vm.stackTop - argCount);
+                vm.stackTop -= argCount + 1;
+                push(result);
+                return true;
+            }
+            case OBJ_STRING:
+            case OBJ_ARRAY:
+            case OBJ_HASHMAP:
                 break;
         }
     }
     runtimeError("Can only call functions and classes.");
     return false;
+}
+
+static bool subscript(Value key) {
+    if (IS_HASHMAP(peek(0))) {
+        ObjHashmap* hm = AS_HASHMAP(peek(0));
+        push(hashmap_get(&hm->map, key, NULL));
+        return true;
+    }
+    // TODO slices
+    if (!IS_INTEGER(key)) {
+        runtimeError("Array index must be an integer");
+        return false;
+    }
+    int i = AS_INTEGER(key);
+    if (IS_ARRAY(peek(0))) {
+        ObjArray* array = AS_ARRAY(peek(0));
+        if (i < 0) {
+            i = array->length + i;
+        }
+        if (i < 0 || i >= array->length) {
+            runtimeError("Array index out of bounds");
+            return false;
+        }
+        push(array->values[i]);
+    } else if (IS_STRING(peek(0))) {
+        ObjString* string = AS_STRING(peek(0));
+        if (i < 0) {
+            i = string->length + i;
+        }
+        if (i < 0 || i >= string->length) {
+            runtimeError("String index out of bounds");
+            return false;
+        }
+        push(OBJ_VAL(copyString(&string->chars[i], 1)));
+    } else {
+        runtimeError("Indexing into a non-array, non-string, non-hashmap value");
+        return false;
+    }
+    return true;
 }
 
 size_t size(void) {
@@ -212,6 +293,13 @@ static InterpretResult run(void) {
                 frame = &vm.frames[vm.frameCount - 1];
                 break;
             }
+            case OP_SUBSCRIPT: {
+                Value key = pop();
+                if (!subscript(key)) {
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                break;
+            }
             case OP_POP:
                 if (size()) {
                     pop();
@@ -235,16 +323,6 @@ static InterpretResult run(void) {
             case OP_GET_GLOBAL_LONG:
             case OP_GET_GLOBAL: {
                 ObjString* name = (instruction == OP_GET_GLOBAL) ? READ_STRING() : READ_STRING_LONG();
-                if (memcmp(name->chars, "__line__", name->length) == 0) {
-                    int line = frame->function->chunk.lines[*frame->ip];
-                    push(INTEGER_VAL(line));
-                    break;
-                }
-                if (memcmp(name->chars, "__col__", name->length) == 0) {
-                    int col = frame->function->chunk.columns[*frame->ip];
-                    push(INTEGER_VAL(col));
-                    break;
-                }
                 bool notFound = false;
                 Value value = hashmap_get(&vm.globals, OBJ_VAL(name), &notFound);
                 if (notFound) {
@@ -308,47 +386,6 @@ static InterpretResult run(void) {
                 Value key = pop();
                 ObjHashmap* hm = AS_HASHMAP(peek(0));
                 hashmap_add(&hm->map, key, value);
-                break;
-            }
-            case OP_SUBSCRIPT: {
-                Value key = pop();
-                if (IS_HASHMAP(peek(0))) {
-                    ObjHashmap* hm = AS_HASHMAP(peek(0));
-                    push(hashmap_get(&hm->map, key, NULL));
-                    break;
-                }
-
-                // TODO implement slices (absolutely scrumptious!)
-                if (!IS_INTEGER(key)) {
-                    runtimeError("Array index must be an integer");
-                    return INTERPRET_RUNTIME_ERROR;
-                }
-                int i = AS_INTEGER(key);
-
-                if (IS_ARRAY(peek(0))) {
-                    ObjArray* array = AS_ARRAY(peek(0));
-                    if (i < 0) {
-                        i = array->length + i;
-                    }
-                    if (i < 0 || i >= array->length) {
-                        runtimeError("Array index out of bounds");
-                        return INTERPRET_RUNTIME_ERROR;
-                    }
-                    push(array->values[i]);
-                } else if (IS_STRING(peek(0))) {
-                    ObjString* string = AS_STRING(peek(0));
-                    if (i < 0) {
-                        i = string->length + i;
-                    }
-                    if (i < 0 || i >= string->length) {
-                        runtimeError("String index out of bounds");
-                        return INTERPRET_RUNTIME_ERROR;
-                    }
-                    push(OBJ_VAL(copyString(&string->chars[i], 1)));
-                } else {
-                    runtimeError("Indexing into a non-array, non-string, non-hashmap value");
-                    return INTERPRET_RUNTIME_ERROR;
-                }
                 break;
             }
             case OP_CONSTANT: push(READ_CONSTANT()); break;

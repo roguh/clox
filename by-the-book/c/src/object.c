@@ -15,11 +15,20 @@ static Obj* allocateObj(size_t size, ObjType type) {
     return object;
 }
 
-ObjFunction* newFunction(void) {
+ObjFunction* newFunction(ObjString* name) {
     ObjFunction* func = (ObjFunction*)allocateObj(sizeof(ObjFunction), OBJ_FUNCTION);
     initChunk(&func->chunk);
     func->arity = 0;
+    func->name = name;
     return func;
+}
+
+ObjNative* newNative(ObjString* name, int arity, NativeFn func) {
+    ObjNative* native = (ObjNative*)allocateObj(sizeof(ObjNative), OBJ_NATIVE);
+    native->function = func;
+    native->name = name;
+    native->arity = arity;
+    return native;
 }
 
 ObjString* copyString(const char* chars, size_t length) {
@@ -99,6 +108,11 @@ void freeObject(Obj* obj) {
             ObjFunction* func = (ObjFunction*)obj;
             freeChunk(&func->chunk);
             free(func);
+            break;
+        }
+        case OBJ_NATIVE: {
+            ObjNative* native = (ObjNative*)obj;
+            free(native);
             break;
         }
         case OBJ_STRING: {

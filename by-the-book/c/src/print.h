@@ -9,5 +9,6 @@
 void printValueExtra(Value value, bool printQuotes);
 void printValue(Value value);
 void printFunction(ObjFunction* func);
+void printNative(ObjNative* func);
 
 #endif
