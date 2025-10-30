@@ -10,7 +10,7 @@
 #define STACK_MAX (FRAMES_MAX * UINT8_COUNT)
 
 typedef struct {
-    ObjFunction* function;
+    ObjFunction function;
     uint8_t* ip;
     Value* slots;
 } CallFrame;
@@ -35,10 +35,9 @@ extern VM vm;
 
 void initVM(void);
 void freeVM(void);
-InterpretResult compileAndPrint(const char* string);
+InterpretResult interpretOrPrint(const char* string, bool onlyPrint);
 InterpretResult interpret(const char* string);
 InterpretResult interpretChunk(Chunk* chunk);
-InterpretResult interpretStream(const char* program, Chunk* chunk);
 void push(Value value);
 Value pop(void);
 

@@ -67,8 +67,9 @@ static void runtimeErrorLog(const char* format, ...) {
     va_end(args);
     fputs("\n", stderr);
 
-    int line = vm.chunk->lines[vm.ip];
-    int col = vm.chunk->columns[vm.ip];
+    CallFrame frame = vm.frames[vm.frameCount - 1];
+    int line = frame.function.chunk.lines[*frame.ip];
+    int col = frame.function.chunk.columns[*frame.ip];
     fprintf(stderr, "    [%d:%d] in script\n", line, col);
 }
 
@@ -104,12 +105,14 @@ static void concatenateArrays(void) {
 }
 
 static InterpretResult run(void) {
+    // All on stack, no indirection. TODO cool?
     CallFrame frame = vm.frames[vm.frameCount - 1];
 
-#define READ_BYTE() (frame->ip++)
+#pragma GCC diagnostic ignored "-Wsequence-point"
+#define READ_BYTE() (*frame.ip++)
 #define READ_24BITS() (READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16)
-#define READ_CONSTANT() (frame.function->chunk.constants.values[READ_BYTE()])
-#define READ_CONSTANT_LONG() (frame.function->chunk.constants.values[READ_24BITS()])
+#define READ_CONSTANT() (frame.function.chunk.constants.values[READ_BYTE()])
+#define READ_CONSTANT_LONG() (frame.function.chunk.constants.values[READ_24BITS()])
 #define READ_STRING() AS_STRING(READ_CONSTANT())
 #define READ_STRING_LONG() AS_STRING(READ_CONSTANT_LONG())
 
@@ -143,7 +146,7 @@ static InterpretResult run(void) {
                 }
             }
             printf(" ]\n");
-            disInstruction(vm.chunk, vm.ip);
+            disInstruction(&frame.function.chunk, frame.ip - frame.function.chunk.code);
         }
         OpCode instruction;
         switch (instruction = READ_BYTE()) { // This switch is exhaustive!
@@ -183,12 +186,12 @@ static InterpretResult run(void) {
             case OP_GET_GLOBAL: {
                 ObjString* name = (instruction == OP_GET_GLOBAL) ? READ_STRING() : READ_STRING_LONG();
                 if (memcmp(name->chars, "__line__", name->length) == 0) {
-                    int line = vm.chunk->lines[vm.ip];
+                    int line = frame.function.chunk.lines[*frame.ip];
                     push(INTEGER_VAL(line));
                     break;
                 }
                 if (memcmp(name->chars, "__col__", name->length) == 0) {
-                    int col = vm.chunk->columns[vm.ip];
+                    int col = frame.function.chunk.columns[*frame.ip];
                     push(INTEGER_VAL(col));
                     break;
                 }
@@ -204,13 +207,13 @@ static InterpretResult run(void) {
             case OP_SET_LOCAL_LONG:
             case OP_SET_LOCAL: {
                 int slot = (instruction == OP_SET_LOCAL) ? READ_BYTE() : READ_24BITS();
-                vm.stack[slot] = peek(0);
+                frame.slots[slot] = peek(0);
                 break;
             }
             case OP_GET_LOCAL_LONG:
             case OP_GET_LOCAL: {
                 int slot = (instruction == OP_GET_LOCAL) ? READ_BYTE() : READ_24BITS();
-                push(frame->slots[slot]);
+                push(frame.slots[slot]);
                 break;
             }
             case OP_EQUAL: {
@@ -219,18 +222,18 @@ static InterpretResult run(void) {
             }
             case OP_JUMP: {
                 int offset = READ_24BITS();
-                vm.ip += offset; // wat about negative
+                frame.ip += offset; // wat about negative
                 break;
             }
             case OP_NEG_JUMP: {
                 int offset = READ_24BITS();
-                vm.ip -= offset; // wat about negative
+                frame.ip -= offset; // wat about negative
                 break;
             }
             case OP_JUMP_IF_FALSE: {
                 int offset = READ_24BITS();
                 if (isFalsey(peek(0))) {
-                    vm.ip += offset; // wat about negative
+                    frame.ip += offset; // wat about negative
                 }
                 break;
             }
@@ -365,43 +368,42 @@ static InterpretResult run(void) {
 }
 
 InterpretResult interpretChunk(Chunk* chunk) {
-    vm.chunk = chunk;
-    vm.ip = 0;
-    if (DEBUG_TRACE) {
-        printf("== running! ==\n");
-    }
+    initVM();
+    ObjFunction func;
+    func.chunk = *chunk;
+    func.arity = 0;
+    push(OBJ_VAL(&func));
+    CallFrame* frame = &vm.frames[vm.frameCount++];
+    frame->function = func;
+    frame->ip = func.chunk.code;
+    frame->slots = vm.stack;
     InterpretResult result = run();
     freeVM();
     return result;
 }
 
-InterpretResult compileAndPrint(const char* string) {
+InterpretResult interpretOrPrint(const char* string, bool printOnly) {
     initVM();
-    ObjFunction* func = compile(string, DEBUG_TRACE);
-    if (!func) {
+    ObjFunction* funcOrFail = compile(string, DEBUG_TRACE);
+    if (!funcOrFail) {
         return INTERPRET_COMPILE_ERROR;
     }
-    disChunk(&func->chunk, "compileAndPrint");
+    ObjFunction func = *funcOrFail;
+    if (printOnly) {
+        disChunk(&func.chunk, "compileAndPrint");
+        freeVM();
+        return INTERPRET_OK;
+    }
+    push(OBJ_VAL(&func));
+    CallFrame* frame = &vm.frames[vm.frameCount++];
+    frame->function = func;
+    frame->ip = func.chunk.code;
+    frame->slots = vm.stack;
+    InterpretResult result = run();
     freeVM();
-    return INTERPRET_OK;
+    return result;
 }
 
 InterpretResult interpret(const char* string) {
-    initVM();
-    ObjFunction* func = compile(string, DEBUG_TRACE);
-    if (!func) {
-        return INTERPRET_COMPILE_ERROR;
-    }
-    InterpretResult result = interpretChunk(&func->chunk);
-    return result;
-}
-
-InterpretResult interpretStream(const char* string, Chunk* _chunk) {
-    ObjFunction* func = compile(string, DEBUG_TRACE);
-    // func->chunk = *chunk; TODO HOW TO REPL!
-    if (!func) {
-        return INTERPRET_COMPILE_ERROR;
-    }
-    InterpretResult result = interpretChunk(&func->chunk);
-    return result;
+    return interpretOrPrint(string, false);
 }

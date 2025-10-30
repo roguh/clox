@@ -10,24 +10,15 @@ const char* VERSION = "v0.0.1";
 bool DEBUG_TRACE = false;
 
 static void repl(void) {
-    int chunk = 0;
-    Chunk chunks[1024] = {0};
     char line[1<<20] = {0};
-    initVM();
-    initChunk(&chunks[0]);
     while (true) {
         printf("> ");
         if (!fgets(line, sizeof(line), stdin)) {
             printf("\n");;
             break;
         }
-        interpretStream(line, &chunks[chunk]);
+        interpret(line);
     }
-    chunk = 1;
-    for (int i = 0; i < chunk; i++) {
-        freeChunk(&chunks[i]);
-    }
-    freeVM();
 }
 
 static char* readFile(const char* fname) {
@@ -110,7 +101,7 @@ int main(int argc, char** argv) {
             i++;
             ran = true;
         } else if (EQ(argv[i], "-d") || EQ(argv[i], "--dis")) {
-            compileAndPrint(argv[i + 1]);
+            interpretOrPrint(argv[i + 1], true);
             i++;
             ran = true;
         } else {
