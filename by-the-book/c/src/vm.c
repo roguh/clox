@@ -24,6 +24,7 @@ void initVM(void) {
     hashmap_init(&vm.strings, 1024, (hash_function)hashAny);
     hashmap_init(&vm.globals, 32, (hash_function)hashAny);
     vm.objects = NULL;
+    vm.frameCount = 0;
 }
 
 void freeVM(void) {
@@ -103,12 +104,12 @@ static void concatenateArrays(void) {
 }
 
 static InterpretResult run(void) {
-#pragma GCC diagnostic ignored "-Wsequence-point"
-#define READ_BYTE() (vm.chunk->code[vm.ip++])
+    CallFrame frame = vm.frames[vm.frameCount - 1];
 
-#define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
+#define READ_BYTE() (frame->ip++)
 #define READ_24BITS() (READ_BYTE() | READ_BYTE() << 8 | READ_BYTE() << 16)
-#define READ_CONSTANT_LONG() (vm.chunk->constants.values[READ_24BITS()])
+#define READ_CONSTANT() (frame.function->chunk.constants.values[READ_BYTE()])
+#define READ_CONSTANT_LONG() (frame.function->chunk.constants.values[READ_24BITS()])
 #define READ_STRING() AS_STRING(READ_CONSTANT())
 #define READ_STRING_LONG() AS_STRING(READ_CONSTANT_LONG())
 
@@ -209,7 +210,7 @@ static InterpretResult run(void) {
             case OP_GET_LOCAL_LONG:
             case OP_GET_LOCAL: {
                 int slot = (instruction == OP_GET_LOCAL) ? READ_BYTE() : READ_24BITS();
-                push(vm.stack[slot]);
+                push(frame->slots[slot]);
                 break;
             }
             case OP_EQUAL: {
