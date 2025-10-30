@@ -8,7 +8,6 @@ while (i < 18) {
     x = x * 2;
     print(i);
     print(x);
-    if (i > 20) { return; }
 }
 print("END OF LOOP:");
 print(x);

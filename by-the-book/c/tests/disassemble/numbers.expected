@@ -1,12 +1,13 @@
 == compileAndPrint ==
-0000    1 OP_CONSTANT         0 '3.14159265'
-0002    | OP_POP
-0003    | OP_CONSTANT         1 '0'
-0005    | OP_POP
-0006    | OP_CONSTANT         2 '1'
-0008    | OP_POP
-0009    | OP_CONSTANT         3 '5'
-0011    | OP_POP
-0012    | OP_CONSTANT         4 '-559038737'
-0014    | OP_POP
-0015    | OP_RETURN
+0000    1:10   OP_CONSTANT         0 '3.14159265'
+0002    1:11   OP_POP
+0003    1:15   OP_CONSTANT         1 '0'
+0005    1:16   OP_POP
+0006    1:18   OP_CONSTANT         2 '1'
+0008    1:19   OP_POP
+0009    1:23   OP_CONSTANT         3 '5'
+0011    1:24   OP_POP
+0012    1:35   OP_CONSTANT         4 '-559038737'
+0014    1:36   OP_POP
+0015    1:36   OP_NIL
+0016    1:36   OP_RETURN

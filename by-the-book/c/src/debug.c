@@ -53,11 +53,7 @@ static int simpleInstruction(const char* name, int offset) {
 
 int disInstruction(Chunk* chunk, int offset) {
     printf("%04d ", offset);
-    if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]) {
-        printf("   | ");
-    } else {
-        printf("% 4d ", chunk->lines[offset]);
-    }
+    printf("% 4d:%-4d ", chunk->lines[offset], chunk->columns[offset]);
     OpCode instruction = chunk->code[offset];
     switch (instruction) {
         case OP_RETURN:
@@ -130,6 +126,8 @@ int disInstruction(Chunk* chunk, int offset) {
             return simpleInstruction("OP_RIGHT_SHIFT", offset);
         case OP_PRINT:
             return simpleInstruction("OP_PRINT", offset);
+        case OP_CALL:
+            return simpleInstruction("OP_CALL", offset);
         case OP_POP:
             return simpleInstruction("OP_POP", offset);
         case OP_FALSE:

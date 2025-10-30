@@ -18,6 +18,7 @@ static Obj* allocateObj(size_t size, ObjType type) {
 ObjFunction* newFunction(void) {
     ObjFunction* func = (ObjFunction*)allocateObj(sizeof(ObjFunction), OBJ_FUNCTION);
     initChunk(&func->chunk);
+    func->arity = 0;
     return func;
 }
 

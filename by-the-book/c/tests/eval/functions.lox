@@ -1,0 +1,12 @@
+fun krabs(a,b){
+    print("YES!"); print(a); print(b); return a * b;
+}
+print(krabs);
+fun having() {
+ yet();
+}
+fun yet() {
+ print(krabs(22, 33));
+}
+having();
+

@@ -82,6 +82,6 @@ void printValue(Value value) {
 }
 
 void printFunction(ObjFunction* func) {
-    printf("<fn %s>", func->name ? func->name->chars : "<top_level>");
+    printf("<fn %s>", func->name ? func->name->chars : "<no_name>");
 }
 
