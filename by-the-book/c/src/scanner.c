@@ -88,6 +88,13 @@ static char peekNext(void) {
     return *(scanner.current + 1);
 }
 
+static char peekNextNext(void) {
+    if (isAtEnd() || peekNext() == '\0') {
+        return '\0';
+    }
+    return *(scanner.current + 2);
+}
+
 static bool isDigit(char c, bool hex) {
     if (hex && ((c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
         return true;
@@ -237,7 +244,7 @@ static Token string(StringType ty) {
     return makeToken(TOKEN_STRING);
 }
 
-static void skipWhitespace(void) {
+static void skipWhitespace(bool semicolonsAreWhitespace) {
     while (true) {
         char c = peek();
         switch (c) {
@@ -247,6 +254,12 @@ static void skipWhitespace(void) {
             case '\r':
                 advance();
                 break;
+            case ';':
+                if (semicolonsAreWhitespace) {
+                    advance();
+                    break;
+                }
+                return;
             case '/':
                 if (peekNext() == '*') {
                     while (!((peek() == '*' && peekNext() == '/') || isAtEnd())) {
@@ -271,7 +284,7 @@ static void skipWhitespace(void) {
 }
 
 Token scanToken(void) {
-    skipWhitespace();
+    skipWhitespace(false);
     scanner.startLine = scanner.line;
     scanner.startColumn = scanner.column;
     scanner.start = scanner.current;
@@ -301,7 +314,14 @@ Token scanToken(void) {
         case '.': return makeToken(TOKEN_DOT);
         case '-': return makeToken(TOKEN_MINUS);
         case '+': return makeToken(TOKEN_PLUS);
-        case ';': return makeToken(TOKEN_SEMICOLON);
+        case ';': {
+            Token t = makeToken(TOKEN_SEMICOLON);
+            skipWhitespace(false);
+            if (peek() == ';' && peekNext() == ';' && peekNextNext() == ';') {
+                skipWhitespace(true);
+            }
+            return t;
+        }
         case '#': return makeToken(TOKEN_SIZE);
         case '&': return makeToken(TOKEN_BITAND);
         case '|': return makeToken(TOKEN_BITOR);
