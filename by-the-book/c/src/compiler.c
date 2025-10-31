@@ -63,12 +63,14 @@ typedef struct Compiler {
     ObjFunction* function;
     FunctionType type;
     struct Compiler* enclosing;
+    struct Compiler* next;
     // This field must always be at the end
     Local locals[];
 } Compiler;
 
 Parser parser;
 Compiler* current = NULL;
+Compiler* root = NULL;
 
 static void errorAt(Token* token, const char* message) {
     if (parser.panicMode) {
@@ -194,14 +196,16 @@ static void initCompiler(size_t localsSize, FunctionType type) {
         name = copyString("<top_level>", sizeof("<top_level>"));
     }
 
-    Compiler* compiler = malloc(sizeof(Compiler) + sizeof(Local) * localsSize);
+    Compiler* compiler = calloc(sizeof(Compiler) + sizeof(Local) * localsSize, 1);
     compiler->enclosing = current;
-    compiler->function = newFunction(name);
+    compiler->function = newFunction(name, NULL);
     compiler->type = type;
     compiler->localCount = 0;
     compiler->scopeDepth = 0;
     compiler->localsSize = localsSize;
     current = compiler;
+    compiler->next = root;
+    root = compiler;
 
     // Claim the first variable at the top of the stack for special reason
     Local* first = &current->locals[current->localCount++];
@@ -211,7 +215,13 @@ static void initCompiler(size_t localsSize, FunctionType type) {
 }
 
 static void freeCompiler(void) {
-    free(current);
+    Compiler* compiler = root;
+    while (compiler != NULL) {
+        Compiler* next = compiler->next;
+        free(compiler);
+        compiler = next;
+    }
+
 }
 
 static void markInitialized(void) {
@@ -372,7 +382,7 @@ static void addLocal(Token name) {
     local->name = name;
     // First, it starts uninitialized
     local->depth = -1;
-    // TODO realloc if too many locals
+    // TODO re-all if too many locals
     if (current->localCount == 1024) {
         error("Too many local variables.");
         return ;

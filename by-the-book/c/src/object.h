@@ -25,6 +25,7 @@
 #define IS_HASHMAP(value) isObjType(value, OBJ_HASHMAP)
 
 typedef enum {
+    OBJ_NEVER,
     OBJ_FUNCTION,
     OBJ_NATIVE,
     OBJ_STRING,
@@ -77,7 +78,7 @@ static inline bool isObjType(Value value, ObjType type) {
     return IS_OBJ(value) && AS_OBJ(value)->type == type;
 }
 
-ObjFunction* newFunction(ObjString* name);
+ObjFunction* newFunction(ObjString* name, const Chunk* optionalChunk);
 ObjNative* newNative(ObjString* name, int arity, NativeFn func);
 
 ObjString* copyString(const char* chars, size_t length);

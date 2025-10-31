@@ -47,6 +47,7 @@ bool valuesEqual(Value a, Value b) {
         return false;
     }
     switch (a.type) { // Exhaustive
+        case VAL_NEVER: return false;
         case VAL_NIL: return a.type == b.type;
         case VAL_INT: return AS_INTEGER(a) == AS_INTEGER(b);
         case VAL_DOUBLE: return AS_DOUBLE(a) == AS_DOUBLE(b);

@@ -44,11 +44,8 @@ void testRun1(void) {
     Chunk chunk;
     initChunk(&chunk);
     writeChunk(&chunk, OP_RETURN, 123, 12);
-    initVM();
     int result = interpretChunk(&chunk);
-    freeVM();
     printf("execution result: %d\n", result);
-    freeChunk(&chunk);
 }
 
 void testRun2(void) {
@@ -58,11 +55,8 @@ void testRun2(void) {
     writeChunk(&chunk, OP_NEG, 123, 12);
     writeChunk(&chunk, OP_RETURN, 123, 12);
 
-    initVM();
     int result = interpretChunk(&chunk);
-    freeVM();
     printf("execution result: %d\n", result);
-    freeChunk(&chunk);
 }
 
 void testRun3(void) {
@@ -86,11 +80,8 @@ void testRun3(void) {
     writeChunk(&chunk, OP_PRINT, 123, 12);
     writeChunk(&chunk, OP_RETURN, 123, 12);
 
-    initVM();
     int result = interpretChunk(&chunk);
-    freeVM();
     printf("execution result: %d\n", result);
-    freeChunk(&chunk);
 }
 
 void testAll(void) {

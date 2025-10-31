@@ -48,14 +48,21 @@ static void defineNative(const char* name, int arity, NativeFn function) {
 }
 
 void initVM(void) {
+    // vm.frameCount
+    vm.frameCount = 0;
+    // vm.stack and vm.stackTop
     resetStack();
-    hashmap_init(&vm.strings, 1024, (hash_function)hashAny);
+    // vm.objects
+    vm.objects = NULL;
+    // vm.globals
     hashmap_init(&vm.globals, 32, (hash_function)hashAny);
+    // vm.strings
+    hashmap_init(&vm.strings, 1024, (hash_function)hashAny);
+
+    // Put these AFTER defining VM
     defineNative("clock", 0, clockNative);
     defineNative("__line__", 0, lineNative);
     defineNative("__col__", 0, colNative);
-    vm.objects = NULL;
-    vm.frameCount = 0;
 }
 
 void freeVM(void) {
@@ -138,6 +145,7 @@ static bool callValue(Value callee, int argCount) {
                 push(result);
                 return true;
             }
+            case OBJ_NEVER:
             case OBJ_STRING:
             case OBJ_ARRAY:
             case OBJ_HASHMAP:
@@ -454,13 +462,13 @@ static InterpretResult run(void) {
     }
 }
 
+// This function takes ownership of chunk and will call freeChunk!
 InterpretResult interpretChunk(Chunk* chunk) {
     initVM();
-    ObjFunction func;
-    func.chunk = *chunk;
-    func.arity = 0;
-    push(OBJ_VAL(&func));
-    call(&func, 0);
+    ObjString* name = copyString("interpretChunk", sizeof("interpretChunk"));
+    ObjFunction* func = newFunction(name, chunk);
+    push(OBJ_VAL(func));
+    call(func, 0);
     InterpretResult result = run();
     freeVM();
     return result;

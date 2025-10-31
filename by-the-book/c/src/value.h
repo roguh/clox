@@ -9,6 +9,7 @@ typedef struct ObjArray ObjArray;
 typedef struct ObjHashmap ObjHashmap;
 
 typedef enum {
+    VAL_NEVER,
     VAL_NIL,
     VAL_DOUBLE,
     VAL_INT,

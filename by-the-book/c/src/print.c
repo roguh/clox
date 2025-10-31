@@ -15,12 +15,14 @@ void printHashmapItem(hashmap_t* map, long unsigned int index, Value key, Value 
 
 void printValueExtra(Value value, bool printQuotes) {
     switch (value.type) { // Exhaustive
+        case VAL_NEVER: printf("(VAL null or uninitialized?)"); break;
         case VAL_NIL: printf("nil"); break;
         case VAL_DOUBLE: printf("%.16lg", AS_DOUBLE(value)); break;
         case VAL_INT: printf("%d", AS_INTEGER(value)); break;
         case VAL_BOOL: printf("%s", AS_BOOL(value) ? "true" : "false"); break;
         case VAL_OBJ: {
             switch (AS_OBJ(value)->type) {
+                case OBJ_NEVER: printf("(OBJ null or uninitialized?)"); break;
                 case OBJ_FUNCTION:
                     printFunction(AS_FUNCTION(value));
                     break;

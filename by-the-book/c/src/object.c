@@ -15,9 +15,12 @@ static Obj* allocateObj(size_t size, ObjType type) {
     return object;
 }
 
-ObjFunction* newFunction(ObjString* name) {
+ObjFunction* newFunction(ObjString* name, const Chunk* optionalChunk) {
     ObjFunction* func = (ObjFunction*)allocateObj(sizeof(ObjFunction), OBJ_FUNCTION);
     initChunk(&func->chunk);
+    if (optionalChunk) {
+        func->chunk = *optionalChunk;
+    }
     func->arity = 0;
     func->name = name;
     return func;
@@ -104,6 +107,9 @@ Value removeArray(ObjArray* array, int index); // shift values, might shrink arr
 
 void freeObject(Obj* obj) {
     switch (obj->type) {
+        case OBJ_NEVER: {
+            break;
+        }
         case OBJ_FUNCTION: {
             ObjFunction* func = (ObjFunction*)obj;
             freeChunk(&func->chunk);

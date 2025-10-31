@@ -26,6 +26,10 @@ size_t hashInt(unsigned int elem) {
 
 size_t hashAny(Value val) {
     switch (val.type) { // Exhaustive!
+        case VAL_NEVER: {
+            hashmap_debug("Unhashable type VAL_NEVER");
+            exit(99);
+        }
         case VAL_NIL: return hashInt(0);
         case VAL_DOUBLE: return hashInt(AS_INTEGER(val));
         case VAL_INT: return hashInt(AS_INTEGER(val));
@@ -35,6 +39,10 @@ size_t hashAny(Value val) {
                 case OBJ_STRING: return AS_STRING(val)->hash;
                 // TODO raise error!
                 // TODO objectName()
+                case OBJ_NEVER: {
+                    hashmap_debug("Unhashable type OBJ_NEVER");
+                    exit(99);
+                }
                 case OBJ_FUNCTION: {
                     hashmap_debug("Unhashable type FUNCTION");
                     exit(99);
@@ -95,7 +103,7 @@ size_t hashmap_len(hashmap_t* map) {
 }
 
 void _hashmap_free_entries(hashmap_t* map) {
-    // Might need to free items, e.g. if keys/values are malloc'd
+    // The user will need to free items if keys or values are heap allocated
     free(map->entries);
     map->entries = NULL;
 }
