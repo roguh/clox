@@ -130,6 +130,8 @@ int disInstruction(Chunk* chunk, int offset) {
             return simpleInstruction("OP_CALL", offset);
         case OP_POP:
             return simpleInstruction("OP_POP", offset);
+        case OP_SWAP:
+            return simpleInstruction("OP_SWAP", offset);
         case OP_FALSE:
             return simpleInstruction("OP_FALSE", offset);
         case OP_NIL:

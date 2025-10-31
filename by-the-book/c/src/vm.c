@@ -145,10 +145,7 @@ static bool callValue(Value callee, int argCount) {
                 push(result);
                 return true;
             }
-            case OBJ_NEVER:
-            case OBJ_STRING:
-            case OBJ_ARRAY:
-            case OBJ_HASHMAP:
+            default: // Safe to automatically assume all other types are no callable
                 break;
         }
     }
@@ -156,43 +153,115 @@ static bool callValue(Value callee, int argCount) {
     return false;
 }
 
+static bool slice(Value key) {
+    if (!IS_ARRAY(key)) {
+        runtimeError("Invalid array slice");
+        return false;
+    }
+    ObjArray* arr = AS_ARRAY(key);
+    ObjType ty = AS_OBJ(peek(0))->type;
+    switch (ty) {
+        case OBJ_STRING_VIEW: break;
+        case OBJ_STRING: {
+            ObjString* string = AS_STRING(pop());
+
+    int start = 0;
+    int end = string->length;
+    if (arr->length == 0) {
+    } else if (arr->length == 1) {
+        start = AS_INTEGER(AS_ARRAY(key)->values[0]);
+    } else if (arr->length == 2) {
+        start = AS_INTEGER(AS_ARRAY(key)->values[0]);
+        end = AS_INTEGER(AS_ARRAY(key)->values[1]);
+    } else {
+        runtimeError("Cannot slice with more than two indices");
+        return false;
+    }
+
+            if (end < 0) {
+                end = string->length - (-end);
+                if (end < 0) {
+                    end = 0;
+                }
+            }
+            if (start > end || start > string->length) {
+                end = 0;
+                start = 0;
+            }
+            push(OBJ_VAL(getStringView(string, start, end - start)));
+            return true;
+        }
+        case OBJ_ARRAY: {
+            return true;
+        }
+        case OBJ_HASHMAP:
+            runtimeError("Cannot slice into hashmap yet");
+            return false;
+        case OBJ_NEVER:
+            runtimeError("Slicing into a non-initialized object");
+            return false;
+        case OBJ_FUNCTION:
+        case OBJ_NATIVE:
+            runtimeError("Indexing into a non-array, non-string, non-hashmap value");
+            return false;
+    }
+    runtimeError("Unreachable code in slice(), unexpected object?");
+    return false;
+}
+
 static bool subscript(Value key) {
+    if (IS_ARRAY(key)) {
+        return slice(key);
+    }
     if (IS_HASHMAP(peek(0))) {
-        ObjHashmap* hm = AS_HASHMAP(peek(0));
+        ObjHashmap* hm = AS_HASHMAP(pop());
         push(hashmap_get(&hm->map, key, NULL));
         return true;
     }
-    // TODO slices
-    if (!IS_INTEGER(key)) {
-        runtimeError("Array index must be an integer");
+    if (!(IS_INTEGER(key) || IS_ARRAY(key))) {
+        runtimeError("Array index must be an integer or a slice");
         return false;
     }
     int i = AS_INTEGER(key);
-    if (IS_ARRAY(peek(0))) {
-        ObjArray* array = AS_ARRAY(peek(0));
-        if (i < 0) {
-            i = array->length + i;
+    ObjType ty = AS_OBJ(peek(0))->type;
+    switch (ty) {
+        case OBJ_STRING:
+        case OBJ_STRING_VIEW: {
+            ObjString* string = AS_STRING(pop());
+            if (i < 0) {
+                i = string->length + i;
+            }
+            if (i < 0 || i >= string->length) {
+                runtimeError("String index %d out of bounds", i);
+                return false;
+            }
+            push(OBJ_VAL(copyString(&string->chars[i], 1)));
+            return true;
         }
-        if (i < 0 || i >= array->length) {
-            runtimeError("Array index out of bounds");
+        case OBJ_ARRAY: {
+            ObjArray* array = AS_ARRAY(pop());
+            if (i < 0) {
+                i = array->length + i;
+            }
+            if (i < 0 || i >= array->length) {
+                runtimeError("Array index %d out of bounds", i);
+                return false;
+            }
+            push(array->values[i]);
+            return true;
+        }
+        case OBJ_HASHMAP:
+            return true;
+        case OBJ_NEVER:
+            runtimeError("Indexing into a non-initialized object");
             return false;
-        }
-        push(array->values[i]);
-    } else if (IS_STRING(peek(0))) {
-        ObjString* string = AS_STRING(peek(0));
-        if (i < 0) {
-            i = string->length + i;
-        }
-        if (i < 0 || i >= string->length) {
-            runtimeError("String index out of bounds");
+        case OBJ_FUNCTION:
+        case OBJ_NATIVE:
+            runtimeError("Indexing into a non-array, non-string, non-hashmap value");
             return false;
-        }
-        push(OBJ_VAL(copyString(&string->chars[i], 1)));
-    } else {
-        runtimeError("Indexing into a non-array, non-string, non-hashmap value");
-        return false;
     }
-    return true;
+    runtimeError("Unreachable code in subscript(), unexpected object?");
+    return false;
 }
 
 size_t size(void) {
@@ -308,6 +377,15 @@ static InterpretResult run(void) {
                 }
                 break;
             }
+            case OP_SWAP: {
+                if (size()) {
+                    Value a = pop();
+                    Value b = pop();
+                    push(a);
+                    push(b);
+                }
+                break;
+            }
             case OP_POP:
                 if (size()) {
                     pop();
@@ -398,7 +476,6 @@ static InterpretResult run(void) {
             }
             case OP_CONSTANT: push(READ_CONSTANT()); break;
             case OP_CONSTANT_LONG: push(READ_CONSTANT_LONG()); break;
-            case OP_NEG: push(DOUBLE_VAL(-pop_double())); break;
             case OP_NOT: push(BOOL_VAL(isFalsey(pop()))); break;
             case OP_BITNEG: push(INTEGER_VAL(~pop_int())); break;
             case OP_SIZE: if (IS_STRING(peek(0))) {
@@ -433,11 +510,12 @@ static InterpretResult run(void) {
                 }
                 break;
             }
+            case OP_NEG: push(INTEGER_VAL(-1)); BIN_OP(*, DOUBLE_VAL, INTEGER_VAL); break;
             case OP_SUB: BIN_OP(-, DOUBLE_VAL, INTEGER_VAL); break;
             case OP_MUL: BIN_OP(*, DOUBLE_VAL, INTEGER_VAL); break;
             case OP_DIV: {
                 if (AS_DOUBLE(peek(0)) == 0.0) {
-                    runtimeErrorLog("Ignoring division by zero! Returning infinity.");
+                    runtimeError("Ignoring division by zero! Returning infinity.");
                     pop();
                     pop();
                     push(DOUBLE_VAL(INFINITY));

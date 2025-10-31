@@ -13,6 +13,37 @@ void printHashmapItem(hashmap_t* map, long unsigned int index, Value key, Value 
     }
 }
 
+void printString(const char* chars, size_t length, bool printQuotes) {
+    if (printQuotes) {
+        char qChar = '"';
+        bool escapeQuotes = false;
+        for (int i = 0; i < length; i++) {
+            if (chars[i] == '"') {
+                qChar = '\'';
+            }
+            if (qChar == '\'' && chars[i] == '\'') {
+                escapeQuotes = true;
+            }
+        }
+        if (escapeQuotes) {
+            printf("\"");
+            for (int i = 0; i < length; i++) {
+                char c = chars[i];
+                if (c == '"') {
+                    printf("\\\"");
+                } else {
+                    printf("%c", c);
+                }
+            }
+            printf("\"");
+        } else {
+            printf("%c%.*s%c", qChar, (int)length, chars, qChar);
+        }
+    } else {
+        printf("%.*s", (int)length, chars);
+    }
+}
+
 void printValueExtra(Value value, bool printQuotes) {
     switch (value.type) { // Exhaustive
         case VAL_NEVER: printf("(VAL null or uninitialized?)"); break;
@@ -30,34 +61,10 @@ void printValueExtra(Value value, bool printQuotes) {
                     printNative(AS_NATIVE(value));
                     break;
                 case OBJ_STRING:
-                    if (printQuotes) {
-                        char qChar = '"';
-                        bool escapeQuotes = false;
-                        for (int i = 0; i < AS_STRING(value)->length; i++) {
-                            if (AS_CSTRING(value)[i] == '"') {
-                                qChar = '\'';
-                            }
-                            if (qChar == '\'' && AS_CSTRING(value)[i] == '\'') {
-                                escapeQuotes = true;
-                            }
-                        }
-                        if (escapeQuotes) {
-                            printf("\"");
-                            for (int i = 0; i < AS_STRING(value)->length; i++) {
-                                char c = AS_CSTRING(value)[i];
-                                if (c == '"') {
-                                    printf("\\\"");
-                                } else {
-                                    printf("%c", c);
-                                }
-                            }
-                            printf("\"");
-                        } else {
-                            printf("%c%s%c", qChar, AS_CSTRING(value), qChar);
-                        }
-                    } else {
-                        printf("%s", AS_CSTRING(value));
-                    }
+                    printString(AS_STRING(value)->chars, AS_STRING(value)->length, printQuotes);
+                    break;
+                case OBJ_STRING_VIEW:
+                    printString(AS_STRING_VIEW(value)->chars, AS_STRING(value)->length, printQuotes);
                     break;
                 case OBJ_ARRAY:
                     printf("[");

@@ -10,6 +10,7 @@ void* reallocate(void* pointer, size_t oldSize, size_t newSize) {
         free(pointer);
         return NULL;
     }
+    // TODO calloc not malloc? OR memset any new memory to 0
     return realloc(pointer, newSize);
 }
 

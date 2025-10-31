@@ -9,7 +9,7 @@ typedef struct ObjArray ObjArray;
 typedef struct ObjHashmap ObjHashmap;
 
 typedef enum {
-    VAL_NEVER,
+    VAL_NEVER,  // Sentinel at enum value 0 to detect uninitialized memory
     VAL_NIL,
     VAL_DOUBLE,
     VAL_INT,

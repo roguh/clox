@@ -58,10 +58,29 @@ ObjHashmap* allocateHashmap(size_t capacity) {
 
 ObjArray* allocateArray(size_t capacity) {
     ObjArray* array = (ObjArray*)allocateObj(sizeof(ObjArray), OBJ_ARRAY);
-    array->capacity = capacity;
     array->length = 0;
+    array->capacity = capacity;
     array->values = (Value*)calloc(capacity, sizeof(Value));
     return array;
+}
+
+ObjStringView* getStringView(ObjString* origin, int index, size_t length) {
+    // Empty string views are allowed
+
+    // Avoid interning the substring (string view), if the user wants this they can convert to ObjString
+    // This ObjString should already be interned
+    if (length > origin->length) {
+        ERR_PRINT("CANNOT (yet) STRINGVIEW PAST LENGTH OF ORIGIN %zu > %zu\n", length, origin->length);
+        exit(1);
+    }
+    const char* chars = origin->chars + index;
+    size_t hash = hashString(chars, length);
+    ObjStringView* sv = (ObjStringView*)allocateObj(sizeof(ObjStringView), OBJ_STRING_VIEW);
+    sv->length = length;
+    sv->hash = hash;
+    sv->chars = chars;
+    sv->origin = origin;
+    return sv;
 }
 
 void reallocArray(ObjArray* array, size_t capacity) {
@@ -85,7 +104,7 @@ void insertArray(ObjArray* array, int index, Value value) {
         return;
     }
     if (array->length + 1 == array->capacity) {
-        ERR_PRINT("Array: Growing capacity from %zu to %zu\n", array->capacity, array->capacity * 2);
+        // ERR_PRINT("Array: Growing capacity from %zu to %zu\n", array->capacity, array->capacity * 2);
         reallocArray(array, array->capacity * 2);
     }
     array->values[index] = value;
@@ -124,6 +143,11 @@ void freeObject(Obj* obj) {
         case OBJ_STRING: {
             ObjString* string = (ObjString*)obj;
             free(string);
+            break;
+        }
+        case OBJ_STRING_VIEW: {
+            ObjStringView* sv = (ObjStringView*)obj;
+            free(sv);
             break;
         }
         case OBJ_ARRAY: {

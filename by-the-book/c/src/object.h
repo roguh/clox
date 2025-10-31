@@ -18,6 +18,10 @@
 #define AS_CSTRING(value) (AS_STRING(value)->chars)
 #define STRING_LENGTH(value) (AS_STRING(value)->length)
 
+#define IS_STRING_VIEW(value) isObjType(value, OBJ_STRING_VIEW)
+#define AS_STRING_VIEW(value) ((ObjStringView*)AS_OBJ(value))
+#define STRING_VIEW_LENGTH(value) (AS_STRINGIEW(value)->length)
+
 #define IS_ARRAY(value) isObjType(value, OBJ_ARRAY)
 #define AS_ARRAY(value) (((ObjArray*)AS_OBJ(value)))
 #define ARRAY_LENGTH(value) (AS_ARRAY(value)->length)
@@ -25,10 +29,11 @@
 #define IS_HASHMAP(value) isObjType(value, OBJ_HASHMAP)
 
 typedef enum {
-    OBJ_NEVER,
+    OBJ_NEVER,  // Sentinel at enum value 0 to detect uninitialized memory
     OBJ_FUNCTION,
     OBJ_NATIVE,
     OBJ_STRING,
+    OBJ_STRING_VIEW,
     OBJ_ARRAY,
     OBJ_HASHMAP,
 } ObjType;
@@ -67,6 +72,14 @@ struct ObjString {
     char chars[];
 };
 
+typedef struct {
+    Obj obj;
+    size_t length;
+    size_t hash;
+    const char* chars; // Do not allocate or free this pointer
+    const ObjString* origin;
+} ObjStringView;
+
 struct ObjArray {
     Obj obj;
     size_t length;
@@ -83,6 +96,8 @@ ObjNative* newNative(ObjString* name, int arity, NativeFn func);
 
 ObjString* copyString(const char* chars, size_t length);
 ObjString* allocateString(char* chars, size_t length, size_t hash);
+
+ObjStringView* getStringView(ObjString* origin, int index, size_t length);
 
 ObjArray* allocateArray(size_t capacity);
 void reallocArray(ObjArray* array, size_t capacity);

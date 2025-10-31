@@ -37,6 +37,7 @@ size_t hashAny(Value val) {
         case VAL_OBJ: {
             switch (AS_OBJ(val)->type) {
                 case OBJ_STRING: return AS_STRING(val)->hash;
+                case OBJ_STRING_VIEW: return AS_STRING_VIEW(val)->hash;
                 // TODO raise error!
                 // TODO objectName()
                 case OBJ_NEVER: {
@@ -311,7 +312,7 @@ bool hashmap_add(hashmap_t* map, HASHMAP_KEY_TYPE key, HASHMAP_VALUE_TYPE value)
     // Resize if needed....
     if (map->total * 2 > map->capacity) {
         hashmap_grow(map, 2);
-        hashmap_debug("Hashmap: Growing capacity up to %zu\n", map->capacity);
+        // hashmap_debug("Hashmap: Growing capacity up to %zu\n", map->capacity);
     }
     return hashmap_add_without_grow(map, key, value);
 }

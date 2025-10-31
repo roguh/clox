@@ -847,35 +847,42 @@ static void array(bool canAssign) {
     debugend("array");
 }
 
+// This pushes either an array (slice) or a single value (index)
 static void subscript(bool canAssign) {
     debugp("subscript");
-    // Slices are simply array literals used to index into a hashmap or array or user-defined class
+    bool isArray = false;
+    // (1) First, we need at least one value on the stack
     if (match(TOKEN_COLON)) {
-        emitByte(OP_INIT_ARRAY);
-        consume(TOKEN_RIGHT_SQUARE_BRACE, "Expect ']' after empty array slice.");
-        emitByte(OP_SUBSCRIPT);
-        debugend("subscript");
-        return;
+        // (1.1) If it starts with colon, it's a slice equivalent to [0:...]
+        emitConstant(INTEGER_VAL(0));
+        isArray = true;
+    } else {
+        // (1.2) Otherwise, it might be a simple index
+        //       or a slice that starts with an integer
+        expression();
     }
-
-    expression();
-    bool initSlice = true;
-    while (!(check(TOKEN_RIGHT_SQUARE_BRACE) && !check(TOKEN_EOF))) {
-        if (initSlice) {
-            emitByte(OP_INIT_ARRAY);
-            initSlice = false;
-        } else {
-            expression();
-        }
-        if (!check(TOKEN_RIGHT_SQUARE_BRACE)) {
-            consume(TOKEN_COLON, "Expect ':' as array slice separator");
-        } else {
-            // Optional comma at end of list
-            match(TOKEN_COLON);
-        }
+    // (2) Are we in a slice or not?
+    if (match(TOKEN_COLON)) {
+        isArray = true;
+    }
+    // (3) Slice detected! One constant on stack is guaranteed
+    if (isArray) {
+        // (3.1) Push new array
+        emitByte(OP_INIT_ARRAY);
+        // (3.2) Then insert the value below the array
+        emitByte(OP_SWAP);
         emitByte(OP_INSERT_ARRAY);
     }
-    initSlice = false;
+    // (4) Now parse any remaining components of a slice
+    while (!(check(TOKEN_RIGHT_SQUARE_BRACE) && !check(TOKEN_EOF))) {
+        expression();
+        // (4.1) Keep pushing indices into the slice array
+        emitByte(OP_INSERT_ARRAY);
+        if (!check(TOKEN_RIGHT_SQUARE_BRACE)) {
+            // (4.2) A slice may or may not end in a colon
+            consume(TOKEN_COLON, "Expect ':' in array slice.");
+        }
+    }
     consume(TOKEN_RIGHT_SQUARE_BRACE, "Expect ']' after array subscript or slice.");
     emitByte(OP_SUBSCRIPT);
     debugend("subscript");

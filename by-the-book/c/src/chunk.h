@@ -11,6 +11,7 @@ typedef enum {
     OP_PRINT,
     // Stack ops
     OP_POP,
+    OP_SWAP,
     OP_CALL,
     // Variables
     OP_DEFINE_GLOBAL,
