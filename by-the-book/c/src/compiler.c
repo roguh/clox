@@ -307,10 +307,7 @@ static void binary(bool canAssign) {
         case TOKEN_RIGHT_PAREN:
         case TOKEN_LEFT_BRACE:
         case TOKEN_RIGHT_BRACE:
-        case TOKEN_LEFT_SQUARE_BRACE: {
-            consume(TOKEN_RIGHT_SQUARE_BRACE, "Expect ']' after array subscript.");
-            emitByte(OP_SUBSCRIPT);
-        }
+        case TOKEN_LEFT_SQUARE_BRACE:
         case TOKEN_RIGHT_SQUARE_BRACE:
         case TOKEN_COMMA:
         case TOKEN_DOT:
@@ -667,7 +664,7 @@ static void unary(bool canAssign) {
         case TOKEN_RIGHT_PAREN:
         case TOKEN_LEFT_BRACE:
         case TOKEN_RIGHT_BRACE:
-        case TOKEN_RIGHT_SQUARE_BRACE: // TODO new token, lists
+        case TOKEN_RIGHT_SQUARE_BRACE: // TODO new token, lists, subscript, hash, slice
         case TOKEN_LEFT_SQUARE_BRACE:
         case TOKEN_COMMA:
         case TOKEN_DOT:
@@ -850,6 +847,40 @@ static void array(bool canAssign) {
     debugend("array");
 }
 
+static void subscript(bool canAssign) {
+    debugp("subscript");
+    // Slices are simply array literals used to index into a hashmap or array or user-defined class
+    if (match(TOKEN_COLON)) {
+        emitByte(OP_INIT_ARRAY);
+        consume(TOKEN_RIGHT_SQUARE_BRACE, "Expect ']' after empty array slice.");
+        emitByte(OP_SUBSCRIPT);
+        debugend("subscript");
+        return;
+    }
+
+    expression();
+    bool initSlice = true;
+    while (!(check(TOKEN_RIGHT_SQUARE_BRACE) && !check(TOKEN_EOF))) {
+        if (initSlice) {
+            emitByte(OP_INIT_ARRAY);
+            initSlice = false;
+        } else {
+            expression();
+        }
+        if (!check(TOKEN_RIGHT_SQUARE_BRACE)) {
+            consume(TOKEN_COLON, "Expect ':' as array slice separator");
+        } else {
+            // Optional comma at end of list
+            match(TOKEN_COLON);
+        }
+        emitByte(OP_INSERT_ARRAY);
+    }
+    initSlice = false;
+    consume(TOKEN_RIGHT_SQUARE_BRACE, "Expect ']' after array subscript or slice.");
+    emitByte(OP_SUBSCRIPT);
+    debugend("subscript");
+}
+
 static void hashmap(bool canAssign) {
     debugp("hashmap");
     emitByte(OP_INIT_HASHMAP);
@@ -879,7 +910,7 @@ ParseRule rules[] = {
     [TOKEN_RIGHT_PAREN]        = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE]         = {hashmap, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE]        = {NULL, NULL, PREC_NONE},
-    [TOKEN_LEFT_SQUARE_BRACE]  = {array, binary, PREC_CALL},
+    [TOKEN_LEFT_SQUARE_BRACE]  = {array, subscript, PREC_CALL},
     [TOKEN_RIGHT_SQUARE_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_COMMA]              = {NULL, NULL, PREC_NONE},
     [TOKEN_DOT]                = {NULL, NULL, PREC_NONE},
