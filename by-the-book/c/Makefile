@@ -1,9 +1,10 @@
 ######### THANK YOU exDM69 from reddit (2014/7/7)
-CC=gcc  # tcc, gcc, clang, etc
+CC=gcc  # Alternatives: tcc, gcc, clang, etc
 CFLAGS = -std=c99
-CFLAGS += -Wall -Wpedantic -O3 -g -Wno-unused-function
-CFLAGS += -Werror=switch # Exhaustive enums if no default
-CFLAGS += -MMD   # dependency generation magic
+CFLAGS += -Wall -Wpedantic -O3 -Wno-unused-function
+CFLAGS += -g  # Debugging symbols
+CFLAGS += -Werror=switch  # Exhaustive enums if no default
+CFLAGS += -MMD  # Dependency generation magic
 LDLIBS = -lm
 LDFLAGS =
 CHONK=tests/chonkfuzz.lox
@@ -36,11 +37,11 @@ memory-check: main
 
 memory-fuzz: main
 	./tests/fuzz.py > $(CHONK)
-	valgrind --quiet --show-leak-kinds=all --leak-check=full ./main $(CHONK) > /dev/null
+	time valgrind --quiet --show-leak-kinds=all --leak-check=full ./main $(CHONK) > /dev/null
 
 fuzz: main
 	./tests/fuzz.py > $(CHONK)
-	./main $(CHONK) > /dev/null
+	time ./main $(CHONK) > /dev/null
 
 integration: main
 	./tests/runner.sh ./main
