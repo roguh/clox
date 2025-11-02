@@ -103,12 +103,14 @@ void insertArray(ObjArray* array, int index, Value value) {
     if (index > array->length) {
         return;
     }
-    if (array->length + 1 == array->capacity) {
-        // ERR_PRINT("Array: Growing capacity from %zu to %zu\n", array->capacity, array->capacity * 2);
+    if (index == array->length && array->length + 1 > array->capacity) {
+        ERR_PRINT("Array: Growing capacity from %zu to %zu\n", array->capacity, array->capacity * 2);
         reallocArray(array, array->capacity * 2);
     }
+    if (index == array->length) {
+        array->length++;
+    }
     array->values[index] = value;
-    array->length++;
     return;
 }
 
