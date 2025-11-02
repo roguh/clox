@@ -13,6 +13,7 @@
 #include "value.h"
 #include "vm.h"
 #include "print.h"
+#include "lib_complex.h"
 
 VM vm;
 
@@ -55,7 +56,8 @@ void initVM(void) {
     // vm.objects
     vm.objects = NULL;
     // vm.globals
-    hashmap_init(&vm.globals, 32, (hash_function)hashAny);
+    /////// TODO test with many globals
+    hashmap_init(&vm.globals, 512, (hash_function)hashAny);
     // vm.strings
     hashmap_init(&vm.strings, 1024, (hash_function)hashAny);
 
@@ -63,6 +65,8 @@ void initVM(void) {
     defineNative("clock", 0, clockNative);
     defineNative("__line__", 0, lineNative);
     defineNative("__col__", 0, colNative);
+
+    defineComplexLib();
 }
 
 void freeVM(void) {
@@ -125,7 +129,8 @@ static bool call(ObjFunction* func, int argCount) {
         runtimeError("Stack overflow.");
         return false;
     }
-    CallFrame* frame = &vm.frames[vm.frameCount++];
+    vm.frameCount += 1;
+    CallFrame* frame = &vm.frames[vm.frameCount - 1];
     frame->function = func;
     frame->ip = func->chunk.code;
     frame->slots = vm.stackTop - argCount - 1;
@@ -305,12 +310,14 @@ static InterpretResult run(void) {
 #define READ_STRING() AS_STRING(READ_CONSTANT())
 #define READ_STRING_LONG() AS_STRING(READ_CONSTANT_LONG())
 
-#define BIN_OP(op, _if_double, _if_int) do { \
+#define ARITH_BIN_OP(op) do { \
     Value b = pop(); \
     Value a = pop(); \
-    push(IS_DOUBLE(a) || IS_DOUBLE(b) ? \
-        _if_double(AS_DOUBLE(a) op AS_DOUBLE(b)) : \
-        _if_int(AS_INTEGER(a) op AS_INTEGER(b))); \
+    push(IS_FCOMPLEX(a) || IS_FCOMPLEX(b) \
+      ? FCOMPLEX_VAL(AS_FCOMPLEX(a) op AS_FCOMPLEX(b)) \
+      : IS_DOUBLE(a) || IS_DOUBLE(b) ? \
+        DOUBLE_VAL(AS_DOUBLE(a) op AS_DOUBLE(b)) : \
+        INTEGER_VAL(AS_INTEGER(a) op AS_INTEGER(b))); \
 } while (false)
 
 #define INT_BIN_OP(op) do { \
@@ -488,8 +495,22 @@ static InterpretResult run(void) {
                 push(INTEGER_VAL(sizeof(Value)));
             }
             break;
-            case OP_GREATER: BIN_OP(>, BOOL_VAL, BOOL_VAL); break;
-            case OP_LESS: BIN_OP(<, BOOL_VAL, BOOL_VAL); break;
+            case OP_GREATER: {
+                Value b = pop();
+                Value a = pop();
+                push(IS_DOUBLE(a) || IS_DOUBLE(b) ? \
+                    BOOL_VAL(AS_DOUBLE(a) > AS_DOUBLE(b)) : \
+                    BOOL_VAL(AS_INTEGER(a) > AS_INTEGER(b))); \
+                break;
+            }
+            case OP_LESS: {
+                Value b = pop();
+                Value a = pop();
+                push(IS_DOUBLE(a) || IS_DOUBLE(b) ? \
+                    BOOL_VAL(AS_DOUBLE(a) < AS_DOUBLE(b)) : \
+                    BOOL_VAL(AS_INTEGER(a) < AS_INTEGER(b))); \
+                break;
+            }
             case OP_ADD: {
                 if (IS_STRING(peek(0)) || IS_STRING(peek(1))) {
                     if (!(IS_STRING(peek(0)) && IS_STRING(peek(1)))) {
@@ -506,22 +527,22 @@ static InterpretResult run(void) {
                     }
                     concatenateArrays();
                 } else {
-                    BIN_OP(+, DOUBLE_VAL, INTEGER_VAL);
+                    ARITH_BIN_OP(+);
                 }
                 break;
             }
-            case OP_NEG: push(INTEGER_VAL(-1)); BIN_OP(*, DOUBLE_VAL, INTEGER_VAL); break;
-            case OP_SUB: BIN_OP(-, DOUBLE_VAL, INTEGER_VAL); break;
-            case OP_MUL: BIN_OP(*, DOUBLE_VAL, INTEGER_VAL); break;
+            case OP_NEG: push(INTEGER_VAL(-1)); ARITH_BIN_OP(*); break;
+            case OP_SUB: ARITH_BIN_OP(-); break;
+            case OP_MUL: ARITH_BIN_OP(*); break;
             case OP_DIV: {
-                if (AS_DOUBLE(peek(0)) == 0.0) {
+                if (IS_ZERO(peek(0))) {
                     runtimeError("Ignoring division by zero! Returning infinity.");
                     pop();
                     pop();
                     push(DOUBLE_VAL(INFINITY));
                     break;
                 }
-                BIN_OP(/, DOUBLE_VAL, INTEGER_VAL);
+                ARITH_BIN_OP(/);
                 break;
             }
             case OP_BITAND: INT_BIN_OP(&); break;

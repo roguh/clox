@@ -1,7 +1,7 @@
 ######### THANK YOU exDM69 from reddit (2014/7/7)
 CC=gcc                  # Alternatives: tcc, gcc, clang, etc
 CFLAGS:=-std=c99
-CFLAGS+=-O3             # Performance!
+# CFLAGS+=-O3             # Performance!
 CFLAGS+=-Wall -Wpedantic
 CFLAGS+=-g              # Debugging symbols
 CFLAGS+=-Werror=switch  # Exhaustive enums if no default

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <complex.h>
 
 #include "print.h"
 
@@ -49,6 +50,15 @@ void printValueExtra(Value value, bool printQuotes) {
         case VAL_NEVER: printf("(VAL null or uninitialized?)"); break;
         case VAL_NIL: printf("nil"); break;
         case VAL_DOUBLE: printf("%.16lg", AS_DOUBLE(value)); break;
+        case VAL_FCOMPLEX: {
+            float complex v = AS_FCOMPLEX(value);
+            if (creal(v) == 0.0) {
+                printf("%.16lgj", cimag(v));
+            } else {
+                printf("(%.16lg%+.16lgj)", creal(v), cimag(v));
+            }
+            break;
+        }
         case VAL_INT: printf("%d", AS_INTEGER(value)); break;
         case VAL_BOOL: printf("%s", AS_BOOL(value) ? "true" : "false"); break;
         case VAL_OBJ: {
@@ -68,9 +78,9 @@ void printValueExtra(Value value, bool printQuotes) {
                     break;
                 case OBJ_ARRAY:
                     printf("[");
-                    for (int i = 0; i < AS_ARRAY(value)->length; i++) {
+                    for (int i = 0; i < ARRAY_LENGTH(value); i++) {
                         printValueExtra(AS_ARRAY(value)->values[i], true);
-                        if (i < AS_ARRAY(value)->length - 1) {
+                        if (i < ARRAY_LENGTH(value) - 1) {
                             printf(", ");
                         }
                     }

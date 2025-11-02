@@ -32,6 +32,7 @@ size_t hashAny(Value val) {
         }
         case VAL_NIL: return hashInt(0);
         case VAL_DOUBLE: return hashInt(AS_INTEGER(val));
+        case VAL_FCOMPLEX: return hashInt(AS_INTEGER(val));
         case VAL_INT: return hashInt(AS_INTEGER(val));
         case VAL_BOOL: return hashInt(AS_INTEGER(val));
         case VAL_OBJ: {
