@@ -1,0 +1,40 @@
+import cmath
+I = 1j
+csqrt = cmath.sqrt
+cexp = cmath.exp
+csin = cmath.sin
+ccos = cmath.cos
+
+print("I")
+print(I)
+print("0 * I")
+print(0 * I)
+print("2 * I")
+print(2 * I)
+print("I * I")
+print(I * I)
+print("1 + 2*I + 3 + 4*I + 5 + 6*I + 7 + 8*I")
+print(1 + 2*I + 3 + 4*I + 5 + 6*I + 7 + 8*I)
+print("3.14159265 * I * 3.14159265 * I")
+print(3.14159265 * I * 3.14159265 * I)
+print("csqrt(4)")
+print(csqrt(4))
+print("csqrt(1)")
+print(csqrt(1))
+print("csqrt(-1)")
+print(csqrt(-1))
+print("csqrt(-1 * I)")
+print(csqrt(-1 * I))
+print("csqrt(5 - 4 * I)")
+print(csqrt(5 - 4 * I))
+print("cexp(-2 * I * 3.14159265 / 4 + -2 * I * 3.14159265 / 5)")
+print(cexp(-2 * I * 3.14159265 / 4 + -2 * I * 3.14159265 / 5))
+print("ccos(3 + 4 * I)")
+print(ccos(3 + 4 * I))
+print("csin(3 + 4 * I)")
+print(csin(3 + 4 * I))
+print("ccos(1 + 2*I + 3 + 4*I + 5 + 6*I + 7 + 8*I)")
+print(ccos(1 + 2*I + 3 + 4*I + 5 + 6*I + 7 + 8*I))
+print("csin(1 + 2*I + 3 + 4*I + 5 + 6*I + 7 + 8*I)")
+print(csin(1 + 2*I + 3 + 4*I + 5 + 6*I + 7 + 8*I))
+

@@ -9,7 +9,7 @@ CFLAGS+=-MMD            # -MMD generates small Makefiles with file extension .d 
 LDLIBS:=-lm
 LDFLAGS:=
 VAL:=valgrind --quiet --show-leak-kinds=all --leak-check=full
-SRCS:=$(wildcard *.c src/*.c src/test/*.c)
+SRCS:=$(wildcard main.c src/*.c src/test/*.c)
 OBJS:=$(SRCS:.c=.o)
 DEPS:=$(OBJS:.o=.d)
 FUZZY_CHONKY_FILE:=tests/chonkfuzz.lox

@@ -1,0 +1,100 @@
+var M_PI = 3.14159265358979312;
+
+fun dft(x) {
+    var N = #x;
+    var Y = [];
+    var k; // TODO for-loop scoping
+    // TODO increment ++
+    for (k = 0; k < N; k = k + 1) {
+        var sum = 0 * I;
+        var c = -2 * M_PI * k / N;
+        var n;
+        for (n = 0; n < N; n = n + 1) {
+            var a = c * n;
+            sum = sum + x[n] * (ccos(a) + I * csin(a));
+        }
+        Y = Y + [sum];
+    }
+    return Y;
+}
+
+fun reverse_bits(x) {
+    // 1. Swap the position of consecutive bits
+    // 2. Swap the position of consecutive pairs of bits
+    // 3. Swap the position of consecutive quads of bits
+    // 4. Continue this until swapping the two consecutive 16-bit parts of x
+    x = ((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1);
+    x = ((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2);
+    x = ((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4);
+    x = ((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8);
+    return (x >> 16) | (x << 16);
+}
+
+fun fft(x) {
+    var N = #x;
+    var Y = [];
+    if (N & (N - 1) == 0) {
+        // TODO fix !=
+    } else {
+        print(N & (N - 1));
+        print("N must be a power of 2");
+        return -1;
+    }
+    var logN = (clog(N) / clog(2)) | 0;
+
+    var i;
+    for (i = 0; i < N; i = i + 1) {
+        var rev = reverse_bits(i);
+        rev = rev >> (32 - logN);
+        Y = Y + [x[rev]];
+    }
+
+    var s;
+    for (s = 1; s <= logN; s = s + 1) {
+        var m = 1 << s;
+        var mh = 1 << (s - 1);
+        var tw = cexp(-2.0 * I * M_PI / m);
+
+        var k;
+        for (k = 0; k < N; k = k + m) {
+            var tf = 1;
+            var j;
+            for (j = 0; j < mh; j = j + 1) {
+                var a = Y[k + j];
+                var b = tf * Y[k + j + mh];
+                tf = tf * tw;
+                // TODO set array at index
+                // Y[k + j] = a + b;
+                // Y[k + j + mh] = a - b;
+                setArray(Y, k + j, a + b);
+                setArray(Y, k + j + mh, a - b);
+            }
+        }
+    }
+    return Y;
+}
+
+var u = [0, 1, -1, 32, 111144114, 508, 643, 798, -772, -538, -345, -567, -898, 904, 60];
+var i;
+for (i = 0; i < #u; i = i + 1) {
+    // print(reverse_bits(u[i]));
+    prints(u[i], " -> ", reverse_bits(u[i]));
+}
+
+
+var x = [1,2,3*I,4*I,5+6*I, 7+8*I, 9+10*I, 11+12*I];
+var y0 = dft(x);
+var y = fft(x);
+print(M_PI);
+print(x);
+print(y0);
+print(y);
+var j;
+for (j = 0; j < #x; j = j + 1) {
+    var a = y0[j];
+    var b = y[j];
+    if (cabs(a - b) >= 1e-4) {
+        print("too much error!");
+        // TODO exit(1)
+    }
+}

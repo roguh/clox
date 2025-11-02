@@ -48,6 +48,19 @@ static void defineNative(const char* name, int arity, NativeFn function) {
     );
 }
 
+static Value FFI_prints(int argCount, Value* values) {
+    for (int i = 0; i < argCount; i++) {
+        printValue(values[i]);
+    }
+    printf("\n");
+    return NIL_VAL;
+}
+
+static Value FFI_setArray(int argCount, Value* arg) {
+    insertArray(AS_ARRAY(arg[0]), AS_INTEGER(arg[1]), arg[2]);
+    return NIL_VAL;
+}
+
 void initVM(void) {
     // vm.frameCount
     vm.frameCount = 0;
@@ -65,6 +78,8 @@ void initVM(void) {
     defineNative("clock", 0, clockNative);
     defineNative("__line__", 0, lineNative);
     defineNative("__col__", 0, colNative);
+    defineNative("prints", -1, FFI_prints);
+    defineNative("setArray", 3, FFI_setArray);
 
     defineComplexLib();
 }
@@ -118,7 +133,7 @@ Value peek(int offset) {
 }
 
 #define ARITY_CHECK(func) \
-    if (argCount != func->arity) { \
+    if (func->arity >= 0 && argCount != func->arity) { \
         runtimeError("%s() expected %d arguments but got %d.", func->name->chars, func->arity, argCount); \
         return false; \
     }
@@ -298,6 +313,12 @@ static void concatenateArrays(void) {
     push(OBJ_VAL(result));
 }
 
+static void hashmap_err_print_key(hashmap_t* hm, unsigned long index, Value key, Value val, void* data) {
+    // TODO print to stderr
+    printValue(key);
+    printf(" ");
+}
+
 static InterpretResult run(void) {
     // All on stack, no indirection. TODO cool?
     CallFrame* frame = &vm.frames[vm.frameCount - 1];
@@ -420,6 +441,9 @@ static InterpretResult run(void) {
                 Value value = hashmap_get(&vm.globals, OBJ_VAL(name), &notFound);
                 if (notFound) {
                     runtimeError("Undefined variable '%s'.", name->chars);
+                    ERR_PRINT("Did you mean one of: ");
+                    hashmap_iter(&vm.globals, hashmap_err_print_key, NULL);
+                    ERR_PRINT("\n");
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 push(value);
@@ -459,7 +483,7 @@ static InterpretResult run(void) {
                 break;
             }
             case OP_INIT_ARRAY: {
-                ObjArray* array = allocateArray(8);
+                ObjArray* array = allocateArray(16);
                 push(OBJ_VAL(array));
                 break;
             }
@@ -549,7 +573,13 @@ static InterpretResult run(void) {
             case OP_BITOR: INT_BIN_OP(|); break;
             case OP_BITXOR: INT_BIN_OP(^); break;
             case OP_LEFT_SHIFT: INT_BIN_OP(<<); break;
-            case OP_RIGHT_SHIFT: INT_BIN_OP(>>); break;
+            // TODO arithmetic shift >>>
+            case OP_RIGHT_SHIFT: {
+                unsigned b = (unsigned)pop_int();
+                unsigned a = (unsigned)pop_int();
+                push(INTEGER_VAL(a >> b));
+                break;
+            }
             case OP_REMAINDER: DOUBLE_BIN_OP(fmod); break;
             case OP_EXP: DOUBLE_BIN_OP(pow); break;
             case OP_NIL: push(NIL_VAL); break;
