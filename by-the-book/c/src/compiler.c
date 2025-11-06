@@ -336,6 +336,19 @@ static void binary(bool canAssign) {
         case TOKEN_VAR:
         case TOKEN_WHILE:
         case TOKEN_ERROR:
+
+        case TOKEN_MINUS_EQUAL:
+        case TOKEN_PLUS_EQUAL:
+        case TOKEN_BITAND_EQUAL:
+        case TOKEN_BITOR_EQUAL:
+        case TOKEN_BITXOR_EQUAL:
+        case TOKEN_LEFT_SHIFT_EQUAL:
+        case TOKEN_RIGHT_SHIFT_EQUAL:
+        case TOKEN_SLASH_EQUAL:
+        case TOKEN_REMAINDER_EQUAL:
+        case TOKEN_STAR_EQUAL:
+        case TOKEN_STAR_STAR_EQUAL:
+
         case TOKEN_EOF:
             break;
     }
@@ -656,61 +669,7 @@ static void unary(bool canAssign) {
         case TOKEN_BITNEG: emitByte(OP_BITNEG); break;
         case TOKEN_BANG: emitByte(OP_NOT); break;
 
-        case TOKEN_NAN:
-        case TOKEN_INF:
-        case TOKEN_PRINT:
-        case TOKEN_COLON:
-        case TOKEN_LEFT_PAREN:
-        case TOKEN_RIGHT_PAREN:
-        case TOKEN_LEFT_BRACE:
-        case TOKEN_RIGHT_BRACE:
-        case TOKEN_RIGHT_SQUARE_BRACE: // TODO new token, lists, subscript, hash, slice
-        case TOKEN_LEFT_SQUARE_BRACE:
-        case TOKEN_COMMA:
-        case TOKEN_DOT:
-        case TOKEN_SEMICOLON:
-        case TOKEN_BITAND: // TODO bit-ops
-        case TOKEN_BITOR: // TODO bit-ops
-        case TOKEN_BITXOR: // TODO bit-ops
-        case TOKEN_EQUAL:
-        case TOKEN_GREAT:
-        case TOKEN_SLASH:
-        case TOKEN_REMAINDER: // TODO %
-        case TOKEN_STAR:
-        case TOKEN_STAR_STAR: // TODO exponential
-        case TOKEN_LESS: // TODO <
-    // Two or more characters
-        case TOKEN_BANG_EQUAL:
-        case TOKEN_EQUAL_EQUAL:
-        case TOKEN_GREAT_EQUAL:
-        case TOKEN_LESS_EQUAL:
-        case TOKEN_LEFT_SHIFT: // TODO bit-ops
-        case TOKEN_RIGHT_SHIFT: // TODO bit-ops
-    // Literals
-        case TOKEN_IDENTIFIER:
-        case TOKEN_STRING:
-        case TOKEN_NUMBER:
-        case TOKEN_INTEGER:
-        case TOKEN_HEXINT:
-    // Keywords
-        case TOKEN_AND:
-        case TOKEN_CLASS:
-        case TOKEN_ELSE:
-        case TOKEN_FALSE:
-        case TOKEN_FOR:
-        case TOKEN_FUN:
-        case TOKEN_IF:
-        case TOKEN_NIL:
-        case TOKEN_OR:
-        case TOKEN_RETURN:
-        case TOKEN_SUPER:
-        case TOKEN_THIS:
-        case TOKEN_TRUE:
-        case TOKEN_VAR:
-        case TOKEN_WHILE:
-        case TOKEN_ERROR:
-    // Special
-        case TOKEN_EOF:
+        default:
             break;
     }
     debugend("unary");
@@ -753,8 +712,59 @@ static void namedVariable(Token name, bool canAssign) {
     int offset = resolveLocal(current, &name);
 
     OpCode instr, instrLong;
-    if (canAssign && match(TOKEN_EQUAL)) {
+    if (canAssign && 
+        (match(TOKEN_EQUAL)
+        || match(TOKEN_MINUS_EQUAL)
+        || match(TOKEN_PLUS_EQUAL)
+        || match(TOKEN_BITAND_EQUAL)
+        || match(TOKEN_BITOR_EQUAL)
+        || match(TOKEN_BITXOR_EQUAL)
+        || match(TOKEN_SLASH_EQUAL)
+        || match(TOKEN_REMAINDER_EQUAL)
+        || match(TOKEN_STAR_EQUAL)
+        || match(TOKEN_STAR_STAR_EQUAL)
+        || match(TOKEN_LEFT_SHIFT_EQUAL)
+        || match(TOKEN_RIGHT_SHIFT_EQUAL))
+    ) {
+        TokenType opType = parser.previous.type;
+        // Step (1): Get current value if needed
+        if (opType != TOKEN_EQUAL) {
+            //////////// TODO this code is horrendous 
+            if (offset != -1) {
+                // Local variables
+                instr = OP_GET_LOCAL;
+                instrLong = OP_GET_LOCAL_LONG;
+            } else {
+                // Global variables
+                offset = identifierConstant(&name);
+                instr = OP_GET_GLOBAL;
+                instrLong = OP_GET_GLOBAL_LONG;
+            }
+            writeConstantByOffset(currentChunk(), instr, instrLong, offset, parser.previous.line, parser.previous.column);
+            if (instr == OP_GET_GLOBAL) {
+                offset = -1;
+            }
+        }
+        // Step (2): Get new value
         expression();
+        // Step (3): Mutate current value using new value if needed
+        switch (opType) {
+            case TOKEN_PLUS_EQUAL: emitByte(OP_ADD); break;
+            case TOKEN_MINUS_EQUAL: emitByte(OP_SUB); break;
+            case TOKEN_STAR_EQUAL: emitByte(OP_MUL); break;
+            case TOKEN_SLASH_EQUAL: emitByte(OP_DIV); break;
+            case TOKEN_STAR_STAR_EQUAL: emitByte(OP_EXP); break;
+            case TOKEN_REMAINDER_EQUAL: emitByte(OP_REMAINDER); break;
+            case TOKEN_BITAND_EQUAL: emitByte(OP_BITAND); break;
+            case TOKEN_BITOR_EQUAL: emitByte(OP_BITOR); break;
+            case TOKEN_BITXOR_EQUAL: emitByte(OP_BITXOR); break;
+            case TOKEN_LEFT_SHIFT_EQUAL: emitByte(OP_LEFT_SHIFT); break;
+            case TOKEN_RIGHT_SHIFT_EQUAL: emitByte(OP_RIGHT_SHIFT); break;
+            case TOKEN_EQUAL:
+            default:
+                break;
+        }
+        // Step (4): Save new value or mutated value to variable
         if (offset != -1) {
             // Local variables
             instr = OP_SET_LOCAL;
@@ -944,6 +954,17 @@ ParseRule rules[] = {
     [TOKEN_LEFT_SHIFT]         = {NULL, binary, PREC_SHIFT},
     [TOKEN_RIGHT_SHIFT]        = {NULL, binary, PREC_SHIFT},
     [TOKEN_IDENTIFIER]         = {variable, NULL, PREC_NONE},
+    [TOKEN_MINUS_EQUAL]        = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_PLUS_EQUAL]         = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_BITAND_EQUAL]       = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_BITOR_EQUAL]        = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_BITXOR_EQUAL]       = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_LEFT_SHIFT_EQUAL]   = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_RIGHT_SHIFT_EQUAL]  = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_SLASH_EQUAL]        = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_REMAINDER_EQUAL]    = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_STAR_EQUAL]         = {NULL, NULL, PREC_EQUALITY},
+    [TOKEN_STAR_STAR_EQUAL]    = {NULL, NULL, PREC_EQUALITY},
     [TOKEN_STRING]             = {string, NULL, PREC_NONE},
     [TOKEN_NUMBER]             = {number, NULL, PREC_NONE},
     [TOKEN_INTEGER]            = {integer, NULL, PREC_NONE},

@@ -37,6 +37,22 @@ typedef enum {
     TOKEN_LESS_EQUAL,
     TOKEN_LEFT_SHIFT, // TODO bit-ops
     TOKEN_RIGHT_SHIFT, // TODO bit-ops
+
+
+    // Two character arithmetic assignment
+    TOKEN_MINUS_EQUAL,
+    TOKEN_PLUS_EQUAL,
+    TOKEN_BITAND_EQUAL,
+    TOKEN_BITOR_EQUAL,
+    TOKEN_BITXOR_EQUAL,
+    TOKEN_SLASH_EQUAL,
+    TOKEN_REMAINDER_EQUAL,
+    TOKEN_STAR_EQUAL,
+    TOKEN_STAR_STAR_EQUAL,
+    // 3-char
+    TOKEN_LEFT_SHIFT_EQUAL,
+    TOKEN_RIGHT_SHIFT_EQUAL,
+
     // Literals
     TOKEN_IDENTIFIER,
     TOKEN_STRING,

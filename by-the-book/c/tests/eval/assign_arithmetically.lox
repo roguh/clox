@@ -1,0 +1,17 @@
+var z = 20;
+print(z / 2.5);
+z /= 2.5;
+print(z);
+var k = 50000;
+print(k >> 4);
+print(50000 >> 4);
+var j = 6;
+j *= 6;
+print(j);
+print(6 * 6);
+j **= 3;
+print(j);
+print(36 ** 3);
+for (var i = 0; i < 10; i += 1) {
+    print(i);
+}

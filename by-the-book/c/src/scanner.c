@@ -302,6 +302,8 @@ static void skipWhitespace(bool semicolonsAreWhitespace) {
 }
 
 Token scanToken(void) {
+    #define MATCH_OR(if_next, then_tok, else_tok) (match(if_next) ? (then_tok) : (else_tok))
+
     skipWhitespace(false);
     scanner.startLine = scanner.line;
     scanner.startColumn = scanner.column;
@@ -330,8 +332,6 @@ Token scanToken(void) {
         case ']': return makeToken(TOKEN_RIGHT_SQUARE_BRACE);
         case ',': return makeToken(TOKEN_COMMA);
         case '.': return makeToken(TOKEN_DOT);
-        case '-': return makeToken(TOKEN_MINUS);
-        case '+': return makeToken(TOKEN_PLUS);
         case ';': {
             Token t = makeToken(TOKEN_SEMICOLON);
             skipWhitespace(false);
@@ -341,25 +341,29 @@ Token scanToken(void) {
             return t;
         }
         case '#': return makeToken(TOKEN_SIZE);
-        case '&': return makeToken(TOKEN_BITAND);
-        case '|': return makeToken(TOKEN_BITOR);
-        case '^': return makeToken(TOKEN_BITXOR);
         case '~': return makeToken(TOKEN_BITNEG);
-        case '/': return makeToken(TOKEN_SLASH);
-        case '%': return makeToken(TOKEN_REMAINDER);
+
+        case '-': return makeToken(MATCH_OR('=', TOKEN_MINUS_EQUAL, TOKEN_MINUS));
+        case '+': return makeToken(MATCH_OR('=', TOKEN_PLUS_EQUAL, TOKEN_PLUS));
+        case '&': return makeToken(MATCH_OR('=', TOKEN_BITAND_EQUAL, TOKEN_BITAND));
+        case '|': return makeToken(MATCH_OR('=', TOKEN_BITOR_EQUAL, TOKEN_BITOR));
+        case '^': return makeToken(MATCH_OR('=', TOKEN_BITXOR_EQUAL, TOKEN_BITXOR));
+        case '/': return makeToken(MATCH_OR('=', TOKEN_SLASH_EQUAL, TOKEN_SLASH));
+        case '%': return makeToken(MATCH_OR('=', TOKEN_REMAINDER_EQUAL, TOKEN_REMAINDER));
+        
         // One or Two-character tokens
-        case '!': return makeToken(match('=') ?
-            TOKEN_BANG_EQUAL : TOKEN_BANG);
-        case '*': return makeToken(match('*') ?
-            TOKEN_STAR_STAR : TOKEN_STAR);
-        case '=': return makeToken(match('=') ?
-            TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
-        case '>': return makeToken(match('=') ?
-            TOKEN_GREAT_EQUAL :
-                (match('>') ? TOKEN_RIGHT_SHIFT: TOKEN_GREAT));
-        case '<': return makeToken(match('=') ?
-            TOKEN_LESS_EQUAL :
-                (match('<') ? TOKEN_LEFT_SHIFT : TOKEN_LESS));
+        case '!': return makeToken(MATCH_OR('=', TOKEN_BANG_EQUAL, TOKEN_BANG));
+        case '=': return makeToken(MATCH_OR('=', TOKEN_EQUAL_EQUAL, TOKEN_EQUAL));
+        // 1, 2, or 3-char tokens
+        case '*': return makeToken(MATCH_OR('*',
+            MATCH_OR('=', TOKEN_STAR_STAR_EQUAL, TOKEN_STAR_STAR),
+                MATCH_OR('=', TOKEN_STAR_EQUAL, TOKEN_STAR)));
+        case '>': return makeToken(MATCH_OR('=', TOKEN_GREAT_EQUAL,
+            (MATCH_OR('>', MATCH_OR('=', TOKEN_RIGHT_SHIFT_EQUAL, TOKEN_RIGHT_SHIFT),
+                TOKEN_GREAT))));
+        case '<': return makeToken(MATCH_OR('=', TOKEN_LESS_EQUAL,
+            (MATCH_OR('<', MATCH_OR('=', TOKEN_LEFT_SHIFT_EQUAL, TOKEN_LEFT_SHIFT) ,
+                TOKEN_LESS))));
         case '"':
             return string(STR_DOUBLE);
         case '\'':

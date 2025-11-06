@@ -2,16 +2,14 @@ var base = 10;
 
 fun zeros(n) {
     var r = [];
-    var i;
-    for (i = 0; i < n; i = i + 1) {
+    for (var i = 0; i < n; i += 1) {
         r = r + [0];
     }
     return r;
 }
 
 fun iszero(a) {
-    var i;
-    for (i = 0; i < #a; i = i + 1) {
+    for (var i = 0; i < #a; i += 1) {
         if (a[i] == 0) {} else { return false; }
     }
     return true;
@@ -40,8 +38,7 @@ fun add(a, b) {
     var carry = 0;
     var c;
     if (#a > #b) { c = zeros(#a); } else { c = zeros(#b); }
-    var i;
-    for (i = 0; i < #c; i = i + 1) {
+    for (var i = 0; i < #c; i += 1) {
         var total = carry;
         if (i < #a) {
             total = total + a[i];
@@ -61,8 +58,7 @@ fun add(a, b) {
 
 fun eq(a, b) {
     if (#a == #b) {} else { return false; }
-    var i;
-    for (i = 0; i < #a; i = i + 1) {
+    for (var i = 0; i < #a; i += 1) {
         if (a[i] == b[i]) {} else { return false; }
     }
     return true;
@@ -70,7 +66,7 @@ fun eq(a, b) {
 
 fun lt(a, b) {
     if (#a == #b) {} else { return #a < #b; }
-    for (i = 0; i < #a; i = i + 1) {
+    for (i = 0; i < #a; i += 1) {
         if (a[i] == b[i]) {} else { return #a < #b; }
     }
     return false;
@@ -88,8 +84,7 @@ fun sub(a, b) {
     var c = zeros(#a);
     var carry = 0;
     var total;
-    var i;
-    for (i = 0; i < #a; i = i + 1) {
+    for (var i = 0; i < #a; i += 1) {
         if (i < #b) {
             total = a[i] - b[i] + carry;
         } else {
@@ -109,15 +104,13 @@ fun sub(a, b) {
 fun _mul(a, b) {
     var N = #a + #b;
     var c = zeros(N);
-    var i;
-    var j;
-    for (i = 0; i < #a; i = i + 1) {
-    for (j = 0; j < #b; j = j + 1) {
+    for (var i = 0; i < #a; i += 1) {
+    for (var j = 0; j < #b; j += 1) {
         setArray(c, i + j, c[i + j] + a[i] * b[j]);
     }
     }
     var carry = 0;
-    for (i = 0; i < N; i = i + 1) {
+    for (var i = 0; i < N; i += 1) {
         var total = c[i] + carry;
         setArray(c, i, total % base);
         carry = (total|0) / (base|0);
@@ -128,8 +121,7 @@ fun _mul(a, b) {
 fun halve(a) {
     var magic = 0;
     var c = zeros(#a);
-    var i;
-    for (i = #a - 1; i >= 0; i = i - 1) {
+    for (var i = #a - 1; i >= 0; i = i - 1) {
         var digit = (a[i] >> 1) + magic;
         magic = (a[i] & 1) * (base / 2);
         setArray(c, i, digit);
@@ -163,8 +155,7 @@ fun mul(a, b) {
     // SPLIT a
     var l1 = [];
     var h1 = [];
-    var i;
-    for (i = 0; i < #a; i = i + 1) {
+    for (var i = 0; i < #a; i += 1) {
         var h;
         if (i <= m2) { h = l1; } else { h = h1; }
         setArray(h, #h, a[i]);
@@ -173,7 +164,7 @@ fun mul(a, b) {
     // SPLIT b
     var l2 = [];
     var h2 = [];
-    for (i = 0; i < #b; i = i + 1) {
+    for (i = 0; i < #b; i += 1) {
         var h;
         if (i <= m2) { h = l2; } else { h = h2; }
         setArray(h, #h, b[i]);
@@ -192,8 +183,7 @@ fun mul(a, b) {
 }
 
 fun print10(t) {
-    var i;
-    for (i = #t - 1; i >= 0; i = i - 1) {
+    for (var i = #t - 1; i >= 0; i = i - 1) {
             prints(t[i]);
     }
     print("");
