@@ -79,6 +79,7 @@ var i;
 for (i = 0; i < #u; i = i + 1) {
     // print(reverse_bits(u[i]));
     prints(u[i], " -> ", reverse_bits(u[i]));
+    print("");
 }
 
 

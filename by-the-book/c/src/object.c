@@ -166,3 +166,23 @@ void freeObject(Obj* obj) {
         }
     }
 }
+
+bool objsEqual(Obj* a, Obj* b) {
+    if (a->type != b->type) {
+        return false;
+    }
+    switch (a->type) { // Exhaustive
+        case OBJ_STRING: {
+            ObjString* aS = (ObjString*)a;
+            ObjString* bS = (ObjString*)b;
+            return aS->length == bS->length && memcmp(aS->chars, bS->chars, aS->length) == 0;
+        }
+        case OBJ_NEVER: { ERR_PRINT("Cannot compare objects yet!\n"); exit(1); return false; }
+        case OBJ_FUNCTION: { ERR_PRINT("Cannot compare objects yet!\n"); exit(1); return false; }
+        case OBJ_NATIVE: { ERR_PRINT("Cannot compare objects yet!\n"); exit(1); return false; }
+        case OBJ_STRING_VIEW: { ERR_PRINT("Cannot compare objects yet!\n"); exit(1); return false; }
+        case OBJ_ARRAY: { ERR_PRINT("Cannot compare objects yet!\n"); exit(1); return false; }
+        case OBJ_HASHMAP: { ERR_PRINT("Cannot compare objects yet!\n"); exit(1); return false; }
+    }
+    return false; // Unreachable
+}

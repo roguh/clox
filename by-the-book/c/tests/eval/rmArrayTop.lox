@@ -1,0 +1,9 @@
+var a = [1,2,3,4,0,0,0,0];
+var c = [0,0,0,0,0,0];
+
+while (#a > 1 and a[#a-1] == 0) { print(a); rmArrayTop(a); }
+while (#c > 1 and c[#c-1] == 0) { print(c); rmArrayTop(c); }
+
+print("FIN!");
+print(a);
+print(c);

@@ -108,5 +108,6 @@ Value removeArray(ObjArray* array, int index); // shift values, might shrink arr
 ObjHashmap* allocateHashmap(size_t capacity);
 
 void freeObject(Obj* obj);
+bool objsEqual(Obj* a, Obj* b);
 
 #endif

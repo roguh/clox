@@ -61,10 +61,12 @@ static Value FFI_setArray(int argCount, Value* arg) {
 }
 
 static Value FFI_rmArrayTop(int argCount, Value* arg) {
-    printf("%d->", ARRAY_LENGTH(arg[0]));
     AS_ARRAY(arg[0])->length--;
-    printf("%d\n", ARRAY_LENGTH(arg[0]));
     return NIL_VAL;
+}
+
+static Value FFI_type(int argCount, Value* arg) {
+    return OBJ_VAL(TYPE_NAME(arg[0].type));
 }
 
 void initVM(void) {
@@ -87,6 +89,7 @@ void initVM(void) {
     defineNative("prints", -1, FFI_prints);
     defineNative("setArray", 3, FFI_setArray);
     defineNative("rmArrayTop", 1, FFI_rmArrayTop);
+    defineNative("type", 1, FFI_type);
 
     defineComplexLib();
 }

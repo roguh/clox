@@ -2,6 +2,7 @@
 #define clox_value_h
 
 #include <complex.h>
+#include <string.h>
 #include "common.h"
 
 typedef struct Obj Obj;
@@ -30,6 +31,10 @@ typedef struct {
     } as;
 } Value;
 
+extern const char* valueTypeNames[];
+
+#define TYPE_NAME(valueType) copyString(valueTypeNames[valueType], strlen(valueTypeNames[valueType]))
+
 #define NIL_VAL ((Value){VAL_NIL, {._int = 0}})
 #define DOUBLE_VAL(val) ((Value){VAL_DOUBLE, {._double = val}})
 #define INTEGER_VAL(val) ((Value){VAL_INT, {._int = val}})
@@ -45,8 +50,8 @@ typedef struct {
 #define IS_FCOMPLEX(value) ((value).type == VAL_FCOMPLEX)
 #define IS_INTEGER(value) ((value).type == VAL_INT)
 #define IS_BOOL(value) ((value).type == VAL_BOOL)
+#define IS_NUMBER(v) (IS_DOUBLE(v) || IS_FCOMPLEX(v) || IS_INTEGER(v) || IS_BOOL(v))
 #define IS_OBJ(value) ((value).type == VAL_OBJ)
-
 #define IS_ZERO(value) (AS_DOUBLE(value) == 0.0 || AS_FCOMPLEX(value) == 0.0)
 
 typedef struct {

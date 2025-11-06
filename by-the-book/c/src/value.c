@@ -5,6 +5,16 @@
 #include "memory.h"
 #include "object.h"
 
+const char* valueTypeNames[] = {
+    "VAL_NEVER",
+    "VAL_NIL",
+    "VAL_DOUBLE",
+    "VAL_INT",
+    "VAL_FCOMPLEX",
+    "VAL_BOOL",
+    "VAL_OBJ",
+};
+
 void initValues(Values* values) {
     values->count = 0;
     values->capacity = 0;
@@ -64,7 +74,11 @@ float complex AS_FCOMPLEX(Value value) {
 
 bool valuesEqual(Value a, Value b) {
     if (a.type != b.type) {
-        return false;
+        // If the types are different, check if both are numbers
+        if (!(IS_NUMBER(a) && IS_NUMBER(b))) {
+            // Neither is a number
+            return false;
+        }
     }
     switch (a.type) { // Exhaustive
         case VAL_NEVER: return false;
@@ -73,11 +87,7 @@ bool valuesEqual(Value a, Value b) {
         case VAL_FCOMPLEX: return AS_FCOMPLEX(a) == AS_FCOMPLEX(b);
         case VAL_DOUBLE: return AS_DOUBLE(a) == AS_DOUBLE(b);
         case VAL_BOOL: return AS_BOOL(a) == AS_BOOL(b);
-        case VAL_OBJ: {
-            ObjString* aS = AS_STRING(a);
-            ObjString* bS = AS_STRING(b);
-            return aS->length == bS->length && memcmp(aS->chars, bS->chars, aS->length) == 0;
-        }
+        case VAL_OBJ: return objsEqual(AS_OBJ(a), AS_OBJ(b)); // This function also has an exhaustive switch
     }
     return false;
 }
