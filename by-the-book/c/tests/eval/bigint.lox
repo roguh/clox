@@ -66,7 +66,7 @@ fun eq(a, b) {
 
 fun lt(a, b) {
     if (#a == #b) {} else { return #a < #b; }
-    for (i = 0; i < #a; i += 1) {
+    for (var i = 0; i < #a; i += 1) {
         if (a[i] == b[i]) {} else { return #a < #b; }
     }
     return false;
@@ -105,9 +105,9 @@ fun _mul(a, b) {
     var N = #a + #b;
     var c = zeros(N);
     for (var i = 0; i < #a; i += 1) {
-    for (var j = 0; j < #b; j += 1) {
-        setArray(c, i + j, c[i + j] + a[i] * b[j]);
-    }
+        for (var j = 0; j < #b; j += 1) {
+            setArray(c, i + j, c[i + j] + a[i] * b[j]);
+        }
     }
     var carry = 0;
     for (var i = 0; i < N; i += 1) {
@@ -143,35 +143,35 @@ fun _pow(a, b, mulfunc) {
     return normalize(r);
 }
 
+fun split(t, midpoint) {
+    var lo = [];
+    var hi = [];
+    for (var i = 0; i < #t; i += 1) {
+        var h;
+        if (i <= midpoint) { h = lo; } else { h = hi; }
+        setArray(h, #h, t[i]);
+    }
+    return [lo, hi];
+}
+
 fun mul(a, b) {
-    if (#a < 2 or #b < 2) {
+    if (#a < 3 or #b < 3) {
         return _mul(a, b);
     }
 
     var m2;
-    if (#a >= #b) { m2 = a; } else { m2 = b; }
-    m2 = (m2 / 2) | 0;  // TODO floor
+    if (#a >= #b) { m2 = #a; } else { m2 = #b; }
+    m2 /= 2;  // TODO floor
 
-    // SPLIT a
-    var l1 = [];
-    var h1 = [];
-    for (var i = 0; i < #a; i += 1) {
-        var h;
-        if (i <= m2) { h = l1; } else { h = h1; }
-        setArray(h, #h, a[i]);
-    }
+    var a_split = split(a, m2);
+    var b_split = split(b, m2);
+    var l1 = a_split[0]; // TODO destructuring assignment
+    var h1 = a_split[1]; // TODO destructuring assignment
+    var l2 = b_split[0]; // TODO destructuring assignment
+    var h2 = b_split[1]; // TODO destructuring assignment
     
-    // SPLIT b
-    var l2 = [];
-    var h2 = [];
-    for (i = 0; i < #b; i += 1) {
-        var h;
-        if (i <= m2) { h = l2; } else { h = h2; }
-        setArray(h, #h, b[i]);
-    }
-
     var k0 = mul(l1, l2);
-    var k1 = mul(add(l1, h2), add(l2, h2));
+    var k1 = mul(add(l1, h1), add(l2, h2));
     var k2 = mul(h1, h2);
     return add(
         _mul(k2, _pow(ibase, fromnum(m2 * 2), _mul)),
@@ -191,12 +191,17 @@ fun print10(t) {
 
 var ibase = fromnum(base);
 
-// print(mul(fromnum(13431513511), fromnum(1141441414)));
-print(134513511 + 1141414);
-print10(add(fromnum(134513511), fromnum(1141414)));
 print(zeros(10));
+print("expect 13431513511 * 1141441414 = 15331285774155944554
+");
+print10(_mul(fromnum(13431513511), fromnum(1141441414)));
+print10(mul(fromnum(13431513511), fromnum(1141441414)));
+prints("expect 134513511 + 1141414 = ", 134513511 + 1141414, "
+");
+print10(add(fromnum(134513511), fromnum(1141414)));
 print(fromnum(1223311));
 print(fromnum(1223311));
 print10(sub(_pow(fromnum(2), fromnum(255), _mul), fromnum(19)));
+print10(sub(_pow(fromnum(2), fromnum(255), mul), fromnum(19)));
 print('$ python3 -c "print(2**255-19)"');
 print("57896044618658097711785492504343953926634992332820282019728792003956564819949");
