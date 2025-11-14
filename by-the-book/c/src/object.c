@@ -36,7 +36,7 @@ ObjNative* newNative(ObjString* name, int arity, NativeFn func) {
 
 ObjString* copyString(const char* chars, size_t length) {
     size_t hash = hashString(chars, length);
-    ObjString* interned = hashmap_get_str(&vm.strings, chars, length, hash);
+    ObjString* interned = hashmap_get_str(&vm.strings->map, chars, length, hash);
     if (interned) {
         return interned;
     }
@@ -46,7 +46,7 @@ ObjString* copyString(const char* chars, size_t length) {
     memcpy(string->chars, chars, length);
     // Turn the chars into a C-string
     string->chars[length] = '\0';
-    hashmap_add(&vm.strings, OBJ_VAL(string), NIL_VAL);
+    hashmap_add(&vm.strings->map, OBJ_VAL(string), NIL_VAL);
     return string;
 }
 

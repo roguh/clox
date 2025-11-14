@@ -55,7 +55,7 @@ struct ObjHashmap {
     hashmap_t map;
 };
 
-typedef void (*hashmap_iterator)(hashmap_t* map, size_t index, HASHMAP_KEY_TYPE key, HASHMAP_VALUE_TYPE value, void* data);
+typedef void hashmap_iterator(hashmap_t* map, size_t index, HASHMAP_KEY_TYPE key, HASHMAP_VALUE_TYPE value, void* data);
 
 void hashmap_init(hashmap_t* map, size_t capacity, hash_function hasher);
 void hashmap_free(hashmap_t* map);

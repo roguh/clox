@@ -21,8 +21,8 @@ typedef struct {
     Value stack[STACK_MAX];
     Value* stackTop;
     Obj* objects;
-    hashmap_t globals;
-    hashmap_t strings;
+    ObjHashmap* globals;
+    ObjHashmap* strings;
 } VM;
 
 typedef enum {
@@ -33,6 +33,8 @@ typedef enum {
 
 extern VM vm;
 
+#define runtimeError(...) { runtimeErrorLog(__VA_ARGS__); dangerousUnsafeResetStack(); }
+
 void initVM(void);
 void freeVM(void);
 InterpretResult interpretOrPrint(const char* string, bool onlyPrint);
@@ -40,5 +42,10 @@ InterpretResult interpret(const char* string);
 InterpretResult interpretChunk(Chunk* chunk);
 void push(Value value);
 Value pop(void);
+
+void defineNative(const char* name, int arity, NativeFn function);
+void defineConstant(const char* name, Value val);
+void runtimeErrorLog(const char* format, ...);
+void dangerousUnsafeResetStack(void);
 
 #endif

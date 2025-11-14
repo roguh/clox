@@ -13,65 +13,48 @@
 #include "value.h"
 #include "vm.h"
 #include "print.h"
+#include "stdlib.h"
 
 VM vm;
 
-#define runtimeError(...) { runtimeErrorLog(__VA_ARGS__); resetStack(); }
-
-static Value clockNative(int argCount, Value* args) {
-    return DOUBLE_VAL((double)clock() / CLOCKS_PER_SEC);
-}
-
-static Value lineNative(int argCount, Value* args) {
-    CallFrame* frame = &vm.frames[vm.frameCount - 1];
-    int line = frame->function->chunk.lines[frame->ip - frame->function->chunk.code - 1];
-    return INTEGER_VAL(line);
-}
-
-static Value colNative(int argCount, Value* args) {
-    CallFrame* frame = &vm.frames[vm.frameCount - 1];
-    int col = frame->function->chunk.columns[frame->ip - frame->function->chunk.code - 1];
-    return INTEGER_VAL(col);
-}
-
-static void resetStack(void) {
+void dangerousUnsafeResetStack(void) {
     vm.stackTop = vm.stack;
 }
 
-static void defineNative(const char* name, int arity, NativeFn function) {
+void defineConstant(const char* name, Value val) {
     ObjString* _name = copyString(name, strlen(name));
     hashmap_add(
-        &vm.globals,
+        &vm.globals->map,
         OBJ_VAL(_name),
-        OBJ_VAL(newNative(_name, arity, function))
+        val
     );
+}
+
+void defineNative(const char* name, int arity, NativeFn function) {
+    defineConstant(name, OBJ_VAL(newNative(copyString(name, strlen(name)), arity, function)));
 }
 
 void initVM(void) {
     // vm.frameCount
     vm.frameCount = 0;
     // vm.stack and vm.stackTop
-    resetStack();
-    // vm.objects
+    dangerousUnsafeResetStack();
     vm.objects = NULL;
-    // vm.globals
-    hashmap_init(&vm.globals, 32, (hash_function)hashAny);
-    // vm.strings
-    hashmap_init(&vm.strings, 1024, (hash_function)hashAny);
+    vm.globals = allocateHashmap(512);
+    vm.strings = allocateHashmap(1024);
 
-    // Put these AFTER defining VM
-    defineNative("clock", 0, clockNative);
-    defineNative("__line__", 0, lineNative);
-    defineNative("__col__", 0, colNative);
+    // Only call AFTER VM is fully initialized
+    bindManyNativeFunctions();
 }
 
 void freeVM(void) {
-    hashmap_free(&vm.strings);
-    hashmap_free(&vm.globals);
+    hashmap_free(&vm.strings->map);
+    hashmap_free(&vm.globals->map);
     freeObjects();
 }
 
-static void runtimeErrorLog(const char* format, ...) {
+// TODO replace this and exit() with Error values!
+void runtimeErrorLog(const char* format, ...) {
     va_list args;
     fputs("ERROR: ", stderr);
     va_start(args, format);
@@ -394,13 +377,13 @@ static InterpretResult run(void) {
             case OP_DEFINE_GLOBAL:
             case OP_DEFINE_GLOBAL_LONG: {
                 ObjString* name = (instruction == OP_DEFINE_GLOBAL) ? READ_STRING() : READ_STRING_LONG();
-                hashmap_add(&vm.globals, OBJ_VAL(name), pop());
+                hashmap_add(&vm.globals->map, OBJ_VAL(name), pop());
                 break;
             }
             case OP_SET_GLOBAL_LONG:
             case OP_SET_GLOBAL: {
                 ObjString* name = (instruction == OP_SET_GLOBAL) ? READ_STRING() : READ_STRING_LONG();
-                if (!hashmap_set(&vm.globals, OBJ_VAL(name), peek(0))) {
+                if (!hashmap_set(&vm.globals->map, OBJ_VAL(name), peek(0))) {
                     runtimeError("Undefined variable '%s'.", name->chars);
                     return INTERPRET_RUNTIME_ERROR;
                 }
@@ -410,7 +393,7 @@ static InterpretResult run(void) {
             case OP_GET_GLOBAL: {
                 ObjString* name = (instruction == OP_GET_GLOBAL) ? READ_STRING() : READ_STRING_LONG();
                 bool notFound = false;
-                Value value = hashmap_get(&vm.globals, OBJ_VAL(name), &notFound);
+                Value value = hashmap_get(&vm.globals->map, OBJ_VAL(name), &notFound);
                 if (notFound) {
                     runtimeError("Undefined variable '%s'.", name->chars);
                     return INTERPRET_RUNTIME_ERROR;
